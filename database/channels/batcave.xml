@@ -3,15 +3,11 @@
 <channel>
   <name>batcave</name>
   <users>
-    <user>
-      desmond
-    </user>
-    <user>
-      batman
-    </user>
-    <user>
-      robin
-    </user>
+    <user>desmond</user>
+    <user>fatih</user>
+    <user>ferdi</user>
+    <user>sjuul</user>
+    <user>harmen</user>
   </users>
   <messages>
     <message user="desmond">
