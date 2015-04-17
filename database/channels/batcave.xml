@@ -1,0 +1,30 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+
+<channel>
+  <name>batcave</name>
+  <users>
+    <user>
+      desmond
+    </user>
+    <user>
+      batman
+    </user>
+    <user>
+      robin
+    </user>
+  </users>
+  <messages>
+    <message user="desmond">
+      <timestamp>17-4-2015/103630</timestamp>
+      <body>"i'm batman"</body>
+    </message>
+    <message user="fatih">
+      <timestamp>17-4-2015/103750</timestamp>
+      <body>"no, i'm batman"</body>
+    </message>
+    <message user="sjuul">
+      <timestamp>17-4-2015/103640</timestamp>
+      <body>"shut up"</body>
+    </message>
+  </messages>
+</channel>
