@@ -8,6 +8,7 @@
 void processConnectedClient(int sockfd);
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
 void flushStdout();
+void sendMessageToClient(int sockfd, char *buffer, int bufferLength);
 
 int main(int argc, char **argv)
 {
@@ -27,7 +28,6 @@ int main(int argc, char **argv)
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
         {
             processConnectedClient(sockfd);
-            close(sockfd);
         }
         else
         {
@@ -49,12 +49,14 @@ void processConnectedClient(int sockfd) {
             exit(1);
         }
 
-        if (send(sockfd, buffer, sizeof(buffer), 0) < 0) {
-            perror("Error send.. ");
-            exit(1);
-        }
+        // bericht interpreteren
+
+
+        sendMessageToClient(sockfd, buffer, sizeof(buffer));
         bzero(buffer, sizeof(buffer));
     }
+
+    close(sockfd);
 }
 
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
@@ -83,4 +85,12 @@ int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_i
 void flushStdout()
 {
     setvbuf(stdout, NULL, _IONBF, 0);
+}
+
+void sendMessageToClient(int sockfd, char *buffer, int bufferLength)
+{
+    if (send(sockfd, buffer, bufferLength, 0) < 0) {
+        perror("Error send.. ");
+        exit(1);
+    }
 }
