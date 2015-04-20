@@ -3,7 +3,7 @@ project(DudeServer)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-set(SOURCE_FILES
-    README.md)
+set(SOURCE_FILES README.md)
 
-add_executable(DudeServer ${SOURCE_FILES} source/main.c)
+add_executable(DudeServer ${SOURCE_FILES} source/main.c source/medium.h)
+include_directories(/usr/include/libxml2/)

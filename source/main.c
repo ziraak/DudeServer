@@ -1,6 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
+#include "medium.h"
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
@@ -11,6 +12,8 @@ void flushStdout();
 
 int main(int argc, char **argv)
 {
+    medium();
+    /*
     flushStdout();
     char *server_ip = "127.0.0.1";
     struct sockaddr_in adres_server, adres_client;
@@ -82,5 +85,5 @@ int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_i
 
 void flushStdout()
 {
-    setvbuf(stdout, NULL, _IONBF, 0);
+    setvbuf(stdout, NULL, _IONBF, 0);*/
 }
