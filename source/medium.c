@@ -3,6 +3,9 @@
 //
 
 #include "medium.h"
+#include <libxml/parser.h>
+#include <libxml/xmlmemory.h>
+#include <libxml/xmlreader.h>
 
 void mainMedium()
 {

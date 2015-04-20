@@ -4,8 +4,7 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <libxml/parser.h>
-#include <libxml/xmlreader.h>
+
 
 /**
  * main for the medium
