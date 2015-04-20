@@ -4,12 +4,10 @@
 
 #include <stdio.h>
 #include <stdlib.h>
-#include "libxml2/libxml/xmlreader.h"
+#include <libxml/parser.h>
+#include <libxml/xmlreader.h>
 
-
-int medium()
-{
-    printf("something");
-
-    return EXIT_SUCCESS;
-}
+/**
+ * main for the medium
+ */
+void mainMedium();

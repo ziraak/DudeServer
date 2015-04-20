@@ -12,7 +12,7 @@ void flushStdout();
 
 int main(int argc, char **argv)
 {
-    medium();
+    mainMedium();
     /*
     flushStdout();
     char *server_ip = "127.0.0.1";
