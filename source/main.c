@@ -9,6 +9,9 @@ void processConnectedClient(int sockfd);
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
 void flushStdout();
 void sendMessageToClient(int sockfd, char *buffer, int bufferLength);
+void parseMessage(char *message);
+void acknowledgeConnection(int sockfd);
+#define RPL_CONNECTED "100"
 
 int main(int argc, char **argv)
 {
@@ -16,7 +19,7 @@ int main(int argc, char **argv)
     char *server_ip = "127.0.0.1";
     struct sockaddr_in adres_server, adres_client;
     int sockfd;
-    uint16_t listenPort = 9099;
+    uint16_t listenPort = 9098;
     unsigned int clientlen;
     int sock = setupServer(&adres_server, listenPort, server_ip);
 
@@ -27,6 +30,7 @@ int main(int argc, char **argv)
         clientlen = sizeof(adres_client);
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
         {
+            acknowledgeConnection(sockfd);
             processConnectedClient(sockfd);
         }
         else
@@ -49,14 +53,18 @@ void processConnectedClient(int sockfd) {
             exit(1);
         }
 
-        // bericht interpreteren
+        // parse message
+        parseMessage(buffer);
 
-
-        sendMessageToClient(sockfd, buffer, sizeof(buffer));
         bzero(buffer, sizeof(buffer));
     }
 
     close(sockfd);
+}
+
+void parseMessage(char *message)
+{
+
 }
 
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
@@ -93,4 +101,10 @@ void sendMessageToClient(int sockfd, char *buffer, int bufferLength)
         perror("Error send.. ");
         exit(1);
     }
+}
+
+void acknowledgeConnection(int sockfd)
+{
+    char *buffer = RPL_CONNECTED;
+    sendMessageToClient(sockfd, buffer, 3);
 }
