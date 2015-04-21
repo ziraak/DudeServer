@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     char *server_ip = "127.0.0.1";
     struct sockaddr_in adres_server, adres_client;
     int sockfd;
-    uint16_t listenPort = 9098;
+    uint16_t listenPort = 9099;
     unsigned int clientlen;
     int sock = setupServer(&adres_server, listenPort, server_ip);
 
@@ -48,7 +48,6 @@ void processConnectedClient(int sockfd) {
             exit(1);
         }
 
-        // parse message
         parseMessage(buffer);
 
         bzero(buffer, sizeof(buffer));
@@ -59,14 +58,12 @@ void processConnectedClient(int sockfd) {
 
 void parseMessage(char *message)
 {
-    // Command
     char *command;
 
     int offset = substringCharacter(message, &command);
 
     if (commandEquals(command, "LOGIN"))
     {
-        // username password nickname
         char *username, *password, *nickname;
         offset = substringCharacter(message += offset, &username);
         offset = substringCharacter(message += offset, &password);
@@ -80,9 +77,31 @@ void parseMessage(char *message)
     }
     else if (commandEquals(command, "JOIN"))
     {
-        // TODO: Join existing channel
-            // TODO Check password
-        // TODO: Else create channel
+        char *channelName, *optionalChannelKey = NULL;
+        offset = substringCharacter(message += offset, &channelName);
+        if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
+        {
+            substringCharacter(message += offset, &optionalChannelKey);
+        }
+
+        int channelExists = findChannelByName(channelName);
+        if (channelExists && optionalChannelKey != NULL)
+        {
+            if (authenticateChannel(channelName, optionalChannelKey))
+            {
+                // TODO: Join existing channel
+                joinChannel(channelName);
+            }
+            else
+            {
+                // TODO: Not authenticated
+            }
+        }
+        else
+        {
+            // TODO: Else create channel
+            createChannel(channelName, optionalChannelKey);
+        }
     }
 }
 
@@ -136,5 +155,29 @@ int commandEquals(char* command, char* check)
 int authenticateUser(char *username, char *password)
 {
     // TODO: Check for user in DB
+    return 0;
+}
+
+int findChannelByName(char *channelName)
+{
+    // TODO: Find channel by name
+    return 0;
+}
+
+int authenticateChannel(char *channelName, char *optionalChannelKey)
+{
+    // TODO: Authenticate on the given channel
+    return 0;
+}
+
+int joinChannel(char *channelName)
+{
+    // TODO: Add current user to the channel
+    return 0;
+}
+
+int createChannel(char *channelName, char *optionalChannelKey)
+{
+    // TODO: create channel
     return 0;
 }
