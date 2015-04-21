@@ -19,4 +19,5 @@ int findChannelByName(char *channelName);
 int authenticateChannel(char *channelName, char *optionalChannelKey);
 int joinChannel(char *channelName);
 int createChannel(char *channelName, char *optionalChannelKey);
+int writeMessageToDB(char *recipient, char *msgToSend);
 #define RPL_CONNECTED "100"

@@ -47,7 +47,7 @@ void processConnectedClient(int sockfd) {
             perror("Error recv");
             exit(1);
         }
-
+        // getAllUnreadMessagesByName(); TODO: Username meegeven
         parseMessage(buffer);
 
         bzero(buffer, sizeof(buffer));
@@ -64,44 +64,15 @@ void parseMessage(char *message)
 
     if (commandEquals(command, "LOGIN"))
     {
-        char *username, *password, *nickname;
-        offset = substringCharacter(message += offset, &username);
-        offset = substringCharacter(message += offset, &password);
-        substringCharacter(message += offset, &nickname);
-
-        int userAuthenticated = authenticateUser(username, password);
-        if (userAuthenticated)
-        {
-            // TODO: Set id somewhere to know that this user is authenticated and may communicate with the server
-        }
+        handleLoginCommand(command, offset, message);
     }
     else if (commandEquals(command, "JOIN"))
     {
-        char *channelName, *optionalChannelKey = NULL;
-        offset = substringCharacter(message += offset, &channelName);
-        if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
-        {
-            substringCharacter(message += offset, &optionalChannelKey);
-        }
-
-        int channelExists = findChannelByName(channelName);
-        if (channelExists && optionalChannelKey != NULL)
-        {
-            if (authenticateChannel(channelName, optionalChannelKey))
-            {
-                // TODO: Join existing channel
-                joinChannel(channelName);
-            }
-            else
-            {
-                // TODO: Not authenticated
-            }
-        }
-        else
-        {
-            // TODO: Else create channel
-            createChannel(channelName, optionalChannelKey);
-        }
+        handleJoinCommand(command, offset, message);
+    }
+    else if (commandEquals(command, "PRIVMSG"))
+    {
+        handlePrivateMessageCommand(command, offset, message);
     }
 }
 
@@ -180,4 +151,68 @@ int createChannel(char *channelName, char *optionalChannelKey)
 {
     // TODO: create channel
     return 0;
+}
+
+int writeMessageToDB(char *recipient, char *msgToSend)
+{
+    // TODO: Write message to the file of given user
+    return 0;
+}
+
+char** getAllUnreadMessagesByName(char *username)
+{
+    // TODO: Get all unread messages
+    char** allUnreadMessages;
+    return allUnreadMessages;
+}
+
+void handleJoinCommand(char *command, int offset, char *message)
+{
+    char *channelName, *optionalChannelKey = NULL;
+    offset = substringCharacter(message += offset, &channelName);
+    if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
+    {
+        substringCharacter(message += offset, &optionalChannelKey);
+    }
+
+    int channelExists = findChannelByName(channelName);
+    if (channelExists && optionalChannelKey != NULL)
+    {
+        if (authenticateChannel(channelName, optionalChannelKey))
+        {
+            // TODO: Join existing channel
+            joinChannel(channelName);
+        }
+        else
+        {
+            // TODO: Not authenticated
+        }
+    }
+    else
+    {
+        // TODO: Else create channel
+        createChannel(channelName, optionalChannelKey);
+    }
+}
+
+void handleLoginCommand(char *command, int offset, char *message)
+{
+    char *username, *password, *nickname;
+    offset = substringCharacter(message += offset, &username);
+    offset = substringCharacter(message += offset, &password);
+    substringCharacter(message += offset, &nickname);
+
+    int userAuthenticated = authenticateUser(username, password);
+    if (userAuthenticated)
+    {
+        // TODO: Set id somewhere to know that this user is authenticated and may communicate with the server
+    }
+}
+
+void handlePrivateMessageCommand(char *command, int offset, char *message)
+{
+    char *recipient, *msgToSend;
+    offset = substringCharacter(message += offset, &recipient);
+    msgToSend = message += offset;
+    writeMessageToDB(recipient, msgToSend);
 }
