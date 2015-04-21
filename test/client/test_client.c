@@ -8,13 +8,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "../../source/utils/utils.h"
 
 #define CMD_SIZE 256
 
 void clientBusiness(int sock);
 int getServerSocket(int port, char* ip);
-
-int substringCharacter(char* str, char find, char** result);
 int input(size_t s, char** result);
 int prompt(size_t s, char** result, char* message);
 
@@ -31,7 +30,7 @@ int main(int argc, char **argv)
 
         while(*cmd == ' ') { cmd++; }
 
-        int i = substringCharacter(cmd, ' ', &ip);
+        int i = substringCharacter(cmd, &ip);
 
         if(i == 1)
         {
@@ -45,7 +44,7 @@ int main(int argc, char **argv)
             continue;
         }
 
-        int j = substringCharacter(cmd + i, ' ', &port);
+        int j = substringCharacter(cmd + i, &port);
 
         if(j < 2)
         {
@@ -142,16 +141,6 @@ int getServerSocket(int port, char* ip)
     }
 
     return sock;
-}
-
-int substringCharacter(char* str, char find, char** result)
-{
-    size_t i = strcspn(str, &find);
-
-    *result = malloc(i);
-    memcpy(*result, str, i);
-
-    return (int)++i;
 }
 
 int input(size_t s, char** result)

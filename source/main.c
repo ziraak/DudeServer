@@ -4,6 +4,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "utils/utils.h"
 
 void processConnectedClient(int sockfd);
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
@@ -11,6 +12,8 @@ void flushStdout();
 void sendMessageToClient(int sockfd, char *buffer, int bufferLength);
 void parseMessage(char *message);
 void acknowledgeConnection(int sockfd);
+int commandEquals(char* command, char* check);
+int authenticateUser(char *username, char *password);
 #define RPL_CONNECTED "100"
 
 int main(int argc, char **argv)
@@ -64,7 +67,31 @@ void processConnectedClient(int sockfd) {
 
 void parseMessage(char *message)
 {
+    // Command
+    char *command;
 
+    int offset = substringCharacter(message, &command);
+
+    if (commandEquals(command, "LOGIN"))
+    {
+        // username password nickname
+        char *username, *password, *nickname;
+        offset = substringCharacter(message += offset, &username);
+        offset = substringCharacter(message += offset, &password);
+        substringCharacter(message += offset, &nickname);
+
+        int userAuthenticated = authenticateUser(username, password);
+        if (userAuthenticated)
+        {
+            // TODO: Set id somewhere to know that this user is authenticated and may communicate with the server
+        }
+    }
+    else if (commandEquals(command, "JOIN"))
+    {
+        // TODO: Join existing channel
+            // TODO Check password
+        // TODO: Else create channel
+    }
 }
 
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
@@ -107,4 +134,15 @@ void acknowledgeConnection(int sockfd)
 {
     char *buffer = RPL_CONNECTED;
     sendMessageToClient(sockfd, buffer, 3);
+}
+
+int commandEquals(char* command, char* check)
+{
+    return strcmp(command, check) == 0;
+}
+
+int authenticateUser(char *username, char *password)
+{
+    // TODO: Check for user in DB
+    return 0;
 }
