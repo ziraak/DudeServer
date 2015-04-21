@@ -5,16 +5,8 @@
 #include <arpa/inet.h>
 #include <unistd.h>
 #include "utils/utils.h"
+#include "main.h"
 
-void processConnectedClient(int sockfd);
-int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
-void flushStdout();
-void sendMessageToClient(int sockfd, char *buffer, int bufferLength);
-void parseMessage(char *message);
-void acknowledgeConnection(int sockfd);
-int commandEquals(char* command, char* check);
-int authenticateUser(char *username, char *password);
-#define RPL_CONNECTED "100"
 
 int main(int argc, char **argv)
 {
