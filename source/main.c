@@ -30,7 +30,7 @@ int main(int argc, char **argv)
         }
         else
         {
-            printf("Server can' t accept one client.\n");
+            printf("Server can' t accept a client.\n");
         }
     }
 
@@ -47,8 +47,10 @@ void processConnectedClient(int sockfd) {
             perror("Error recv");
             exit(1);
         }
+
         // getAllUnreadMessagesByName(); TODO: Username meegeven
-        parseMessage(buffer);
+        char* result = parseMessage(buffer);
+        sendMessageToClient(sockfd, result, sizeof(result));
 
         bzero(buffer, sizeof(buffer));
     }
@@ -56,24 +58,31 @@ void processConnectedClient(int sockfd) {
     close(sockfd);
 }
 
-void parseMessage(char *message)
+char* parseMessage(char *message)
 {
     char *command;
 
+    char* result;
     int offset = substringCharacter(message, &command);
 
     if (commandEquals(command, "LOGIN"))
     {
-        handleLoginCommand(command, offset, message);
+        result = handleLoginCommand(message + offset);
     }
     else if (commandEquals(command, "JOIN"))
     {
-        handleJoinCommand(command, offset, message);
+        result = handleJoinCommand(message + offset);
     }
     else if (commandEquals(command, "PRIVMSG"))
     {
-        handlePrivateMessageCommand(command, offset, message);
+        result = handlePrivateMessageCommand(message + offset);
     }
+    else
+    {
+        result = ERR_UNKNOWNCOMMAND;
+    }
+
+    return result;
 }
 
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
@@ -166,10 +175,10 @@ char** getAllUnreadMessagesByName(char *username)
     return allUnreadMessages;
 }
 
-void handleJoinCommand(char *command, int offset, char *message)
+char* handleJoinCommand(char *message)
 {
     char *channelName, *optionalChannelKey = NULL;
-    offset = substringCharacter(message += offset, &channelName);
+    int offset = substringCharacter(message, &channelName);
     if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
     {
         substringCharacter(message += offset, &optionalChannelKey);
@@ -186,6 +195,7 @@ void handleJoinCommand(char *command, int offset, char *message)
         else
         {
             // TODO: Not authenticated
+            return ERR_BADCHANNELKEY;
         }
     }
     else
@@ -193,12 +203,14 @@ void handleJoinCommand(char *command, int offset, char *message)
         // TODO: Else create channel
         createChannel(channelName, optionalChannelKey);
     }
+
+    return RPL_TOPIC;
 }
 
-void handleLoginCommand(char *command, int offset, char *message)
+char* handleLoginCommand(char *message)
 {
     char *username, *password, *nickname;
-    offset = substringCharacter(message += offset, &username);
+    int offset = substringCharacter(message, &username);
     offset = substringCharacter(message += offset, &password);
     substringCharacter(message += offset, &nickname);
 
@@ -206,13 +218,18 @@ void handleLoginCommand(char *command, int offset, char *message)
     if (userAuthenticated)
     {
         // TODO: Set id somewhere to know that this user is authenticated and may communicate with the server
+        return RPL_LOGIN;
     }
+
+    return ERR_NOLOGIN;
 }
 
-void handlePrivateMessageCommand(char *command, int offset, char *message)
+char* handlePrivateMessageCommand(char *message)
 {
     char *recipient, *msgToSend;
-    offset = substringCharacter(message += offset, &recipient);
+    int offset = substringCharacter(message, &recipient);
     msgToSend = message += offset;
     writeMessageToDB(recipient, msgToSend);
+
+    return RPL_AWAY;
 }
