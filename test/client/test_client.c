@@ -107,7 +107,7 @@ void clientBusiness(int sock)
 
         int len = prompt(CMD_SIZE, &snd, "COMMAND: ");
 
-        if(strcmp(snd, "quit") == 0)
+        if(strcmp(snd, "QUIT\n") == 0)
         {
             //TODO: send quit msg
             printf("CLOSING CONNECTION, BYE BYE\n");
@@ -116,7 +116,22 @@ void clientBusiness(int sock)
         }
         else if(strcmp(snd, "") != 0)
         {
-            if(send(sock, snd, len, 0) < 0)
+            if(strcmp(snd, "LOGIN\n") == 0)
+            {
+                char* lgn = "LOGIN fatih secretpassword fatihawesome";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(strcmp(snd, "JOIN\n") == 0)
+            {
+                char* lgn = "JOIN batcave batmanisawesome";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(strcmp(snd, "JOINZP\n") == 0)
+            {
+                char* lgn = "JOIN batcave";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(send(sock, snd, len, 0) < 0)
             {
                 perror("SEND ERROR, CLOSING CLIENT");
                 close(sock);
