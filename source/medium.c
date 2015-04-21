@@ -7,6 +7,14 @@
 #include <libxml/xmlmemory.h>
 #include <libxml/xmlreader.h>
 
+
+int main(int argc, char **argv) {
+
+    mainMedium();
+    return 0;
+}
+
+
 void mainMedium()
 {
     printf("something");
