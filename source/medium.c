@@ -29,7 +29,7 @@ userinfo getUser(char *username) {
     user.username = malloc(30);
     user.nickname = malloc(30);
     user.password = malloc(30);
-    user.channels = malloc(1000);
+    user.channels = calloc(100,100*4);
     docname = (char *) malloc(500);
     sprintf(docname,"database/users/%s.xml",username);
     printf("opening :%s \n", docname);

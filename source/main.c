@@ -1,10 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
-#include "medium.h"
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "xmlWriter.h"
 
 void processConnectedClient(int sockfd);
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
@@ -13,6 +13,9 @@ void flushStdout();
 int main(int argc, char **argv)
 {
     mainMedium();
+    userinfo ui = getUser("desmond");
+    ui.nickname = "Des";
+    writeUser(ui);
     return 0;
     /*
     flushStdout();

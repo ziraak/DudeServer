@@ -4,7 +4,7 @@
 
 #include "xmlWriter.h"
 
-int writeUser(struct user user)
+int writeUser(userinfo user)
 {
     printf("User %s wordt opgeslagen", user.username);
     xmlTextWriterPtr xmlptr = openFile(user.username);
@@ -29,8 +29,7 @@ void writeChannels(xmlTextWriterPtr xmlptr, char **channels) {
     xmlTextWriterStartElement(xmlptr, "channels");
     while(channels != NULL && channels != 0)
     {
-        if(*channels == NULL) {
-            channels++;
+        if(*channels == NULL || *channels == 0) {
             break;
         }
         xmlTextWriterWriteElement(xmlptr, "channel", *channels);

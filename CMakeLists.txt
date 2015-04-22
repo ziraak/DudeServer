@@ -3,9 +3,9 @@ project(DudeServer)
 
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++11")
 
-#set(SOURCE_FILES README.md)
+set(XML_SOURCE_FILES source/xmlWriter.c source/xmlWriter.h)
 
-add_executable(DudeServer ${SOURCE_FILES} source/main.c source/medium.h source/medium.c)
+add_executable(DudeServer ${XML_SOURCE_FILES} source/main.c source/medium.h source/medium.c)
 
 find_package(LibXml2)
 include_directories(${LIBXML2_INCLUDE_DIR})
