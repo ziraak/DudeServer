@@ -9,9 +9,11 @@ void getChannel(char *channelName);
 
 void mainMedium() {
     getChannel("batcave");
-    /*
+
+
+
     userinfo fatih;
-    fatih = getUser("desmond");
+    fatih = getUser("fatih");
 
 
     printf("username is:%s\n",fatih.username);
@@ -22,7 +24,7 @@ void mainMedium() {
     while(fatih.channels[index] != NULL) {
         printf("channel%i : %s\n",index,fatih.channels[index]);
         index++;
-    }*/
+    }
 }
 xmlDocPtr openDoc(char* docname){
     xmlDocPtr doc;
@@ -140,28 +142,9 @@ userinfo getUser(char *username) {
     xmlDocPtr doc;
     xmlNodePtr cur;
 
-    doc = xmlParseFile(docname);
+    doc = openDoc(docname);
 
-    if (doc == NULL) {
-        fprintf(stderr, "Document not parsed successfully. \n");
-        return user;
-    }
-
-    cur = xmlDocGetRootElement(doc);
-
-    if (cur == NULL) {
-        fprintf(stderr, "empty document\n");
-        xmlFreeDoc(doc);
-        return user;
-    }
-
-    if (xmlStrcmp(cur->name, (const xmlChar *) "user")) {
-        fprintf(stderr, "document of the wrong type, this is not a channel");
-        xmlFreeDoc(doc);
-        return user;
-    }
-
-    cur = cur->xmlChildrenNode;
+    cur = checkDoc(doc,"user");
 
     xmlChar *key;
     strcpy(user.username,username);
