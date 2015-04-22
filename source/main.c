@@ -41,17 +41,15 @@ int main(int argc, char **argv)
 
 void processConnectedClient(int sockfd)
 {
-    int authenticated = 0;
+    int authenticated = 1;
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
 
-    // TODO: wachten op login
     while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
     {
         if(!authenticated)
         {
-            // er MOET ingelogd zijn
             char *command;
             int offset = substringCharacter(buffer, &command);
 
@@ -63,8 +61,6 @@ void processConnectedClient(int sockfd)
                 {
                     authenticated = 1;
                 }
-
-                authenticated = 1; // DIKKE TODO: zodra de database toegankelijk is moet deze weggehaald worden!!!!!11!!11111!!1!!11!
                 sendIntegerMessageToClient(sockfd, result);
             }
             else
