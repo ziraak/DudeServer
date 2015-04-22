@@ -3,66 +3,104 @@
 //
 
 #include "medium.h"
-#include <stdio.h>
-#include <string.h>
-#include <stdlib.h>
-#include <libxml/xmlmemory.h>
-#include <libxml/parser.h>
-#include <libxml/xmlreader.h>
-
-typedef struct currentDoc {
-    xmlDocPtr document;
-    xmlNodePtr node;
-    int succesfull;
-} currentDoc;
-
-void getUser(char *username);
-void parseStory(xmlDocPtr doc, xmlNodePtr cur);
-static void parseDoc(char *docname);
-
-typedef struct user {
-    char *username;
-    char *nickname;
-    char *password;
-    char **channels;
-} user;
 
 
 void mainMedium() {
-    getUser("fatih");
-
-}
-
-
-void getUser(char *username) {
-    user user1;
-    char *document;
-    currentDoc userFile;
+    userinfo fatih;
+    fatih = getUser("desmond");
 
 
-    document = (char *) malloc(500);
-    //sprintf(document,"/home/osboxes/ClionProjects/Dude/database/users/%s.xml",username);
-    document = "/home/osboxes/ClionProjects/Dude/source/test.xml";
-    printf("opening :%s \n", document);
-
-    /*userFile = getDoc(document,"story");
-    if(userFile.succesfull == EXIT_SUCCESS){
-        strcpy(user1.username,username);
-        printf("username : %s\n",user1.username);
-
-
-        getField(userFile.document,userFile.node,"storyinfo");
-        user1.nickname = getField(userFile.document,userFile.node,"nickname");
-
-        printf("Nickname : %s\n",user1.nickname);
+    printf("username is:%s\n",fatih.username);
+    printf("nickname is:%s\n",fatih.nickname);
+    printf("password is:%s\n",fatih.password);
+    int index;
+    index = 0;
+    while(fatih.channels[index] != NULL) {
+        printf("channel%i : %s\n",index,fatih.channels[index]);
+        index++;
     }
-    xmlFreeDoc(userFile.document);
-    free(document);*/
-    parseDoc(document);
-
-
 }
 
+
+userinfo getUser(char *username) {
+    char *docname;
+    userinfo user;
+
+    user.username = malloc(30);
+    user.nickname = malloc(30);
+    user.password = malloc(30);
+    user.channels = malloc(1000);
+    docname = (char *) malloc(500);
+    sprintf(docname,"database/users/%s.xml",username);
+    printf("opening :%s \n", docname);
+
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+
+    doc = xmlParseFile(docname);
+
+    if (doc == NULL) {
+        fprintf(stderr, "Document not parsed successfully. \n");
+        return user;
+    }
+
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL) {
+        fprintf(stderr, "empty document\n");
+        xmlFreeDoc(doc);
+        return user;
+    }
+
+    if (xmlStrcmp(cur->name, (const xmlChar *) "user")) {
+        fprintf(stderr, "document of the wrong type, root node != user");
+        xmlFreeDoc(doc);
+        return user;
+    }
+
+    cur = cur->xmlChildrenNode;
+
+    xmlChar *key;
+    strcpy(user.username,username);
+
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "nickname"))) {
+            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+           // printf("gevonden: %s\n", key);
+            strcpy(user.nickname,(char *)key);
+            xmlFree(key);
+        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "password"))) {
+            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+            //printf("gevonden: %s\n", key);
+            strcpy(user.password,(char *)key);
+            xmlFree(key);
+        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels"))) {
+            xmlNodePtr curChild;
+            curChild = cur->xmlChildrenNode;
+            int i;
+            i = 0;
+            while (curChild != NULL) {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "channel"))) {
+                    key = xmlNodeListGetString(doc, curChild->xmlChildrenNode, 1);
+                    //printf("channel: %s\n", key);
+                    //user.channels[i] = malloc(20);
+                    user.channels[i] = (char *)key;
+
+                    i++;
+                }
+                curChild = curChild->next;
+            }
+
+        }
+
+        cur = cur->next;
+    }
+
+    xmlFreeDoc(doc);
+    return user;
+}
+
+/*
 void parseStory(xmlDocPtr doc, xmlNodePtr cur) {
 
     xmlChar *key;
@@ -76,43 +114,4 @@ void parseStory(xmlDocPtr doc, xmlNodePtr cur) {
         cur = cur->next;
     }
     return;
-}
-
-static void parseDoc(char *docname) {
-
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-
-    doc = xmlParseFile(docname);
-
-    if (doc == NULL) {
-        fprintf(stderr, "Document not parsed successfully. \n");
-        return;
-    }
-
-    cur = xmlDocGetRootElement(doc);
-
-    if (cur == NULL) {
-        fprintf(stderr, "empty document\n");
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    if (xmlStrcmp(cur->name, (const xmlChar *) "story")) {
-        fprintf(stderr, "document of the wrong type, root node != story");
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    cur = cur->xmlChildrenNode;
-    while (cur != NULL) {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "storyinfo"))) {
-            parseStory(doc, cur);
-        }
-
-        cur = cur->next;
-    }
-
-    xmlFreeDoc(doc);
-    return;
-}
+}*/
