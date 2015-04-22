@@ -59,6 +59,35 @@ xmlNodePtr checkDoc(xmlDocPtr doc,char * docType ){
     return cur;
 }
 
+char* getValue(xmlDocPtr doc, xmlNodePtr node, char* fieldname){
+    xmlNodePtr cur;
+    cur = node;
+    xmlChar *key;
+
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname))) {
+            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+        }
+        cur = cur->next;
+    }
+    return (char *)key;
+}
+
+char** getListOfValues(xmlDocPtr doc,xmlNodePtr node,char* listname, char* fieldname){
+    xmlNodePtr cur;
+    cur = node;
+    char** key;
+    int i;
+    i=0;
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) listname))) {
+            key[i] = getValue(doc,  cur->xmlChildrenNode,fieldname);
+            i++;
+        }
+        cur = cur->next;
+    }
+    return key;
+}
 
 void getChannel(char *channelName){
     char *docname;
@@ -72,13 +101,11 @@ void getChannel(char *channelName){
     doc = openDoc(docname);
     cur = checkDoc(doc,"channel");
 
+    printf("channel name: %s\n", getValue(doc,cur,"name"));
+  
     xmlChar *key;
     while (cur != NULL){
-        if((!xmlStrcmp(cur->name, (const xmlChar *) "name"))){
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-            printf("channel name: %s\n", key);
-            xmlFree(key);
-        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "users"))) {
+         if ((!xmlStrcmp(cur->name, (const xmlChar *) "users"))) {
             xmlNodePtr curChild;
             curChild = cur->xmlChildrenNode;
             printf("users:\n");
@@ -136,31 +163,23 @@ userinfo getUser(char *username) {
     user.password = malloc(30);
     user.channels = malloc(1000);
     docname = (char *) malloc(500);
+
     sprintf(docname,"database/users/%s.xml",username);
-    printf("opening :%s \n", docname);
+
 
     xmlDocPtr doc;
     xmlNodePtr cur;
-
     doc = openDoc(docname);
-
     cur = checkDoc(doc,"user");
 
-    xmlChar *key;
     strcpy(user.username,username);
+    strcpy(user.nickname,getValue(doc,cur,"nickname"));
+    strcpy(user.password,getValue(doc,cur,"password"));
 
+
+    xmlChar *key;
     while (cur != NULL) {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "nickname"))) {
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-            // printf("gevonden: %s\n", key);
-            strcpy(user.nickname,(char *)key);
-            xmlFree(key);
-        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "password"))) {
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-            //printf("gevonden: %s\n", key);
-            strcpy(user.password,(char *)key);
-            xmlFree(key);
-        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels"))) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels"))) {
             xmlNodePtr curChild;
             curChild = cur->xmlChildrenNode;
             int i;
