@@ -4,8 +4,12 @@
 
 #include "medium.h"
 
+void getChannel(char *channelName);
+
 
 void mainMedium() {
+    getChannel("batcave");
+    /*
     userinfo fatih;
     fatih = getUser("desmond");
 
@@ -18,9 +22,95 @@ void mainMedium() {
     while(fatih.channels[index] != NULL) {
         printf("channel%i : %s\n",index,fatih.channels[index]);
         index++;
-    }
+    }*/
 }
 
+
+void getChannel(char *channelName){
+    char *docname;
+    docname = (char *) malloc(500);
+    sprintf(docname,"database/channels/%s.xml",channelName);
+    printf("opening :%s \n", docname);
+
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+
+    doc = xmlParseFile(docname);
+
+    if (doc == NULL) {
+        fprintf(stderr, "Document not parsed successfully. \n");
+        return;
+    }
+
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL) {
+        fprintf(stderr, "empty document\n");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+    if (xmlStrcmp(cur->name, (const xmlChar *) "channel")) {
+        fprintf(stderr, "document of the wrong type, this is not a channel");
+        xmlFreeDoc(doc);
+        return;
+    }
+
+    xmlChar *key;
+    cur = cur->xmlChildrenNode;
+    while (cur != NULL){
+        if((!xmlStrcmp(cur->name, (const xmlChar *) "name"))){
+            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+            printf("channel name: %s\n", key);
+            xmlFree(key);
+        } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "users"))) {
+            xmlNodePtr curChild;
+            curChild = cur->xmlChildrenNode;
+            printf("users:\n");
+            while (curChild != NULL) {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "user"))) {
+                    key = xmlNodeListGetString(doc, curChild->xmlChildrenNode, 1);
+                    printf("user: %s\n", key);
+                }
+                curChild = curChild->next;
+            }
+
+        }  else if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages"))) {
+            xmlNodePtr curChild;
+            curChild = cur->xmlChildrenNode;
+            printf("messages:\n");
+            while (curChild != NULL) {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message"))) {
+                    key = xmlGetProp(curChild,"user");
+                    printf("message send by: %s\n", key);
+
+                    xmlNodePtr curGrandChild;
+                    curGrandChild = curChild->xmlChildrenNode;
+                    while(curGrandChild != NULL){
+                        if ((!xmlStrcmp(curGrandChild->name, (const xmlChar *) "timestamp"))){
+                            key = xmlNodeListGetString(doc, curGrandChild->xmlChildrenNode, 1);
+                            printf("timestamp: %s\n", key);
+                        }
+                        if ((!xmlStrcmp(curGrandChild->name, (const xmlChar *) "body"))){
+                            key = xmlNodeListGetString(doc, curGrandChild->xmlChildrenNode, 1);
+                            printf("message: %s\n", key);
+                        }
+                        curGrandChild= curGrandChild->next;
+                    }
+                    printf("------------------\n\n");
+
+                }
+                curChild = curChild->next;
+            }
+        }
+
+        cur = cur->next;
+
+    }
+
+    xmlFreeDoc(doc);
+    return;
+}
 
 userinfo getUser(char *username) {
     char *docname;
@@ -53,7 +143,7 @@ userinfo getUser(char *username) {
     }
 
     if (xmlStrcmp(cur->name, (const xmlChar *) "user")) {
-        fprintf(stderr, "document of the wrong type, root node != user");
+        fprintf(stderr, "document of the wrong type, this is not a channel");
         xmlFreeDoc(doc);
         return user;
     }
@@ -99,19 +189,3 @@ userinfo getUser(char *username) {
     xmlFreeDoc(doc);
     return user;
 }
-
-/*
-void parseStory(xmlDocPtr doc, xmlNodePtr cur) {
-
-    xmlChar *key;
-    cur = cur->xmlChildrenNode;
-    while (cur != NULL) {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "keyword"))) {
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-            printf("keyword: %s\n", key);
-            xmlFree(key);
-        }
-        cur = cur->next;
-    }
-    return;
-}*/
