@@ -1,7 +1,8 @@
 //
 // Created by osboxes on 21/04/15.
 //
-
+#include <stdlib.h>
+#include <stdio.h>
 #ifndef DUDESERVER_MAIN_H
 #define DUDESERVER_MAIN_H
 

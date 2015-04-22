@@ -27,8 +27,20 @@ int main(int argc, char **argv)
         clientlen = sizeof(adres_client);
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
         {
-            acknowledgeConnection(sockfd);
-            processConnectedClient(sockfd);
+            printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr), ntohs(adres_client.sin_port));
+
+            int childpid = fork();
+            if(childpid == 0) {
+                acknowledgeConnection(sockfd);
+                processConnectedClient(sockfd);
+                close(sockfd);
+                printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
+                // exit child
+                exit(0);
+            } else if (childpid < 0) {
+                perror("Fork error");
+                exit(1);
+            }
         }
         else
         {
