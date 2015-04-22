@@ -24,44 +24,53 @@ int main(int argc, char **argv)
     char *ip;
 
     int sock;
-    for(;;)
+
+    if(argv[1] == NULL)
     {
-        int cmdSize = prompt(CMD_SIZE, &cmd, "CONNECT NAAR '<IP> <POORT>': ");
-
-        while(*cmd == ' ') { cmd++; }
-
-        int i = substringCharacter(cmd, &ip);
-
-        if(i == 1)
+        for(;;)
         {
-            printf("NEED IP AND PORT\n");
-            continue;
+            int cmdSize = prompt(CMD_SIZE, &cmd, "CONNECT NAAR '<IP> <POORT>': ");
+
+            while(*cmd == ' ') { cmd++; }
+
+            int i = substringCharacter(cmd, &ip);
+
+            if(i == 1)
+            {
+                printf("NEED IP AND PORT\n");
+                continue;
+            }
+
+            if((i - 1) == cmdSize)
+            {
+                printf("NEED PORT\n");
+                continue;
+            }
+
+            int j = substringCharacter(cmd + i, &port);
+
+            if(j < 2)
+            {
+                printf("NEED PORT\n");
+                continue;
+            }
+
+            sock = getServerSocket(atoi(port), ip);
+            if(sock < 0)
+            {
+                printf("INVALID CONFIGURATION (%s:%s)\n", ip, port);
+                continue;
+            }
+
+            printf("CONNECTED TO %s:%s (ID: %i)\n", ip, port, sock);
+            break;
         }
-
-        if((i - 1) == cmdSize)
-        {
-            printf("NEED PORT\n");
-            continue;
-        }
-
-        int j = substringCharacter(cmd + i, &port);
-
-        if(j < 2)
-        {
-            printf("NEED PORT\n");
-            continue;
-        }
-
-        sock = getServerSocket(atoi(port), ip);
-        if(sock < 0)
-        {
-            printf("INVALID CONFIGURATION (%s:%s)\n", ip, port);
-            continue;
-        }
-
-        printf("CONNECTED TO %s:%s (ID: %i)\n", ip, port, sock);
-        break;
     }
+    else
+    {
+        sock = getServerSocket(atoi(argv[2]), argv[1]);
+    }
+
 
     clientBusiness(sock);
 
@@ -78,9 +87,27 @@ void clientBusiness(int sock)
     //TODO: add first recv for '100' status
     for(;;)
     {
+        ssize_t received = recv(sock, rcv, CMD_SIZE, 0);
+        if(received < 0)
+        {
+            perror("RECEIVE ERROR, CLOSING CLIENT");
+            close(sock);
+            exit(2);
+        }
+        else if(received == 0)
+        {
+            printf("CONNECTION CLOSED BY SERVER, BYE BYE\n");
+            close(sock);
+            return;
+        }
+        else
+        {
+            printf("RECEIVED: '%s'\n", rcv);
+        }
+
         int len = prompt(CMD_SIZE, &snd, "COMMAND: ");
 
-        if(strcmp(snd, "quit") == 0)
+        if(strcmp(snd, "QUIT\n") == 0)
         {
             //TODO: send quit msg
             printf("CLOSING CONNECTION, BYE BYE\n");
@@ -89,31 +116,30 @@ void clientBusiness(int sock)
         }
         else if(strcmp(snd, "") != 0)
         {
-            if(send(sock, snd, len, 0) < 0)
+            if(strcmp(snd, "LOGIN\n") == 0)
+            {
+                char* lgn = "LOGIN fatih secretpassword fatihawesome";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(strcmp(snd, "JOIN\n") == 0)
+            {
+                char* lgn = "JOIN batcave batmanisawesome";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(strcmp(snd, "JOINZP\n") == 0)
+            {
+                char* lgn = "JOIN batcave";
+                send(sock, lgn, sizeof(lgn), 0);
+            }
+            else if(send(sock, snd, len, 0) < 0)
             {
                 perror("SEND ERROR, CLOSING CLIENT");
                 close(sock);
                 exit(1);
             }
-
-            int received = recv(sock, rcv, CMD_SIZE, 0);
-            if(received < 0)
-            {
-                perror("RECEIVE ERROR, CLOSING CLIENT");
-                close(sock);
-                exit(2);
-            }
-            else if(received == 0)
-            {
-                printf("CONNECTION CLOSED BY SERVER, BYE BYE\n");
-                close(sock);
-                return;
-            }
-            else
-            {
-                printf("RECEIVED: '%s'\n", rcv);
-            }
         }
+
+        free(snd);
     }
 }
 

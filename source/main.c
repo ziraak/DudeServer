@@ -6,7 +6,9 @@
 #include <unistd.h>
 #include "utils/utils.h"
 #include "main.h"
-
+#include "commands/login.h"
+#include "commands/join.h"
+#include "commands/privmsg.h"
 
 int main(int argc, char **argv)
 {
@@ -14,76 +16,106 @@ int main(int argc, char **argv)
     char *server_ip = "127.0.0.1";
     struct sockaddr_in adres_server, adres_client;
     int sockfd;
-    uint16_t listenPort = 9098;
+    uint16_t listenPort = 9099;
     unsigned int clientlen;
     int sock = setupServer(&adres_server, listenPort, server_ip);
 
     listen(sock, 200);
 
-    while(1)
+    for(;;)
     {
         clientlen = sizeof(adres_client);
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
         {
-            acknowledgeConnection(sockfd);
-            processConnectedClient(sockfd);
+            printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr), ntohs(adres_client.sin_port));
+
+            int childpid = fork();
+            if(childpid == 0) {
+                acknowledgeConnection(sockfd);
+                processConnectedClient(sockfd);
+                close(sockfd);
+                printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
+                // exit child
+                exit(0);
+            } else if (childpid < 0) {
+                perror("Fork error");
+                exit(1);
+            }
         }
         else
         {
-            printf("Server can' t accept one client.\n");
+            printf("Server can' t accept a client.\n");
         }
     }
 
     return EXIT_SUCCESS;
 }
 
-void processConnectedClient(int sockfd) {
+void processConnectedClient(int sockfd)
+{
+    int authenticated = 1;
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
 
-    while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0') {
-        if (receive < 0) {
-            perror("Error recv");
-            exit(1);
+    while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
+    {
+        if(!authenticated)
+        {
+            char *command;
+            int offset = substringCharacter(buffer, &command);
+
+            if(commandEquals(command, "LOGIN"))
+            {
+                int result = handleLoginCommand(buffer + offset);
+
+                if(result == RPL_LOGIN)
+                {
+                    authenticated = 1;
+                }
+                sendIntegerMessageToClient(sockfd, result);
+            }
+            else
+            {
+                sendIntegerMessageToClient(sockfd, ERR_NOLOGIN);
+            }
         }
+        else
+        {
+            // ingelogd!
+            if (receive < 0)
+            {
+                perror("Error recv");
+                exit(1);
+            }
 
-        // parse message
-        parseMessage(buffer);
+            // getAllUnreadMessagesByName(); TODO: Username meegeven
+            int result = parseMessage(buffer);
+            sendIntegerMessageToClient(sockfd, result);
 
-        bzero(buffer, sizeof(buffer));
+            bzero(buffer, sizeof(buffer));
+        }
     }
 
     close(sockfd);
 }
 
-void parseMessage(char *message)
+int parseMessage(char *message)
 {
-    // Command
     char *command;
 
     int offset = substringCharacter(message, &command);
 
-    if (commandEquals(command, "LOGIN"))
+    if (commandEquals(command, "JOIN"))
     {
-        // username password nickname
-        char *username, *password, *nickname;
-        offset = substringCharacter(message += offset, &username);
-        offset = substringCharacter(message += offset, &password);
-        substringCharacter(message += offset, &nickname);
+        return handleJoinCommand(message + offset);
+    }
+    else if (commandEquals(command, "PRIVMSG"))
+    {
+        return handlePrivateMessageCommand(message + offset);
+    }
 
-        int userAuthenticated = authenticateUser(username, password);
-        if (userAuthenticated)
-        {
-            // TODO: Set id somewhere to know that this user is authenticated and may communicate with the server
-        }
-    }
-    else if (commandEquals(command, "JOIN"))
-    {
-        // TODO: Join existing channel
-            // TODO Check password
-        // TODO: Else create channel
-    }
+    return ERR_UNKNOWNCOMMAND;
 }
 
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
@@ -114,7 +146,15 @@ void flushStdout()
     setvbuf(stdout, NULL, _IONBF, 0);
 }
 
-void sendMessageToClient(int sockfd, char *buffer, int bufferLength)
+void sendIntegerMessageToClient(int sockfd, int msg)
+{
+    char* dest = malloc(3);
+    sprintf(dest, "%i", msg);
+    sendMessageToClient(sockfd, dest, sizeof(dest));
+    free(dest);
+}
+
+void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
 {
     if (send(sockfd, buffer, bufferLength, 0) < 0) {
         perror("Error send.. ");
@@ -124,8 +164,8 @@ void sendMessageToClient(int sockfd, char *buffer, int bufferLength)
 
 void acknowledgeConnection(int sockfd)
 {
-    char *buffer = RPL_CONNECTED;
-    sendMessageToClient(sockfd, buffer, 3);
+    int buffer = RPL_CONNECTED;
+    sendIntegerMessageToClient(sockfd, buffer);
 }
 
 int commandEquals(char* command, char* check)
@@ -133,8 +173,15 @@ int commandEquals(char* command, char* check)
     return strcmp(command, check) == 0;
 }
 
-int authenticateUser(char *username, char *password)
+int writeMessageToDB(char *recipient, char *msgToSend)
 {
-    // TODO: Check for user in DB
+    // TODO: Write message to the file of given user
     return 0;
+}
+
+char** getAllUnreadMessagesByName(char *username)
+{
+    // TODO: Get all unread messages
+    char** allUnreadMessages;
+    return allUnreadMessages;
 }
