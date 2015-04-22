@@ -24,6 +24,38 @@ void mainMedium() {
         index++;
     }*/
 }
+xmlDocPtr openDoc(char* docname){
+    xmlDocPtr doc;
+    doc = xmlParseFile(docname);
+
+    if (doc == NULL) {
+        fprintf(stderr, "Document not parsed successfully. \n");
+        return NULL;
+    } else {
+        return doc;
+    }
+
+}
+
+xmlNodePtr checkDoc(xmlDocPtr doc,char * docType ){
+    xmlNodePtr cur;
+    cur = xmlDocGetRootElement(doc);
+
+    if (cur == NULL) {
+        fprintf(stderr, "empty document\n");
+        xmlFreeDoc(doc);
+        return NULL;
+    }
+
+    if (xmlStrcmp(cur->name, (const xmlChar *)docType)) {
+        fprintf(stderr, "document of the wrong type, this is not a channel");
+        xmlFreeDoc(doc);
+        return NULL;
+    }
+
+    cur = cur->xmlChildrenNode;
+    return cur;
+}
 
 
 void getChannel(char *channelName){
@@ -35,29 +67,10 @@ void getChannel(char *channelName){
     xmlDocPtr doc;
     xmlNodePtr cur;
 
-    doc = xmlParseFile(docname);
-
-    if (doc == NULL) {
-        fprintf(stderr, "Document not parsed successfully. \n");
-        return;
-    }
-
-    cur = xmlDocGetRootElement(doc);
-
-    if (cur == NULL) {
-        fprintf(stderr, "empty document\n");
-        xmlFreeDoc(doc);
-        return;
-    }
-
-    if (xmlStrcmp(cur->name, (const xmlChar *) "channel")) {
-        fprintf(stderr, "document of the wrong type, this is not a channel");
-        xmlFreeDoc(doc);
-        return;
-    }
+    doc = openDoc(docname);
+    cur = checkDoc(doc,"channel");
 
     xmlChar *key;
-    cur = cur->xmlChildrenNode;
     while (cur != NULL){
         if((!xmlStrcmp(cur->name, (const xmlChar *) "name"))){
             key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
@@ -156,7 +169,7 @@ userinfo getUser(char *username) {
     while (cur != NULL) {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) "nickname"))) {
             key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-           // printf("gevonden: %s\n", key);
+            // printf("gevonden: %s\n", key);
             strcpy(user.nickname,(char *)key);
             xmlFree(key);
         } else if ((!xmlStrcmp(cur->name, (const xmlChar *) "password"))) {

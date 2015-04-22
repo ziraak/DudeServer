@@ -9,4 +9,4 @@
     <headline>This is the headline</headline>
     <para>This is the body text.</para>
   </body>
-</story>
+<reference uri="somethinf"/><reference user="fatih"/></story>
