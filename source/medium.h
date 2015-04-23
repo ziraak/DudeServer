@@ -35,7 +35,12 @@ typedef struct channelInfo{
 /**
  * main for the medium
  */
-void mainMedium();
+//void mainMedium();
 
 userInfo getUser(char *username);
 
+/**
+ * get channel gets all info of a specific channel
+ * channelName is the name of the channel
+ */
+channelInfo getChannel(char *channelName);

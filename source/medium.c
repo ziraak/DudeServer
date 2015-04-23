@@ -4,8 +4,6 @@
 
 #include "medium.h"
 
-channelInfo getChannel(char *channelName);
-
 
 
 void mainMedium() {
@@ -21,7 +19,7 @@ void mainMedium() {
     }
     index = 0;
     while(batcave.messages[index].body != NULL){
-        printf("----------------------------------- \nmessage number %i\n",index+1);
+        printf("----------------------------------- \n message number %i\n",index+1);
         printf("written by: %s\n",batcave.messages[index].writer);
         printf("written on: %s\n",batcave.messages[index].timestamp);
         printf("message:\n %s\n----------------------------------- \n",batcave.messages[index].body);
