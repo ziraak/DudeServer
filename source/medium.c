@@ -5,10 +5,18 @@
 #include "medium.h"
 
 
+int checkChannel(char * channelName);
+int checkUser(char * userName);
+char** getUserList();
+char** getChannelList();
+xmlDocPtr openDoc(char* docname);
+xmlNodePtr checkDoc(xmlDocPtr doc,char * docType );
+char* getValue(xmlDocPtr doc, xmlNodePtr node, char* fieldname);
+char** getListOfValues(xmlDocPtr doc,xmlNodePtr node,char* listname, char* fieldname);
 
 void mainMedium() {
     int index;
-
+/*
     channelInfo batcave;
     batcave = getChannel("batcave");
     printf("channelname is:%s\n",batcave.naam);
@@ -38,7 +46,13 @@ void mainMedium() {
     while(fatih.channels[index] != NULL) {
         printf("channel%i : %s\n",index,fatih.channels[index]);
         index++;
-    }
+    }*/
+
+    checkUser("joe");
+    checkUser("desmond");
+    checkChannel("batcave");
+    checkChannel("eigendunk");
+
 }
 xmlDocPtr openDoc(char* docname){
     xmlDocPtr doc;
@@ -154,16 +168,10 @@ channelInfo getChannel(char *channelName){
     xmlFreeDoc(doc);
     return channel;
 }
-void getUserList(){
+char** getUserList(){
     char *docname;
     docname = "database/userlist.xml";
-    userInfo user;
 
-    user.username = malloc(30);
-    user.nickname = malloc(30);
-    user.password = malloc(30);
-    user.channels = calloc(100,100*4);
-    docname = (char *) malloc(500);
     printf("opening :%s \n", docname);
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -174,13 +182,24 @@ void getUserList(){
     cur = cur->parent;
 
     list = getListOfValues(doc,cur,"users","user");
+    return list;
+}
 
-    int i;
-    i = 0;
-    while(list[i]!=NULL){
-        printf("something: %s\n",list[i]);
-        i++;
-    }
+char** getChannelList(){
+    char *docname;
+    docname = "database/channelList.xml";
+
+    printf("opening :%s \n", docname);
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char** list;
+
+    doc = openDoc(docname);
+    cur = checkDoc(doc,"channels");
+    cur = cur->parent;
+
+    list = getListOfValues(doc,cur,"channels","channel");
+    return list;
 }
 
 
@@ -209,4 +228,36 @@ userInfo getUser(char *username) {
     user.channels = getListOfValues(doc,cur,"channels","channel");
     xmlFreeDoc(doc);
     return user;
+}
+
+int checkUser(char * userName){
+    char** userList;
+    userList = getUserList();
+    int lijstIndex;
+    lijstIndex = 0;
+    while(userList[lijstIndex]){
+        if(!strcmp(userList[lijstIndex],userName)){
+            printf("user: %s found\n it was : %s \n",userName,userList[lijstIndex]);
+            return EXIT_SUCCESS;
+        }
+        lijstIndex++;
+    }
+    printf("%s not found\n",userName);
+    return EXIT_FAILURE;
+}
+
+int checkChannel(char * channelName){
+    char**channelList;
+    channelList = getChannelList();
+    int lijstIndex;
+    lijstIndex = 0;
+    while(channelList[lijstIndex]){
+        if(!strcmp(channelList[lijstIndex],channelName)){
+            printf("channel: %s found\n it was : %s \n",channelName, channelList[lijstIndex]);
+            return EXIT_SUCCESS;
+        }
+        lijstIndex++;
+    }
+    printf("%s not found", channelName);
+    return EXIT_FAILURE;
 }

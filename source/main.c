@@ -12,9 +12,11 @@ void flushStdout();
 
 int main(int argc, char **argv)
 {
+    mainMedium();
+    /*
     userInfo ui = getUser("desmond");
     ui.nickname = "Des";
-    writeUser(ui);
+    writeUser(ui);*/
     return 0;
     /*
     flushStdout();
