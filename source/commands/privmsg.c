@@ -6,7 +6,8 @@
 #include "../main.h"
 #include "../utils/utils.h"
 
-int handlePrivateMessageCommand(char *message) {
+int handlePrivateMessageCommand(char *message)
+{
     char *recipient, *msgToSend;
     int offset = substringCharacter(message, &recipient);
     msgToSend = message += offset;
