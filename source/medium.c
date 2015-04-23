@@ -5,10 +5,7 @@
 #include "medium.h"
 
 
-int checkChannel(char * channelName);
-int checkUser(char * userName);
-char** getUserList();
-char** getChannelList();
+
 xmlDocPtr openDoc(char* docname);
 xmlNodePtr checkDoc(xmlDocPtr doc,char * docType );
 char* getValue(xmlDocPtr doc, xmlNodePtr node, char* fieldname);
@@ -16,10 +13,13 @@ char** getListOfValues(xmlDocPtr doc,xmlNodePtr node,char* listname, char* field
 
 void mainMedium() {
     int index;
-/*
+
     channelInfo batcave;
+    getChannel("eigendunk");
+    getChannel("bier");
     batcave = getChannel("batcave");
-    printf("channelname is:%s\n",batcave.naam);
+
+    printf("channelname is:%s\n",batcave.name);
     index = 0;
     while(batcave.users[index] != NULL) {
         printf("user %i : %s\n",index+1,batcave.users[index]);
@@ -37,7 +37,12 @@ void mainMedium() {
 
 
     userInfo fatih;
+
+    getUser("joe");
+    getUser("patrick");
     fatih = getUser("fatih");
+
+
     printf("username is:%s\n",fatih.username);
     printf("nickname is:%s\n",fatih.nickname);
     printf("password is:%s\n",fatih.password);
@@ -46,12 +51,12 @@ void mainMedium() {
     while(fatih.channels[index] != NULL) {
         printf("channel%i : %s\n",index,fatih.channels[index]);
         index++;
-    }*/
-
+    }
+/*
     checkUser("joe");
     checkUser("desmond");
     checkChannel("batcave");
-    checkChannel("eigendunk");
+    checkChannel("eigendunk");*/
 
 }
 xmlDocPtr openDoc(char* docname){
@@ -59,7 +64,7 @@ xmlDocPtr openDoc(char* docname){
     doc = xmlParseFile(docname);
 
     if (doc == NULL) {
-        fprintf(stderr, "Document not parsed successfully. \n");
+        fprintf(stderr, "Document **%s**Was not parsed successfully. \n",docname);
         return NULL;
     } else {
         return doc;
@@ -78,7 +83,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc,char * docType ){
     }
 
     if (xmlStrcmp(cur->name, (const xmlChar *)docType)) {
-        fprintf(stderr, "document of the wrong type, this is not a channel");
+        fprintf(stderr, "document of the wrong type, this is not a channel\n");
         xmlFreeDoc(doc);
         return NULL;
     }
@@ -132,13 +137,24 @@ channelInfo getChannel(char *channelName){
     xmlDocPtr doc;
     xmlNodePtr cur;
 
+    if(checkChannel(channelName)==EXIT_FAILURE){
+        fprintf(stderr, "channel: %s does not exist\n",channelName);
+        return channel;
+    }
+
     docname = (char *) malloc(500);
     sprintf(docname,"database/channels/%s.xml",channelName);
 
     doc = openDoc(docname);
+    if(doc == NULL){
+        return channel;
+    }
     cur = checkDoc(doc,"channel");
+    if(cur == NULL){
+        return channel;
+    }
 
-    channel.naam = getValue(doc,cur,"name");
+    channel.name = getValue(doc,cur,"name");
     channel.users = getListOfValues(doc,cur,"users","user");
 
     int index;
@@ -172,7 +188,6 @@ char** getUserList(){
     char *docname;
     docname = "database/userlist.xml";
 
-    printf("opening :%s \n", docname);
     xmlDocPtr doc;
     xmlNodePtr cur;
     char** list;
@@ -189,7 +204,6 @@ char** getChannelList(){
     char *docname;
     docname = "database/channelList.xml";
 
-    printf("opening :%s \n", docname);
     xmlDocPtr doc;
     xmlNodePtr cur;
     char** list;
@@ -207,20 +221,36 @@ char** getChannelList(){
 userInfo getUser(char *username) {
     char *docname;
     userInfo user;
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+
+
+    if(checkUser(username)==EXIT_FAILURE){
+        fprintf(stderr, "user: %s does not exist\n",username);
+        return user;
+    }
+
+    docname = (char *) malloc(500);
+
+    sprintf(docname,"database/users/%s.xml",username);
+
+    doc = openDoc(docname);
+    if(doc == NULL){
+        return user;
+    }
+    cur = checkDoc(doc,"user");
+    if(cur == NULL){
+        return user;
+    }
+
+
 
     user.username = malloc(30);
     user.nickname = malloc(30);
     user.password = malloc(30);
     user.channels = malloc(1000);
-    docname = (char *) malloc(500);
-
-    sprintf(docname,"database/users/%s.xml",username);
 
 
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    doc = openDoc(docname);
-    cur = checkDoc(doc,"user");
 
     strcpy(user.username,username);
     strcpy(user.nickname,getValue(doc,cur,"nickname"));
@@ -237,12 +267,12 @@ int checkUser(char * userName){
     lijstIndex = 0;
     while(userList[lijstIndex]){
         if(!strcmp(userList[lijstIndex],userName)){
-            printf("user: %s found\n it was : %s \n",userName,userList[lijstIndex]);
+            //printf("user: %s found it was : %s \n",userName,userList[lijstIndex]);
             return EXIT_SUCCESS;
         }
         lijstIndex++;
     }
-    printf("%s not found\n",userName);
+    //printf("%s not found\n",userName);
     return EXIT_FAILURE;
 }
 
@@ -253,11 +283,11 @@ int checkChannel(char * channelName){
     lijstIndex = 0;
     while(channelList[lijstIndex]){
         if(!strcmp(channelList[lijstIndex],channelName)){
-            printf("channel: %s found\n it was : %s \n",channelName, channelList[lijstIndex]);
+           // printf("channel: %s found it was : %s \n",channelName, channelList[lijstIndex]);
             return EXIT_SUCCESS;
         }
         lijstIndex++;
     }
-    printf("%s not found", channelName);
+    //printf("%s not found\n", channelName);
     return EXIT_FAILURE;
 }

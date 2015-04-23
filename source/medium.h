@@ -25,22 +25,17 @@ typedef struct messageInfo {
 }messageInfo;
 
 typedef struct channelInfo{
-    char *naam;
+    char *name;
     char **users;
     messageInfo messages[100];
 }channelInfo;
 
 
 
-/**
- * main for the medium
- */
 void mainMedium();
-
 userInfo getUser(char *username);
-
-/**
- * get channel gets all info of a specific channel
- * channelName is the name of the channel
- */
 channelInfo getChannel(char *channelName);
+int checkChannel(char * channelName);
+int checkUser(char * userName);
+char** getUserList();
+char** getChannelList();
