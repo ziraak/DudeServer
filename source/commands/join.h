@@ -10,6 +10,9 @@
 int handleJoinCommand(char *message);
 
 int findChannelByName(char *channelName);
+
 int authenticateChannel(char *channelName, char *optionalChannelKey);
+
 int joinChannel(char *channelName);
+
 int createChannel(char *channelName, char *optionalChannelKey);

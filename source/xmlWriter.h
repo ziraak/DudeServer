@@ -11,5 +11,7 @@
 #endif //DUDESERVER_XMLWRITER_H
 
 int writeUser(userInfo user);
+
 xmlTextWriterPtr openFile(char *username);
+
 void writeChannels(xmlTextWriterPtr xmlptr, char **channels);

@@ -8,4 +8,5 @@
 #endif //DUDESERVER_LOGIN_H
 
 int handleLoginCommand(char *message);
+
 int authenticateUser(char *username, char *password);

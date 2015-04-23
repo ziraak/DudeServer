@@ -3,21 +3,28 @@
 //
 #include <stdlib.h>
 #include <stdio.h>
+
 #ifndef DUDESERVER_MAIN_H
 #define DUDESERVER_MAIN_H
 
 #endif //DUDESERVER_MAIN_H
 
 void processConnectedClient(int sockfd);
+
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
+
 void flushStdout();
 
 void sendIntegerMessageToClient(int sockfd, int msg);
+
 void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength);
 
 int parseMessage(char *message);
+
 void acknowledgeConnection(int sockfd);
-int commandEquals(char* command, char* check);
+
+int commandEquals(char *command, char *check);
+
 int writeMessageToDB(char *recipient, char *msgToSend);
 
 #define RPL_CONNECTED 100 // CONNECT

@@ -7,11 +7,10 @@
 #include <malloc.h>
 #include "utils.h"
 
-int substringCharacter(char* str, char** result)
-{
+int substringCharacter(char *str, char **result) {
     char find = ' ';
     size_t i = strcspn(str, &find);
     *result = malloc(i);
     memcpy(*result, str, i);
-    return (int)++i;
+    return (int) ++i;
 }

@@ -2,8 +2,6 @@
 // Created by osboxes on 20/04/15.
 //
 
-#include "medium.h"
-
 
 xmlDocPtr openDoc(char *docname);
 
@@ -13,8 +11,7 @@ char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
 
 char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
 
-void mainMedium()
-{
+void mainMedium() {
     int index;
 
     channelInfo batcave;
@@ -24,14 +21,12 @@ void mainMedium()
 
     printf("channelname is:%s\n", batcave.name);
     index = 0;
-    while (batcave.users[index] != NULL)
-    {
+    while (batcave.users[index] != NULL) {
         printf("user %i : %s\n", index + 1, batcave.users[index]);
         index++;
     }
     index = 0;
-    while (batcave.messages[index].body != NULL)
-    {
+    while (batcave.messages[index].body != NULL) {
         printf("----------------------------------- \n message number %i\n", index + 1);
         printf("written by: %s\n", batcave.messages[index].writer);
         printf("written on: %s\n", batcave.messages[index].timestamp);
@@ -52,8 +47,7 @@ void mainMedium()
     printf("password is:%s\n", fatih.password);
 
     index = 0;
-    while (fatih.channels[index] != NULL)
-    {
+    while (fatih.channels[index] != NULL) {
         printf("channel%i : %s\n", index, fatih.channels[index]);
         index++;
     }
@@ -65,13 +59,11 @@ void mainMedium()
 
 }
 
-xmlDocPtr openDoc(char *docname)
-{
+xmlDocPtr openDoc(char *docname) {
     xmlDocPtr doc;
     doc = xmlParseFile(docname);
 
-    if (doc == NULL)
-    {
+    if (doc == NULL) {
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
         return NULL;
     }
@@ -79,20 +71,17 @@ xmlDocPtr openDoc(char *docname)
 
 }
 
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
-{
+xmlNodePtr checkDoc(xmlDocPtr doc, char *docType) {
     xmlNodePtr cur;
     cur = xmlDocGetRootElement(doc);
 
-    if (cur == NULL)
-    {
+    if (cur == NULL) {
         fprintf(stderr, "empty document\n");
         xmlFreeDoc(doc);
         return NULL;
     }
 
-    if (xmlStrcmp(cur->name, (const xmlChar *) docType))
-    {
+    if (xmlStrcmp(cur->name, (const xmlChar *) docType)) {
         fprintf(stderr, "document of the wrong type, this is not a channel\n");
         xmlFreeDoc(doc);
         return NULL;
@@ -102,16 +91,13 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
     return cur;
 }
 
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname)
-{
+char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname) {
     xmlNodePtr cur;
     cur = node;
     xmlChar *key;
 
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname)))
-        {
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname))) {
             key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
         }
         cur = cur->next;
@@ -119,24 +105,19 @@ char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname)
     return (char *) key;
 }
 
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname)
-{
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname) {
     xmlNodePtr cur;
     cur = node;
     char **key;
     key = malloc(50000);
     int i;
     i = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) listname)))
-        {
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) listname))) {
             xmlNodePtr curChild;
             curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) fieldname)))
-                {
+            while (curChild != NULL) {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) fieldname))) {
                     key[i] = (char *) xmlNodeListGetString(doc, curChild->xmlChildrenNode, 1);
                     i++;
                 }
@@ -148,16 +129,14 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     return key;
 }
 
-channelInfo getChannel(char *channelName)
-{
+channelInfo getChannel(char *channelName) {
     char *docname;
     channelInfo channel;
     messageInfo message;
     xmlDocPtr doc;
     xmlNodePtr cur;
 
-    if (checkChannel(channelName) == EXIT_FAILURE)
-    {
+    if (checkChannel(channelName) == EXIT_FAILURE) {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
         return channel;
     }
@@ -166,13 +145,11 @@ channelInfo getChannel(char *channelName)
     sprintf(docname, "database/channels/%s.xml", channelName);
 
     doc = openDoc(docname);
-    if (doc == NULL)
-    {
+    if (doc == NULL) {
         return channel;
     }
     cur = checkDoc(doc, "channel");
-    if (cur == NULL)
-    {
+    if (cur == NULL) {
         return channel;
     }
 
@@ -181,16 +158,12 @@ channelInfo getChannel(char *channelName)
 
     int index;
     index = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
-        {
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages"))) {
             xmlNodePtr curChild;
             curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")))
-                {
+            while (curChild != NULL) {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message"))) {
 
                     message.writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
                     message.timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
@@ -211,8 +184,7 @@ channelInfo getChannel(char *channelName)
     return channel;
 }
 
-char **getUserList()
-{
+char **getUserList() {
     char *docname;
     docname = "database/userlist.xml";
 
@@ -228,8 +200,7 @@ char **getUserList()
     return list;
 }
 
-char **getChannelList()
-{
+char **getChannelList() {
     char *docname;
     docname = "database/channelList.xml";
 
@@ -246,16 +217,14 @@ char **getChannelList()
 }
 
 
-userInfo getUser(char *username)
-{
+userInfo getUser(char *username) {
     char *docname;
     userInfo user;
     xmlDocPtr doc;
     xmlNodePtr cur;
 
 
-    if (checkUser(username) == EXIT_FAILURE)
-    {
+    if (checkUser(username) == EXIT_FAILURE) {
         fprintf(stderr, "user: %s does not exist\n", username);
         return user;
     }
@@ -265,13 +234,11 @@ userInfo getUser(char *username)
     sprintf(docname, "database/users/%s.xml", username);
 
     doc = openDoc(docname);
-    if (doc == NULL)
-    {
+    if (doc == NULL) {
         return user;
     }
     cur = checkDoc(doc, "user");
-    if (cur == NULL)
-    {
+    if (cur == NULL) {
         return user;
     }
 
@@ -290,16 +257,13 @@ userInfo getUser(char *username)
     return user;
 }
 
-int checkUser(char *userName)
-{
+int checkUser(char *userName) {
     char **userList;
     userList = getUserList();
     int lijstIndex;
     lijstIndex = 0;
-    while (userList[lijstIndex])
-    {
-        if (!strcmp(userList[lijstIndex], userName))
-        {
+    while (userList[lijstIndex]) {
+        if (!strcmp(userList[lijstIndex], userName)) {
             //printf("user: %s found it was : %s \n",userName,userList[lijstIndex]);
             return EXIT_SUCCESS;
         }
@@ -309,16 +273,13 @@ int checkUser(char *userName)
     return EXIT_FAILURE;
 }
 
-int checkChannel(char *channelName)
-{
+int checkChannel(char *channelName) {
     char **channelList;
     channelList = getChannelList();
     int lijstIndex;
     lijstIndex = 0;
-    while (channelList[lijstIndex])
-    {
-        if (!strcmp(channelList[lijstIndex], channelName))
-        {
+    while (channelList[lijstIndex]) {
+        if (!strcmp(channelList[lijstIndex], channelName)) {
             // printf("channel: %s found it was : %s \n",channelName, channelList[lijstIndex]);
             return EXIT_SUCCESS;
         }
