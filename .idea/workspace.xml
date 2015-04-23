@@ -13,11 +13,7 @@
   </component>
   <component name="ChangeListManager">
     <list default="true" id="e9b0d549-58a2-457b-b378-cc530c40375d" name="Default" comment="">
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/channelList.xml" afterPath="$PROJECT_DIR$/database/channelList.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source/medium.c" afterPath="$PROJECT_DIR$/source/medium.c" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source/medium.h" afterPath="$PROJECT_DIR$/source/medium.h" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/database/userlist.xml" afterPath="$PROJECT_DIR$/database/userlist.xml" />
-      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/source/main.c" afterPath="$PROJECT_DIR$/source/main.c" />
     </list>
     <ignored path="DudeServer.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -38,11 +34,11 @@
   </component>
   <component name="FileEditorManager">
     <leaf>
-      <file leaf-file-name="main.c" pinned="false" current-in-tab="false">
+      <file leaf-file-name="main.c" pinned="false" current-in-tab="true">
         <entry file="file://$PROJECT_DIR$/source/main.c">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.0">
-              <caret line="18" column="20" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
+            <state vertical-scroll-proportion="0.34532374">
+              <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
               <folding />
             </state>
           </provider>
@@ -68,11 +64,11 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="medium.h" pinned="false" current-in-tab="true">
+      <file leaf-file-name="medium.h" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/source/medium.h">
           <provider selected="true" editor-type-id="text-editor">
-            <state vertical-scroll-proportion="0.4388489">
-              <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+            <state vertical-scroll-proportion="0.0">
+              <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
               <folding>
                 <element signature="e#42#60#0" expanded="true" />
               </folding>
@@ -107,9 +103,9 @@
         <option value="$PROJECT_DIR$/../xmlreader/CMakeLists.txt" />
         <option value="$PROJECT_DIR$/source/xmlWriter.c" />
         <option value="$PROJECT_DIR$/source/xmlWriter.h" />
-        <option value="$PROJECT_DIR$/source/main.c" />
         <option value="$PROJECT_DIR$/source/medium.c" />
         <option value="$PROJECT_DIR$/source/medium.h" />
+        <option value="$PROJECT_DIR$/source/main.c" />
       </list>
     </option>
   </component>
@@ -517,14 +513,6 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/source/main.c">
-      <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.0">
-          <caret line="18" column="20" selection-start-line="18" selection-start-column="20" selection-end-line="18" selection-end-column="20" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="file://$PROJECT_DIR$/source/medium.c">
       <provider selected="true" editor-type-id="text-editor">
         <state vertical-scroll-proportion="0.0">
@@ -535,11 +523,19 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/source/medium.h">
       <provider selected="true" editor-type-id="text-editor">
-        <state vertical-scroll-proportion="0.4388489">
-          <caret line="33" column="0" selection-start-line="33" selection-start-column="0" selection-end-line="33" selection-end-column="0" />
+        <state vertical-scroll-proportion="0.0">
+          <caret line="34" column="0" selection-start-line="34" selection-start-column="0" selection-end-line="34" selection-end-column="0" />
           <folding>
             <element signature="e#42#60#0" expanded="true" />
           </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/source/main.c">
+      <provider selected="true" editor-type-id="text-editor">
+        <state vertical-scroll-proportion="0.34532374">
+          <caret line="14" column="17" selection-start-line="14" selection-start-column="17" selection-end-line="14" selection-end-column="17" />
+          <folding />
         </state>
       </provider>
     </entry>
