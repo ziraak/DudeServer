@@ -7,7 +7,9 @@
 #include "xmlWriter.h"
 
 void processConnectedClient(int sockfd);
+
 int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
+
 void flushStdout();
 
 int main(int argc, char **argv)
@@ -27,7 +29,7 @@ int main(int argc, char **argv)
 
     listen(sock, 200);
 
-    while(1)
+    while (1)
     {
         clientlen = sizeof(adres_client);
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
@@ -44,18 +46,22 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-void processConnectedClient(int sockfd) {
+void processConnectedClient(int sockfd)
+{
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
 
-    while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0') {
-        if (receive < 0) {
+    while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
+    {
+        if (receive < 0)
+        {
             perror("Error recv");
             exit(1);
         }
 
-        if (send(sockfd, buffer, sizeof(buffer), 0) < 0) {
+        if (send(sockfd, buffer, sizeof(buffer), 0) < 0)
+        {
             perror("Error send.. ");
             exit(1);
         }
@@ -77,7 +83,7 @@ int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_i
         exit(1);
     }
 
-    if(bind(sock, (struct sockaddr *) adres_server, sizeof(*adres_server)) < 0)
+    if (bind(sock, (struct sockaddr *) adres_server, sizeof(*adres_server)) < 0)
     {
         perror("Bind error...");
         exit(1);
