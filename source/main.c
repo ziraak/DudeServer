@@ -17,7 +17,6 @@ int main(int argc, char **argv)
     ui.nickname = "Des";
     writeUser(ui);
     return 0;
-    /*
     flushStdout();
     char *server_ip = "127.0.0.1";
     struct sockaddr_in adres_server, adres_client;
@@ -89,5 +88,5 @@ int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_i
 
 void flushStdout()
 {
-    setvbuf(stdout, NULL, _IONBF, 0);*/
+    setvbuf(stdout, NULL, _IONBF, 0);
 }
