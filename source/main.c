@@ -185,3 +185,8 @@ char** getAllUnreadMessagesByName(char *username)
     char** allUnreadMessages;
     return allUnreadMessages;
 }
+
+int generateToken()
+{
+    return rand();
+}
