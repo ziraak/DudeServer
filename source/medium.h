@@ -11,17 +11,31 @@
 #include <libxml/xmlreader.h>
 
 
-typedef struct userinfo {
+typedef struct userInfo {
     char *username;
     char *nickname;
     char *password;
     char **channels;
-} userinfo;
+} userInfo;
+
+typedef struct messageInfo {
+    char *writer;
+    char *timestamp;
+    char *body;
+}messageInfo;
+
+typedef struct channelInfo{
+    char *naam;
+    char **users;
+    messageInfo messages[100];
+}channelInfo;
+
+
 
 /**
  * main for the medium
  */
 void mainMedium();
 
-userinfo getUser(char *username);
+userInfo getUser(char *username);
 
