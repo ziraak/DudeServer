@@ -157,6 +157,14 @@ channelInfo getChannel(char *channelName){
 void getUserList(){
     char *docname;
     docname = "database/userlist.xml";
+    userInfo user;
+
+    user.username = malloc(30);
+    user.nickname = malloc(30);
+    user.password = malloc(30);
+    user.channels = calloc(100,100*4);
+    docname = (char *) malloc(500);
+    printf("opening :%s \n", docname);
     xmlDocPtr doc;
     xmlNodePtr cur;
     char** list;
