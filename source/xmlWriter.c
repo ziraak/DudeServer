@@ -15,7 +15,7 @@ int writeUser(userInfo user)
     xmlTextWriterWriteElement(xmlptr, "password", user.password);
     writeChannels(xmlptr, user.channels);
     xmlTextWriterEndElement(xmlptr);
-    xmlTextWriterFlush(xmlptr);
+    xmlTextWriterEndDocument(file);
     return 0;
 }
 

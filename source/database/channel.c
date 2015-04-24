@@ -4,30 +4,65 @@
 
 #include "channel.h"
 
-int writeChannel()
-{
+xmlTextWriterPtr openChannelFile(char *channelName);
+void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users);
+void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]);
+void writeMessageToChannel(xmlTextWriterPtr  xmlptr, messageInfo message);
 
+int writeChannel(channelInfo channel)
+{
+    xmlTextWriterPtr file = openChannelFile(channel.name);
+
+    xmlTextWriterStartElement(file, "channel");
+    xmlTextWriterWriteElement(file, "name", channel.name);
+    writeUsersToChannel(file, channel.users);
+    writeMessagesToChannel(file, channel.messages);
+    xmlTextWriterEndElement(file);
+    xmlTextWriterEndDocument(file);
     return 0;
 }
 
-xmlTextWriterPtr openChannelFile(char *username)
+
+xmlTextWriterPtr openChannelFile(char *channelName)
 {
     char filename[250];
-    sprintf(filename, "database/channels/%s.xml", username);
+    sprintf(filename, FILEFORMATSTRING, channelName);
     return xmlNewTextWriterFilename(filename, 0);
 }
 
-void writeChannels(xmlTextWriterPtr xmlptr, char **channels)
+void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users)
 {
-    xmlTextWriterStartElement(xmlptr, "channels");
-    while (channels != NULL && channels != 0)
+
+    xmlTextWriterStartElement(xmlptr, "users");
+    while (users != NULL && users != 0)
     {
-        if (*channels == NULL || *channels == 0)
+        if (*users == NULL || *users == 0)
         {
             break;
         }
-        xmlTextWriterWriteElement(xmlptr, "channel", *channels);
-        channels++;
+        xmlTextWriterWriteElement(xmlptr, "user", *users);
+        users++;
     }
+    xmlTextWriterEndElement(xmlptr);
+}
+
+void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]
+)
+{
+    xmlTextWriterStartElement(xmlptr, "messages");
+    while( messages->writer != NULL)
+    {
+        writeMessageToChannel(xmlptr, *messages);
+        messages++;
+    }
+    xmlTextWriterEndElement(xmlptr);
+}
+
+void writeMessageToChannel(xmlTextWriterPtr  xmlptr, messageInfo message)
+{
+    xmlTextWriterStartElement(xmlptr, "message");
+    xmlTextWriterWriteAttribute(xmlptr, "user", message.writer);
+    xmlTextWriterWriteElement(xmlptr, "timestamp", message.timestamp);
+    xmlTextWriterWriteElement(xmlptr, "body", message.body);
     xmlTextWriterEndElement(xmlptr);
 }
