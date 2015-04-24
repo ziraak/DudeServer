@@ -30,7 +30,7 @@ typedef struct channelInfo
 {
     char *name;
     char **users;
-    messageInfo messages[100];
+    messageInfo *messages;
 } channelInfo;
 
 
