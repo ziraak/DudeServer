@@ -1,18 +1,11 @@
 //
 // Created by osboxes on 20/04/15.
 //
+#include "medium.h"
 
-
-xmlDocPtr openDoc(char *docname);
-
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
-
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
-
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
 
 void mainMedium()
-{
+{/*
     int index;
 
     channelInfo batcave;
@@ -54,7 +47,7 @@ void mainMedium()
     {
         printf("channel%i : %s\n", index, fatih.channels[index]);
         index++;
-    }
+    }*/
 /*
     checkUser("joe");
     checkUser("desmond");
@@ -303,7 +296,7 @@ int checkUser(char *userName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n",userName);
+    printf("%s not found\n",userName);
     return EXIT_FAILURE;
 }
 
@@ -322,6 +315,7 @@ int checkChannel(char *channelName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n", channelName);
+    printf("%s not found\n", channelName);
     return EXIT_FAILURE;
 }
+

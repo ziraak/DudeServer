@@ -47,3 +47,11 @@ int checkUser(char *userName);
 char **getUserList();
 
 char **getChannelList();
+
+xmlDocPtr openDoc(char *docname);
+
+xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
+
+char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
