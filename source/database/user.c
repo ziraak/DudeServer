@@ -3,7 +3,6 @@
 //
 
 #include "user.h"
-#include "database.h"
 
 char **getUserList()
 {
@@ -23,7 +22,7 @@ char **getUserList()
 }
 
 
-int getUser(char *username, userInfo* result)
+int getUser(char *username, userInfo *result)
 {
     char *docname;
     xmlDocPtr doc;
@@ -60,7 +59,7 @@ int getUser(char *username, userInfo* result)
     strcpy(result->nickname, getValue(doc, cur, "nickname"));
     strcpy(result->password, getValue(doc, cur, "password"));
     result->channels = getListOfValues(doc, cur, "channels", "channel");
-    result->loginToken = getValue(doc,cur,"loginToken");
+    result->loginToken = getValue(doc, cur, "loginToken");
 
     xmlFreeDoc(doc);
     return 0;
@@ -68,7 +67,8 @@ int getUser(char *username, userInfo* result)
 
 int checkUser(char *userName)
 {
-    if(userName == NULL){
+    if (userName == NULL)
+    {
         fprintf(stderr, "user can not be NULL ");
         return EXIT_FAILURE;
     }
@@ -85,6 +85,18 @@ int checkUser(char *userName)
         }
         lijstIndex++;
     }
-    printf("%s not found\n",userName);
+    printf("%s not found\n", userName);
     return EXIT_FAILURE;
+}
+
+void userJoinChannel(char *username, char *channelName)
+{
+    if (checkUser(username) == EXIT_FAILURE || checkChannel(channelName) == EXIT_FAILURE)
+    {
+        fprintf(stderr, "user: %s or channel %s does not exist\n", username, channelName);
+        return;
+    }
+
+    addFieldToFileInList("user", username, "channels", "channel", channelName);
+    addFieldToFileInList("channel", channelName, "users", "user", username);
 }

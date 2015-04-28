@@ -6,3 +6,5 @@
 #define DUDESERVER_USER_H
 
 #endif //DUDESERVER_USER_H
+
+#include "database.h"

@@ -3,6 +3,8 @@
 //
 
 #include <libxml/xmlstring.h>
+#include <libxml/xmlwriter.h>
+#include <stdio.h>
 #include "database.h"
 
 #ifndef DUDESERVER_CHANNEL_H
@@ -22,13 +24,25 @@ static xmlChar *const bodyTagName = "body";
 static const int maxMessages = 100;
 #endif //DUDESERVER_CHANNEL_H
 
-#include <libxml/xmlwriter.h>
-#include <stdio.h>
-#include "../medium.h"
-
 int writeChannel(channelInfo channel);
+
 int writeMessageToChannel(char *channelName, messageInfo message);
+
 xmlTextWriterPtr openChannelFile(char *channelName);
-void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users);
-void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]);
-void writeMessageToXml(xmlTextWriterPtr  xmlptr, messageInfo message);
+
+void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users);
+
+void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[]);
+
+void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message);
+
+void deleteChannelFromList(char *channelName);
+
+void deleteChannel(char *channelName);
+
+int checkChannel(char *channelName);
+
+char **getChannelList();
+
+void deleteChannelFromUser(char *username, char *channelName);
+

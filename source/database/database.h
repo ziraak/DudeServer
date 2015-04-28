@@ -16,8 +16,6 @@
 #include <malloc.h>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
-#include "user.h"
-#include "channel.h"
 
 typedef struct userInfo
 {
@@ -45,9 +43,9 @@ typedef struct channelInfo
 
 void mainMedium();
 
-int getUser(char *username, userInfo* result);
+int getUser(char *username, userInfo *result);
 
-int getChannel(char *channelName, channelInfo* channel);
+int getChannel(char *channelName, channelInfo *channel);
 
 int checkChannel(char *channelName);
 
@@ -64,3 +62,17 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
 char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
 
 char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
+
+xmlDocPtr openDoc(char *docname);
+
+xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
+
+char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
+
+void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
+
+void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
+
+void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);

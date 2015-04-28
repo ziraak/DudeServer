@@ -5,27 +5,21 @@
 #include "database.h"
 
 
-
 xmlDocPtr openDoc(char *docname)
 {
-    xmlDocPtr doc;
-    doc = xmlParseFile(docname);
-
+    xmlDocPtr doc = xmlParseFile(docname);
     if (doc == NULL)
     {
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
-        return NULL;
     }
     return doc;
-
 }
 
 xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 {
     xmlNodePtr cur;
-    cur = xmlDocGetRootElement(doc);
 
-    if (cur == NULL)
+    if ((cur = xmlDocGetRootElement(doc))==NULL)
     {
         fprintf(stderr, "empty document\n");
         xmlFreeDoc(doc);
@@ -34,7 +28,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 
     if (xmlStrcmp(cur->name, (const xmlChar *) docType))
     {
-        fprintf(stderr, "document of the wrong type, this is not a %s\n",docType);
+        fprintf(stderr, "document of the wrong type, this is not a %s\n", docType);
         xmlFreeDoc(doc);
         return NULL;
     }
@@ -43,10 +37,8 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
     return cur;
 }
 
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname)
+char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
 {
-    xmlNodePtr cur;
-    cur = node;
     xmlChar *key;
 
     while (cur != NULL)
@@ -60,12 +52,10 @@ char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname)
     return (char *) key;
 }
 
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname)
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
 {
-    xmlNodePtr cur;
-    cur = node;
     char **key;
-    key = calloc(50,1000);
+    key = calloc(50, 1000);
     int i;
     i = 0;
     while (cur != NULL)
@@ -87,4 +77,61 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
         cur = cur->next;
     }
     return key;
+}
+
+void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname = (char *) malloc(500);
+
+    sprintf(docname, "database/%ss/%s.xml", fileType, filename);
+
+    printf("opening document %s\n", docname);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    if ((cur = checkDoc(doc, fileType)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    addChild(cur, listname, fieldname, content);
+
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+}
+
+
+void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent)
+{
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) parent)))
+        {
+            xmlNewTextChild(cur, NULL, (xmlChar *) child, (xmlChar *) childContent);
+            break;
+        }
+        cur = cur->next;
+    }
+
+}
+
+
+void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
+{
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), (xmlChar *) fieldText)))
+        {
+            xmlUnlinkNode(cur);
+        }
+        cur = cur->next;
+    }
 }
