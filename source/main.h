@@ -1,4 +1,6 @@
-include <stdio.h>
+#ifndef MAIN_H
+#define MAIN_H
+#include <stdio.h>
 #include <stdlib.h>
 #include <netinet/in.h>
 #include <string.h>
@@ -45,6 +47,3 @@ int writeMessageToDB(char *recipient, char *msgToSend);
 #define ERR_BANNEDFROMCHAN 474
 #define ERR_BADCHANNELKEY 475
 #define ERR_BADCHANMASK 476
-
-#define BOOL_TRUE 1
-#define BOOL_FALSE 0

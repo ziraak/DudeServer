@@ -1,7 +1,3 @@
-//
-// Created by osboxes on 21/04/15.
-//
-
 #include "join.h"
 
 int handleJoinCommand(char *message)
