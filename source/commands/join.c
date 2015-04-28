@@ -16,44 +16,41 @@ int handleJoinCommand(char *message)
     channelInfo channel;
     if(getChannel(channelName, &channel) < 0)
     {
-
+        // TODO: create channel and
+        createChannel(channelName, optionalChannelKey);
     }
 
-    if (checkChannel(channelName) == EXIT_SUCCESS)
+    int result = authenticateChannel(channel, channelName, optionalChannelKey)
+    if(result != BOOL_TRUE)
     {
-        if (authenticateChannel(channelName, optionalChannelKey))
-        {
-            // TODO: Join existing channel
-            joinChannel(channelName);
-        }
-        else
-        {
-            // TODO: Not authenticated
-            return ERR_BADCHANNELKEY;
-        }
+        return result;
     }
     else
     {
-        // TODO: Else create channel
-        createChannel(channelName, optionalChannelKey);
+        printf("JOINED!\n");
     }
+
+    joinChannel(channel);
 
     return RPL_TOPIC;
 }
 
-int findChannelByName(char *channelName)
+int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey)
 {
-    // TODO: Find channel by name
-    return 0;
+    if(optionalChannelKey != NULL)
+    {
+        //TODO: optionalChannelKey toevoegen
+    }
+
+    if(strcmp(channel.name, channelName) == 0)
+    {
+        return BOOL_TRUE;
+    }
+
+    return BOOL_FALSE;
 }
 
-int authenticateChannel(char *channelName, char *optionalChannelKey)
-{
-    // TODO: Authenticate on the given channel
-    return 0;
-}
-
-int joinChannel(char *channelName)
+int joinChannel(channelInfo channel)
 {
     // TODO: Add current user to the channel
     return 0;
