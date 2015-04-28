@@ -1,13 +1,15 @@
-//
-// Created by osboxes on 21/04/15.
-//
-#include <stdlib.h>
+#ifndef MAIN_H
+#define MAIN_H
 #include <stdio.h>
-
-#ifndef DUDESERVER_MAIN_H
-#define DUDESERVER_MAIN_H
-
-#endif //DUDESERVER_MAIN_H
+#include <stdlib.h>
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include "utils/utils.h"
+#include "commands/login.h"
+#include "commands/join.h"
+#include "commands/privmsg.h"
 
 void processConnectedClient(int sockfd);
 

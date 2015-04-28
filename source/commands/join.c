@@ -1,10 +1,4 @@
-//
-// Created by osboxes on 21/04/15.
-//
-
 #include "join.h"
-#include "../main.h"
-#include "../utils/utils.h"
 
 int handleJoinCommand(char *message)
 {
