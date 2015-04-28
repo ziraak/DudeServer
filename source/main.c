@@ -13,12 +13,10 @@
 int main(int argc, char **argv)
 {
     flushStdout();
-    char *server_ip = "127.0.0.1";
-    struct sockaddr_in adres_server, adres_client;
+    struct sockaddr_in adres_client;
     int sockfd;
-    uint16_t listenPort = 9099;
     unsigned int clientlen;
-    int sock = setupServer(&adres_server, listenPort, server_ip);
+    int sock = setupServer();
 
     listen(sock, 200);
 
@@ -122,12 +120,15 @@ int parseMessage(char *message)
     return ERR_UNKNOWNCOMMAND;
 }
 
-int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip)
+int setupServer()
 {
+    char *server_ip = "127.0.0.1";
+    uint16_t listenPort = 9090;
+    struct sockaddr_in adres_server;
     int sock;
-    adres_server->sin_family = AF_INET; // ip protocol
-    adres_server->sin_port = htons(listenPort); // change to network byte order
-    adres_server->sin_addr.s_addr = inet_addr(server_ip);
+    adres_server.sin_family = AF_INET; // ip protocol
+    adres_server.sin_port = htons(listenPort); // change to network byte order
+    adres_server.sin_addr.s_addr = inet_addr(server_ip);
 
 
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
@@ -136,7 +137,7 @@ int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_i
         exit(1);
     }
 
-    if (bind(sock, (struct sockaddr *) adres_server, sizeof(*adres_server)) < 0)
+    if (bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server)) < 0)
     {
         perror("Bind error...");
         exit(1);

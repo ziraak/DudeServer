@@ -11,7 +11,7 @@
 
 void processConnectedClient(int sockfd);
 
-int setupServer(struct sockaddr_in *adres_server, int listenPort, char *server_ip);
+int setupServer();
 
 void flushStdout();
 
