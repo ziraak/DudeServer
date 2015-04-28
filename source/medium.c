@@ -43,9 +43,9 @@ void mainMedium()
 
     userInfo fatih;
 
-    getUser("joe");
-    getUser("patrick");
-    fatih = getUser("fatih");
+//    getUser("joe");
+//    getUser("patrick");
+//    fatih = getUser("fatih");
 
 
     printf("username is:%s\n", fatih.username);
@@ -246,11 +246,9 @@ char **getChannelList()
     return list;
 }
 
-
-userInfo getUser(char *username)
+int getUser(char *username, userInfo* result)
 {
     char *docname;
-    userInfo user;
     xmlDocPtr doc;
     xmlNodePtr cur;
 
@@ -258,7 +256,7 @@ userInfo getUser(char *username)
     if (checkUser(username) == EXIT_FAILURE)
     {
         fprintf(stderr, "user: %s does not exist\n", username);
-        return user;
+        return -1;
     }
 
     docname = (char *) malloc(500);
@@ -268,27 +266,25 @@ userInfo getUser(char *username)
     doc = openDoc(docname);
     if (doc == NULL)
     {
-        return user;
+        return -2;
     }
     cur = checkDoc(doc, "user");
     if (cur == NULL)
     {
-        return user;
+        return -3;
     }
 
+    result->username = malloc(30);
+    result->nickname = malloc(30);
+    result->password = malloc(30);
+    result->channels = malloc(1000);
 
-    user.username = malloc(30);
-    user.nickname = malloc(30);
-    user.password = malloc(30);
-    user.channels = malloc(1000);
-
-
-    strcpy(user.username, username);
-    strcpy(user.nickname, getValue(doc, cur, "nickname"));
-    strcpy(user.password, getValue(doc, cur, "password"));
-    user.channels = getListOfValues(doc, cur, "channels", "channel");
+    strcpy(result->username, username);
+    strcpy(result->nickname, getValue(doc, cur, "nickname"));
+    strcpy(result->password, getValue(doc, cur, "password"));
+    result->channels = getListOfValues(doc, cur, "channels", "channel");
     xmlFreeDoc(doc);
-    return user;
+    return 0;
 }
 
 int checkUser(char *userName)
