@@ -1,9 +1,6 @@
 //
 // Created by osboxes on 20/04/15.
 //
-
-
-#include <libxml/tree.h>
 #include "medium.h"
 
 xmlDocPtr openDoc(char *docname);
@@ -17,7 +14,7 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
 void mainMedium()
 {
     int index;
-
+/*
     channelInfo batcave;
     getChannel("eigendunk");
     getChannel("bier");
@@ -40,7 +37,7 @@ void mainMedium()
         index++;
     }
 
-
+*/
     userInfo fatih;
 
 //    getUser("joe");
@@ -51,7 +48,7 @@ void mainMedium()
     printf("username is:%s\n", fatih.username);
     printf("nickname is:%s\n", fatih.nickname);
     printf("password is:%s\n", fatih.password);
-
+    printf("token is:%s\n",fatih.loginToken);
     index = 0;
     while (fatih.channels[index] != NULL)
     {
@@ -94,7 +91,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 
     if (xmlStrcmp(cur->name, (const xmlChar *) docType))
     {
-        fprintf(stderr, "document of the wrong type, this is not a channel\n");
+        fprintf(stderr, "document of the wrong type, this is not a %s\n",docType);
         xmlFreeDoc(doc);
         return NULL;
     }
@@ -125,7 +122,7 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     xmlNodePtr cur;
     cur = node;
     char **key;
-    key = malloc(50000);
+    key = calloc(50,1000);
     int i;
     i = 0;
     while (cur != NULL)
@@ -283,12 +280,18 @@ int getUser(char *username, userInfo* result)
     strcpy(result->nickname, getValue(doc, cur, "nickname"));
     strcpy(result->password, getValue(doc, cur, "password"));
     result->channels = getListOfValues(doc, cur, "channels", "channel");
+    result->loginToken = getValue(doc,cur,"loginToken");
+
     xmlFreeDoc(doc);
     return 0;
 }
 
 int checkUser(char *userName)
 {
+    if(userName == NULL){
+        fprintf(stderr, "user can not be NULL ");
+        return EXIT_FAILURE;
+    }
     char **userList;
     userList = getUserList();
     int lijstIndex;
@@ -302,17 +305,23 @@ int checkUser(char *userName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n",userName);
+    printf("%s not found\n",userName);
     return EXIT_FAILURE;
 }
 
 int checkChannel(char *channelName)
 {
+    if(channelName == NULL){
+        fprintf(stderr, "channel can not be NULL ");
+        return EXIT_FAILURE;
+    }
+
     char **channelList;
     channelList = getChannelList();
     int lijstIndex;
     lijstIndex = 0;
-    while (channelList[lijstIndex])
+
+    while (channelList[lijstIndex] != NULL)
     {
         if (!strcmp(channelList[lijstIndex], channelName))
         {
@@ -321,6 +330,7 @@ int checkChannel(char *channelName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n", channelName);
+    printf("%s not found\n", channelName);
     return EXIT_FAILURE;
 }
+

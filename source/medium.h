@@ -16,6 +16,7 @@ typedef struct userInfo
     char *nickname;
     char *password;
     char **channels;
+    char *loginToken;
 } userInfo;
 
 typedef struct messageInfo
@@ -29,7 +30,7 @@ typedef struct channelInfo
 {
     char *name;
     char **users;
-    messageInfo messages[100];
+    messageInfo *messages;
 } channelInfo;
 
 
@@ -46,3 +47,11 @@ int checkUser(char *userName);
 char **getUserList();
 
 char **getChannelList();
+
+xmlDocPtr openDoc(char *docname);
+
+xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
+
+char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
