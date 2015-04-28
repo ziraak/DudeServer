@@ -17,6 +17,7 @@ typedef struct userInfo
     char *nickname;
     char *password;
     char **channels;
+    char *loginToken;
 } userInfo;
 
 typedef struct messageInfo

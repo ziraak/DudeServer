@@ -5,9 +5,9 @@
 
 
 void mainMedium()
-{/*
+{
     int index;
-
+/*
     channelInfo batcave;
     getChannel("eigendunk");
     getChannel("bier");
@@ -30,7 +30,7 @@ void mainMedium()
         index++;
     }
 
-
+*/
     userInfo fatih;
 
     getUser("joe");
@@ -41,13 +41,13 @@ void mainMedium()
     printf("username is:%s\n", fatih.username);
     printf("nickname is:%s\n", fatih.nickname);
     printf("password is:%s\n", fatih.password);
-
+    printf("token is:%s\n",fatih.loginToken);
     index = 0;
     while (fatih.channels[index] != NULL)
     {
         printf("channel%i : %s\n", index, fatih.channels[index]);
         index++;
-    }*/
+    }
 /*
     checkUser("joe");
     checkUser("desmond");
@@ -277,6 +277,7 @@ userInfo getUser(char *username)
     strcpy(user.nickname, getValue(doc, cur, "nickname"));
     strcpy(user.password, getValue(doc, cur, "password"));
     user.channels = getListOfValues(doc, cur, "channels", "channel");
+    user.loginToken = getValue(doc,cur,"loginToken");
     xmlFreeDoc(doc);
     return user;
 }
