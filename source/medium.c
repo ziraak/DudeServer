@@ -3,6 +3,9 @@
 //
 
 
+#include <libxml/tree.h>
+#include "medium.h"
+
 xmlDocPtr openDoc(char *docname);
 
 xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);

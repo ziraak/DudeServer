@@ -57,7 +57,7 @@ int main(int argc, char **argv)
 
 void processConnectedClient(int sockfd)
 {
-    int authenticated = 1;
+    int authenticated = 0;
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
