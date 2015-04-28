@@ -17,3 +17,5 @@ xmlTextWriterPtr openFile(char *username);
 void writeChannels(xmlTextWriterPtr xmlptr, char **channels);
 
 void userJoinChannel(char *username, char *channelName);
+
+void deleteChannel(char *channelName);
