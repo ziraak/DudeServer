@@ -10,13 +10,13 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 
-
 typedef struct userInfo
 {
     char *username;
     char *nickname;
     char *password;
     char **channels;
+    char *loginToken;
 } userInfo;
 
 typedef struct messageInfo
@@ -30,15 +30,15 @@ typedef struct channelInfo
 {
     char *name;
     char **users;
-    messageInfo messages[100];
+    messageInfo *messages;
 } channelInfo;
 
 
 void mainMedium();
 
-userInfo getUser(char *username);
+int getUser(char *username, userInfo* result);
 
-channelInfo getChannel(char *channelName);
+int getChannel(char *channelName, channelInfo* channel);
 
 int checkChannel(char *channelName);
 
@@ -47,3 +47,11 @@ int checkUser(char *userName);
 char **getUserList();
 
 char **getChannelList();
+
+xmlDocPtr openDoc(char *docname);
+
+xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
+
+char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+
+char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);

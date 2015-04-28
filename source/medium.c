@@ -1,9 +1,6 @@
 //
 // Created by osboxes on 20/04/15.
 //
-
-
-#include <libxml/tree.h>
 #include "medium.h"
 
 xmlDocPtr openDoc(char *docname);
@@ -17,7 +14,7 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
 void mainMedium()
 {
     int index;
-
+/*
     channelInfo batcave;
     getChannel("eigendunk");
     getChannel("bier");
@@ -40,18 +37,18 @@ void mainMedium()
         index++;
     }
 
-
+*/
     userInfo fatih;
 
-    getUser("joe");
-    getUser("patrick");
-    fatih = getUser("fatih");
+//    getUser("joe");
+//    getUser("patrick");
+//    fatih = getUser("fatih");
 
 
     printf("username is:%s\n", fatih.username);
     printf("nickname is:%s\n", fatih.nickname);
     printf("password is:%s\n", fatih.password);
-
+    printf("token is:%s\n",fatih.loginToken);
     index = 0;
     while (fatih.channels[index] != NULL)
     {
@@ -94,7 +91,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 
     if (xmlStrcmp(cur->name, (const xmlChar *) docType))
     {
-        fprintf(stderr, "document of the wrong type, this is not a channel\n");
+        fprintf(stderr, "document of the wrong type, this is not a %s\n",docType);
         xmlFreeDoc(doc);
         return NULL;
     }
@@ -125,7 +122,7 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     xmlNodePtr cur;
     cur = node;
     char **key;
-    key = malloc(50000);
+    key = calloc(50,1000);
     int i;
     i = 0;
     while (cur != NULL)
@@ -149,10 +146,9 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     return key;
 }
 
-channelInfo getChannel(char *channelName)
+int getChannel(char *channelName, channelInfo* channel)
 {
     char *docname;
-    channelInfo channel;
     messageInfo message;
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -160,7 +156,7 @@ channelInfo getChannel(char *channelName)
     if (checkChannel(channelName) == EXIT_FAILURE)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
-        return channel;
+        return -1;
     }
 
     docname = (char *) malloc(500);
@@ -169,16 +165,16 @@ channelInfo getChannel(char *channelName)
     doc = openDoc(docname);
     if (doc == NULL)
     {
-        return channel;
+        return -2;
     }
     cur = checkDoc(doc, "channel");
     if (cur == NULL)
     {
-        return channel;
+        return -3;
     }
 
-    channel.name = getValue(doc, cur, "name");
-    channel.users = getListOfValues(doc, cur, "users", "user");
+    channel->name = getValue(doc, cur, "name");
+    channel->users = getListOfValues(doc, cur, "users", "user");
 
     int index;
     index = 0;
@@ -196,7 +192,7 @@ channelInfo getChannel(char *channelName)
                     message.writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
                     message.timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
                     message.body = getValue(doc, curChild->xmlChildrenNode, "body");
-                    channel.messages[index] = message;
+                    channel->messages[index] = message;
                     index++;
 
                 }
@@ -209,7 +205,7 @@ channelInfo getChannel(char *channelName)
     }
 
     xmlFreeDoc(doc);
-    return channel;
+    return 0;
 }
 
 char **getUserList()
@@ -246,11 +242,9 @@ char **getChannelList()
     return list;
 }
 
-
-userInfo getUser(char *username)
+int getUser(char *username, userInfo* result)
 {
     char *docname;
-    userInfo user;
     xmlDocPtr doc;
     xmlNodePtr cur;
 
@@ -258,7 +252,7 @@ userInfo getUser(char *username)
     if (checkUser(username) == EXIT_FAILURE)
     {
         fprintf(stderr, "user: %s does not exist\n", username);
-        return user;
+        return -1;
     }
 
     docname = (char *) malloc(500);
@@ -268,31 +262,35 @@ userInfo getUser(char *username)
     doc = openDoc(docname);
     if (doc == NULL)
     {
-        return user;
+        return -2;
     }
     cur = checkDoc(doc, "user");
     if (cur == NULL)
     {
-        return user;
+        return -3;
     }
 
+    result->username = malloc(30);
+    result->nickname = malloc(30);
+    result->password = malloc(30);
+    result->channels = malloc(1000);
 
-    user.username = malloc(30);
-    user.nickname = malloc(30);
-    user.password = malloc(30);
-    user.channels = malloc(1000);
+    strcpy(result->username, username);
+    strcpy(result->nickname, getValue(doc, cur, "nickname"));
+    strcpy(result->password, getValue(doc, cur, "password"));
+    result->channels = getListOfValues(doc, cur, "channels", "channel");
+    result->loginToken = getValue(doc,cur,"loginToken");
 
-
-    strcpy(user.username, username);
-    strcpy(user.nickname, getValue(doc, cur, "nickname"));
-    strcpy(user.password, getValue(doc, cur, "password"));
-    user.channels = getListOfValues(doc, cur, "channels", "channel");
     xmlFreeDoc(doc);
-    return user;
+    return 0;
 }
 
 int checkUser(char *userName)
 {
+    if(userName == NULL){
+        fprintf(stderr, "user can not be NULL ");
+        return EXIT_FAILURE;
+    }
     char **userList;
     userList = getUserList();
     int lijstIndex;
@@ -306,17 +304,23 @@ int checkUser(char *userName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n",userName);
+    printf("%s not found\n",userName);
     return EXIT_FAILURE;
 }
 
 int checkChannel(char *channelName)
 {
+    if(channelName == NULL){
+        fprintf(stderr, "channel can not be NULL ");
+        return EXIT_FAILURE;
+    }
+
     char **channelList;
     channelList = getChannelList();
     int lijstIndex;
     lijstIndex = 0;
-    while (channelList[lijstIndex])
+
+    while (channelList[lijstIndex] != NULL)
     {
         if (!strcmp(channelList[lijstIndex], channelName))
         {
@@ -325,6 +329,7 @@ int checkChannel(char *channelName)
         }
         lijstIndex++;
     }
-    //printf("%s not found\n", channelName);
+    printf("%s not found\n", channelName);
     return EXIT_FAILURE;
 }
+
