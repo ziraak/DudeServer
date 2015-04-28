@@ -5,6 +5,9 @@
 void addChild(xmlNodePtr cur, char* parent,char* child,char* childContent);
 
 void addFieldToFileInList(char* fileType,char* filename, char* listname, char* fieldname, char* content);
+void deleteChannelFromUser(char * username,char* channelName);
+void deleteChannelFromList(char * channelName);
+void deleteField(xmlDocPtr doc, xmlNodePtr currentNode,char * fieldText );
 
 //int writeUser(userInfo user)
 //{
@@ -54,6 +57,105 @@ void userJoinChannel(char *username, char *channelName){
     addFieldToFileInList("user",username,"channels","channel",channelName);
     addFieldToFileInList("channel",channelName,"users","user",username);
 }
+
+void deleteChannel(char *channelName)
+{
+    channelInfo channel;
+    char* docname;
+
+    docname = (char *) malloc(500);
+    channel = getChannel(channelName);
+
+    int userindex;
+    userindex = 0;
+    while(channel.users[userindex] != NULL){
+        deleteChannelFromUser(channel.users[userindex],channelName);
+        userindex ++;
+    }
+
+    sprintf(docname, "database/channels/%s.xml",channelName);
+
+    remove(docname);
+
+    deleteChannelFromList(channelName);
+    free(docname);
+}
+
+void deleteChannelFromList(char * channelName){
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char* docname;
+    docname = "database/channelList.xml";
+
+    printf("opening document %s\n",docname);
+
+    doc = openDoc(docname);
+    if (doc == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+    cur = checkDoc(doc, "channels");
+    if (cur == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+    deleteField(doc,cur,channelName);
+
+    xmlSaveFormatFile (docname, doc, 0);
+    xmlFreeDoc(doc);
+}
+
+void deleteField(xmlDocPtr doc, xmlNodePtr currentNode,char * fieldText ){
+    xmlNodePtr cur;
+    cur = currentNode;
+    while (cur != NULL) {
+        if ((!xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1),(xmlChar *)fieldText))){
+            xmlUnlinkNode(cur);
+        }
+        cur = cur->next;
+    }
+}
+
+
+
+void deleteChannelFromUser(char * username,char* channelName){
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char* docname;
+    docname = (char *) malloc(500);
+
+    sprintf(docname, "database/users/%s.xml",username);
+    printf("opening : %s\n",docname);
+
+    doc = openDoc(docname);
+    if (doc == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    cur = checkDoc(doc, "user");
+    if (cur == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    while (cur != NULL) {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels"))){
+            deleteField(doc,cur->xmlChildrenNode,channelName);
+        }
+        cur = cur->next;
+    }
+
+    xmlSaveFormatFile (docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+}
+
+
 
 
 

@@ -84,7 +84,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 
     if (xmlStrcmp(cur->name, (const xmlChar *) docType))
     {
-        fprintf(stderr, "document of the wrong type, this is not a channel\n");
+        fprintf(stderr, "document of the wrong type, this is not a %s\n",docType);
         xmlFreeDoc(doc);
         return NULL;
     }
@@ -115,7 +115,7 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     xmlNodePtr cur;
     cur = node;
     char **key;
-    key = malloc(50000);
+    key = calloc(50,1000);
     int i;
     i = 0;
     while (cur != NULL)
@@ -283,6 +283,10 @@ userInfo getUser(char *username)
 
 int checkUser(char *userName)
 {
+    if(userName == NULL){
+        fprintf(stderr, "user can not be NULL ");
+        return EXIT_FAILURE;
+    }
     char **userList;
     userList = getUserList();
     int lijstIndex;
@@ -302,11 +306,17 @@ int checkUser(char *userName)
 
 int checkChannel(char *channelName)
 {
+    if(channelName == NULL){
+        fprintf(stderr, "channel can not be NULL ");
+        return EXIT_FAILURE;
+    }
+
     char **channelList;
     channelList = getChannelList();
     int lijstIndex;
     lijstIndex = 0;
-    while (channelList[lijstIndex])
+
+    while (channelList[lijstIndex] != NULL)
     {
         if (!strcmp(channelList[lijstIndex], channelName))
         {
