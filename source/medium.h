@@ -10,7 +10,6 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 
-
 typedef struct userInfo
 {
     char *username;
@@ -36,7 +35,7 @@ typedef struct channelInfo
 
 void mainMedium();
 
-userInfo getUser(char *username);
+int getUser(char *username, userInfo* result);
 
 channelInfo getChannel(char *channelName);
 
