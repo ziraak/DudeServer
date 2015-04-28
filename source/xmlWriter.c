@@ -64,7 +64,11 @@ void deleteChannel(char *channelName)
     char* docname;
 
     docname = (char *) malloc(500);
-    channel = getChannel(channelName);
+
+    if(getChannel(channelName, &channel) < 0)
+    {
+        return;
+    }
 
     int userindex;
     userindex = 0;

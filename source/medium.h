@@ -38,7 +38,7 @@ void mainMedium();
 
 int getUser(char *username, userInfo* result);
 
-channelInfo getChannel(char *channelName);
+int getChannel(char *channelName, channelInfo* channel);
 
 int checkChannel(char *channelName);
 

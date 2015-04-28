@@ -81,9 +81,12 @@ int countMessages(messageInfo *message)
 
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
-    if(checkChannel(channelName) == EXIT_FAILURE)
+    channelInfo ci;
+    if(getChannel(channelName, &ci) < 0)
+    {
         return EXIT_FAILURE;
-    channelInfo ci = getChannel(channelName);
+    }
+
     int messageCount = countMessages(ci.messages);
     ci.messages = realloc(ci.messages,(messageCount + 2) * sizeof(messageInfo));
     ci.messages[messageCount] = message;

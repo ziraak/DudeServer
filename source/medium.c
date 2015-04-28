@@ -146,10 +146,9 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
     return key;
 }
 
-channelInfo getChannel(char *channelName)
+int getChannel(char *channelName, channelInfo* channel)
 {
     char *docname;
-    channelInfo channel;
     messageInfo message;
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -157,7 +156,7 @@ channelInfo getChannel(char *channelName)
     if (checkChannel(channelName) == EXIT_FAILURE)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
-        return channel;
+        return -1;
     }
 
     docname = (char *) malloc(500);
@@ -166,16 +165,16 @@ channelInfo getChannel(char *channelName)
     doc = openDoc(docname);
     if (doc == NULL)
     {
-        return channel;
+        return -2;
     }
     cur = checkDoc(doc, "channel");
     if (cur == NULL)
     {
-        return channel;
+        return -3;
     }
 
-    channel.name = getValue(doc, cur, "name");
-    channel.users = getListOfValues(doc, cur, "users", "user");
+    channel->name = getValue(doc, cur, "name");
+    channel->users = getListOfValues(doc, cur, "users", "user");
 
     int index;
     index = 0;
@@ -193,7 +192,7 @@ channelInfo getChannel(char *channelName)
                     message.writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
                     message.timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
                     message.body = getValue(doc, curChild->xmlChildrenNode, "body");
-                    channel.messages[index] = message;
+                    channel->messages[index] = message;
                     index++;
 
                 }
@@ -206,7 +205,7 @@ channelInfo getChannel(char *channelName)
     }
 
     xmlFreeDoc(doc);
-    return channel;
+    return 0;
 }
 
 char **getUserList()
