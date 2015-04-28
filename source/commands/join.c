@@ -3,8 +3,6 @@
 //
 
 #include "join.h"
-#include "../main.h"
-#include "../utils/utils.h"
 
 int handleJoinCommand(char *message)
 {
@@ -15,8 +13,13 @@ int handleJoinCommand(char *message)
         substringCharacter(message += offset, &optionalChannelKey);
     }
 
-    int channelExists = findChannelByName(channelName);
-    if (channelExists && optionalChannelKey != NULL)
+    channelInfo channel;
+    if(getChannel(channelName, &channel) < 0)
+    {
+
+    }
+
+    if (checkChannel(channelName) == EXIT_SUCCESS)
     {
         if (authenticateChannel(channelName, optionalChannelKey))
         {

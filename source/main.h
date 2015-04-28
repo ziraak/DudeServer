@@ -1,13 +1,13 @@
-//
-// Created by osboxes on 21/04/15.
-//
+include <stdio.h>
 #include <stdlib.h>
-#include <stdio.h>
-
-#ifndef DUDESERVER_MAIN_H
-#define DUDESERVER_MAIN_H
-
-#endif //DUDESERVER_MAIN_H
+#include <netinet/in.h>
+#include <string.h>
+#include <arpa/inet.h>
+#include <unistd.h>
+#include "utils/utils.h"
+#include "commands/login.h"
+#include "commands/join.h"
+#include "commands/privmsg.h"
 
 void processConnectedClient(int sockfd);
 
@@ -45,3 +45,6 @@ int writeMessageToDB(char *recipient, char *msgToSend);
 #define ERR_BANNEDFROMCHAN 474
 #define ERR_BADCHANNELKEY 475
 #define ERR_BADCHANMASK 476
+
+#define BOOL_TRUE 1
+#define BOOL_FALSE 0

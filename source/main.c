@@ -1,14 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <netinet/in.h>
-#include <string.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include "utils/utils.h"
 #include "main.h"
-#include "commands/login.h"
-#include "commands/join.h"
-#include "commands/privmsg.h"
 
 int main(int argc, char **argv)
 {
@@ -55,14 +45,14 @@ int main(int argc, char **argv)
 
 void processConnectedClient(int sockfd)
 {
-    int authenticated = 0;
+    int authenticated = BOOL_FALSE;
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
 
     while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
     {
-        if (!authenticated)
+        if (authenticated == BOOL_FALSE)
         {
             char *command;
             int offset = substringCharacter(buffer, &command);
@@ -73,7 +63,7 @@ void processConnectedClient(int sockfd)
 
                 if (result == RPL_LOGIN)
                 {
-                    authenticated = 1;
+                    authenticated = BOOL_TRUE;
                 }
                 sendIntegerMessageToClient(sockfd, result);
             }
@@ -84,7 +74,6 @@ void processConnectedClient(int sockfd)
         }
         else
         {
-            // ingelogd!
             if (receive < 0)
             {
                 perror("Error recv");

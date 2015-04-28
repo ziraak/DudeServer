@@ -2,10 +2,9 @@
 // Created by osboxes on 21/04/15.
 //
 
-#ifndef DUDESERVER_JOIN_H
-#define DUDESERVER_JOIN_H
-
-#endif //DUDESERVER_JOIN_H
+#include "../main.h"
+#include "../utils/utils.h"
+#include "../medium.h"
 
 int handleJoinCommand(char *message);
 
