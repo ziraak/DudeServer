@@ -24,7 +24,7 @@ char **getUserList()
 
 int getUser(char *username, userInfo *result)
 {
-    char *docname;
+    char*  docname = (char *) malloc(500);
     xmlDocPtr doc;
     xmlNodePtr cur;
 
@@ -35,17 +35,15 @@ int getUser(char *username, userInfo *result)
         return -1;
     }
 
-    docname = (char *) malloc(500);
+
 
     sprintf(docname, "database/users/%s.xml", username);
 
-    doc = openDoc(docname);
-    if (doc == NULL)
+    if ((doc = openDoc(docname)) == NULL)
     {
         return -2;
     }
-    cur = checkDoc(doc, "user");
-    if (cur == NULL)
+    if ((cur = checkDoc(doc, "user")) == NULL)
     {
         return -3;
     }
@@ -74,16 +72,16 @@ int checkUser(char *userName)
     }
     char **userList;
     userList = getUserList();
-    int lijstIndex;
-    lijstIndex = 0;
-    while (userList[lijstIndex])
+    int listIndex;
+    listIndex = 0;
+    while (userList[listIndex])
     {
-        if (!strcmp(userList[lijstIndex], userName))
+        if (!strcmp(userList[listIndex], userName))
         {
-            //printf("user: %s found it was : %s \n",userName,userList[lijstIndex]);
+            //printf("user: %s found it was : %s \n",userName,userList[listIndex]);
             return EXIT_SUCCESS;
         }
-        lijstIndex++;
+        listIndex++;
     }
     printf("%s not found\n", userName);
     return EXIT_FAILURE;
