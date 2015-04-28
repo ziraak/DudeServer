@@ -27,3 +27,7 @@ static const int maxMessages = 100;
 
 int writeChannel(channelInfo channel);
 int writeMessageToChannel(char *channelName, messageInfo message);
+xmlTextWriterPtr openChannelFile(char *channelName);
+void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users);
+void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]);
+void writeMessageToXml(xmlTextWriterPtr  xmlptr, messageInfo message);

@@ -4,15 +4,9 @@
 
 #include "channel.h"
 
-xmlTextWriterPtr openChannelFile(char *channelName);
-void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users);
-void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]);
-void writeMessageToXml(xmlTextWriterPtr  xmlptr, messageInfo message);
-
 int writeChannel(channelInfo channel)
 {
     xmlTextWriterPtr file = openChannelFile(channel.name);
-
     xmlTextWriterStartElement(file, channelTagName);
     xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
     writeUsersToChannel(file, channel.users);
@@ -23,7 +17,6 @@ int writeChannel(channelInfo channel)
     return suc;
 }
 
-
 xmlTextWriterPtr openChannelFile(char *channelName)
 {
     char filename[maxFilenameSize];
@@ -31,7 +24,7 @@ xmlTextWriterPtr openChannelFile(char *channelName)
     return xmlNewTextWriterFilename(filename, compression);
 }
 
-void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users)
+void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
 {
 
     xmlTextWriterStartElement(xmlptr, usersTagName);
@@ -47,11 +40,10 @@ void writeUsersToChannel(xmlTextWriterPtr  xmlptr, char **users)
     xmlTextWriterEndElement(xmlptr);
 }
 
-void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]
-)
+void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
 {
     xmlTextWriterStartElement(xmlptr, messagesTagName);
-    while( messages->writer != NULL)
+    while (messages->writer != NULL)
     {
         writeMessageToXml(xmlptr, *messages);
         messages++;
@@ -59,7 +51,7 @@ void writeMessagesToChannel(xmlTextWriterPtr  xmlptr, messageInfo messages[]
     xmlTextWriterEndElement(xmlptr);
 }
 
-void writeMessageToXml(xmlTextWriterPtr  xmlptr, messageInfo message)
+void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
 {
     xmlTextWriterStartElement(xmlptr, messageTagName);
     xmlTextWriterWriteAttribute(xmlptr, userTagName, (xmlChar const *) message.writer);
@@ -71,7 +63,7 @@ void writeMessageToXml(xmlTextWriterPtr  xmlptr, messageInfo message)
 int countMessages(messageInfo *message)
 {
     int total = 0;
-    while(message->writer != NULL)
+    while (message->writer != NULL)
     {
         total++;
         message++;
@@ -82,16 +74,16 @@ int countMessages(messageInfo *message)
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
     channelInfo ci;
-    if(getChannel(channelName, &ci) < 0)
+    if (getChannel(channelName, &ci) < 0)
     {
         return EXIT_FAILURE;
     }
 
     int messageCount = countMessages(ci.messages);
-    ci.messages = realloc(ci.messages,(messageCount + 2) * sizeof(messageInfo));
+    ci.messages = realloc(ci.messages, (messageCount + 2) * sizeof(messageInfo));
     ci.messages[messageCount] = message;
     memset(&ci.messages[messageCount + 1], 0, sizeof(messageInfo));
-    if(messageCount >= maxMessages)
+    if (messageCount >= maxMessages)
     {
         ci.messages = &ci.messages[1];
     }
