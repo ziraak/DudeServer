@@ -14,7 +14,7 @@ set(TEST_CLIENT_FILES ${SOURCE_FILES})
 
 add_executable(DudeServer ${SOURCE_FILES} source/main.c  source/main.h
 source/database/channel.h source/database/channel.c source/medium.h source/medium.c
- source/xmlWriter.h source/xmlWriter.c source/database/database.h source/database/user.h source/database/user.c)
+ source/xmlWriter.h source/xmlWriter.c source/database/database.h source/database/user.h source/database/user.c source/database/database.h source/database/database.c)
 add_executable(DudeTestClient source/utils/utils.h source/utils/utils.c test/client/test_client.c)
 
 find_package(LibXml2)

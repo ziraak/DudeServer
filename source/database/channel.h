@@ -3,6 +3,7 @@
 //
 
 #include <libxml/xmlstring.h>
+#include "database.h"
 
 #ifndef DUDESERVER_CHANNEL_H
 #define DUDESERVER_CHANNEL_H

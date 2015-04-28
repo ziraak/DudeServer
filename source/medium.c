@@ -63,89 +63,6 @@ void mainMedium()
 
 }
 
-xmlDocPtr openDoc(char *docname)
-{
-    xmlDocPtr doc;
-    doc = xmlParseFile(docname);
-
-    if (doc == NULL)
-    {
-        fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
-        return NULL;
-    }
-    return doc;
-
-}
-
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
-{
-    xmlNodePtr cur;
-    cur = xmlDocGetRootElement(doc);
-
-    if (cur == NULL)
-    {
-        fprintf(stderr, "empty document\n");
-        xmlFreeDoc(doc);
-        return NULL;
-    }
-
-    if (xmlStrcmp(cur->name, (const xmlChar *) docType))
-    {
-        fprintf(stderr, "document of the wrong type, this is not a %s\n",docType);
-        xmlFreeDoc(doc);
-        return NULL;
-    }
-
-    cur = cur->xmlChildrenNode;
-    return cur;
-}
-
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname)
-{
-    xmlNodePtr cur;
-    cur = node;
-    xmlChar *key;
-
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname)))
-        {
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
-        }
-        cur = cur->next;
-    }
-    return (char *) key;
-}
-
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname)
-{
-    xmlNodePtr cur;
-    cur = node;
-    char **key;
-    key = calloc(50,1000);
-    int i;
-    i = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) listname)))
-        {
-            xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) fieldname)))
-                {
-                    key[i] = (char *) xmlNodeListGetString(doc, curChild->xmlChildrenNode, 1);
-                    i++;
-                }
-                curChild = curChild->next;
-            }
-        }
-        cur = cur->next;
-    }
-    return key;
-}
-
 int getChannel(char *channelName, channelInfo* channel)
 {
     char *docname;
@@ -208,22 +125,7 @@ int getChannel(char *channelName, channelInfo* channel)
     return 0;
 }
 
-char **getUserList()
-{
-    char *docname;
-    docname = "database/userlist.xml";
 
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    char **list;
-
-    doc = openDoc(docname);
-    cur = checkDoc(doc, "users");
-    cur = cur->parent;
-
-    list = getListOfValues(doc, cur, "users", "user");
-    return list;
-}
 
 char **getChannelList()
 {
@@ -242,71 +144,6 @@ char **getChannelList()
     return list;
 }
 
-int getUser(char *username, userInfo* result)
-{
-    char *docname;
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-
-
-    if (checkUser(username) == EXIT_FAILURE)
-    {
-        fprintf(stderr, "user: %s does not exist\n", username);
-        return -1;
-    }
-
-    docname = (char *) malloc(500);
-
-    sprintf(docname, "database/users/%s.xml", username);
-
-    doc = openDoc(docname);
-    if (doc == NULL)
-    {
-        return -2;
-    }
-    cur = checkDoc(doc, "user");
-    if (cur == NULL)
-    {
-        return -3;
-    }
-
-    result->username = malloc(30);
-    result->nickname = malloc(30);
-    result->password = malloc(30);
-    result->channels = malloc(1000);
-
-    strcpy(result->username, username);
-    strcpy(result->nickname, getValue(doc, cur, "nickname"));
-    strcpy(result->password, getValue(doc, cur, "password"));
-    result->channels = getListOfValues(doc, cur, "channels", "channel");
-    result->loginToken = getValue(doc,cur,"loginToken");
-
-    xmlFreeDoc(doc);
-    return 0;
-}
-
-int checkUser(char *userName)
-{
-    if(userName == NULL){
-        fprintf(stderr, "user can not be NULL ");
-        return EXIT_FAILURE;
-    }
-    char **userList;
-    userList = getUserList();
-    int lijstIndex;
-    lijstIndex = 0;
-    while (userList[lijstIndex])
-    {
-        if (!strcmp(userList[lijstIndex], userName))
-        {
-            //printf("user: %s found it was : %s \n",userName,userList[lijstIndex]);
-            return EXIT_SUCCESS;
-        }
-        lijstIndex++;
-    }
-    printf("%s not found\n",userName);
-    return EXIT_FAILURE;
-}
 
 int checkChannel(char *channelName)
 {

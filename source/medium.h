@@ -33,9 +33,6 @@ typedef struct channelInfo
     messageInfo *messages;
 } channelInfo;
 
-
-void mainMedium();
-
 int getUser(char *username, userInfo* result);
 
 int getChannel(char *channelName, channelInfo* channel);
