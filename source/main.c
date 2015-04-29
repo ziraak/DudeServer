@@ -86,9 +86,9 @@ void processConnectedClient(int sockfd)
             // getAllUnreadMessagesByName(); TODO: Username meegeven
             int result = parseMessage(buffer);
             sendIntegerMessageToClient(sockfd, result);
-
-            bzero(buffer, sizeof(buffer));
         }
+
+        bzero(buffer, sizeof(buffer));
     }
 
     close(sockfd);
