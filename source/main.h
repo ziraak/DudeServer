@@ -11,6 +11,7 @@
 #include "commands/join.h"
 #include "commands/privmsg.h"
 #include "database/database.h"
+#include "commands/part.h"
 
 void processConnectedClient(int sockfd);
 
@@ -30,6 +31,7 @@ int commandEquals(char *command, char *check);
 
 int writeMessageToDB(char *recipient, char *msgToSend);
 
+#define RPL_SUCCESS 50 // Default success message
 #define RPL_CONNECTED 100 // CONNECT
 #define RPL_LOGIN 300 // LOGIN
 #define RPL_AWAY 301 // PRIVMSG

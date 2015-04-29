@@ -108,6 +108,10 @@ int parseMessage(char *message)
     {
         return handlePrivateMessageCommand(message + offset);
     }
+    else if (commandEquals(command, "PART"))
+    {
+        return handlePartCommand(message + offset);
+    }
 
     return ERR_UNKNOWNCOMMAND;
 }
