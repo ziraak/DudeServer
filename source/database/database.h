@@ -8,7 +8,6 @@
 
 #endif //DUDESERVER_DATABASE_H
 
-
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -16,6 +15,14 @@
 #include <malloc.h>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
+
+#ifndef DUDESERVER_CHANNEL_H
+#include "channel.h"
+#endif
+
+#ifndef DUDESERVER_USER_H
+#include "user.h"
+#endif //DUDESERVER_USER_H
 
 typedef struct userInfo
 {
@@ -43,25 +50,6 @@ typedef struct channelInfo
 
 void mainMedium();
 
-int getUser(char *username, userInfo *result);
-
-int getChannel(char *channelName, channelInfo *channel);
-
-int checkChannel(char *channelName);
-
-int checkUser(char *userName);
-
-char **getUserList();
-
-char **getChannelList();
-
-xmlDocPtr openDoc(char *docname);
-
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
-
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
-
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
 
 xmlDocPtr openDoc(char *docname);
 
