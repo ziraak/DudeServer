@@ -11,7 +11,9 @@ int substringCharacter(char *str, char **result)
 {
     char find = ' ';
     size_t i = strcspn(str, &find);
-    *result = malloc(i);
-    memcpy(*result, str, i);
+    *result = malloc(i + 1);
+    bzero(*result, i + 1);
+    strncpy(*result, str, i);
+    printf("%s | %i\n", *result, i);
     return (int) ++i;
 }
