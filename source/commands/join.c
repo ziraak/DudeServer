@@ -1,5 +1,7 @@
 #include "join.h"
 
+extern userInfo currentUser;
+
 int handleJoinCommand(char *message)
 {
     char *channelName, *optionalChannelKey = NULL;
@@ -21,21 +23,15 @@ int handleJoinCommand(char *message)
     {
         return result;
     }
-    else
-    {
-        printf("JOINED!\n");
-    }
 
-    joinChannel(channel);
-
-    return RPL_TOPIC;
+    return joinChannel(channelName);
 }
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey)
 {
-    if(optionalChannelKey != NULL)
+    if(optionalChannelKey != NULL && strlen(optionalChannelKey) > 0)
     {
-        //TODO: optionalChannelKey toevoegen
+        //TODO: optionalChannelKey support toevoegen
         return ERR_BADCHANNELKEY;
     }
 
@@ -47,10 +43,15 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
     return ERR_BADCHANMASK;
 }
 
-int joinChannel(channelInfo channel)
+int joinChannel(char* channelName)
 {
-    // TODO: Add current user to the channel
-    return 0;
+    printf("JOINING %s\n", channelName);
+    if(userJoinChannel(currentUser.username, channelName) == BOOL_FALSE)
+    {
+        return ERR_BADCHANMASK;
+    }
+
+    return RPL_TOPIC;
 }
 
 int createChannel(char *channelName, char *optionalChannelKey)
