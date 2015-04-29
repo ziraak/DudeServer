@@ -192,5 +192,5 @@ void changeNickname(char* username, char* newNickname)
 
 void changePassword(char* username, char* newPassword)
 {
-    changeFieldInFile("user",username,"passworod",newPassword);
+    changeFieldInFile("user",username,"password",newPassword);
 }

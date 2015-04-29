@@ -11,6 +11,7 @@
 #include <malloc.h>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
+#include "../main.h"
 
 xmlDocPtr openDoc(char *docname);
 

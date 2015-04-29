@@ -142,18 +142,19 @@ int changeField(xmlNodePtr cur, char *nodeName, char *newContent)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) nodeName)))
         {
-            xmlNodeSetContent(cur, newContent);
-            return 0;
+            xmlNodeSetContent(cur,(xmlChar *) newContent);
+            return BOOL_TRUE;
         }
         cur = cur->next;
     }
-    return -1;
+    return BOOL_FALSE;
 }
 
 int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+    int succes;
     char *docname = (char *) malloc(500);
 
     sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
@@ -172,9 +173,10 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
         return -1;
     }
 
-    changeField(cur,fieldname, newContent);
+    succes = changeField(cur,fieldname, newContent);
 
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
     free(docname);
+    return succes;
 }

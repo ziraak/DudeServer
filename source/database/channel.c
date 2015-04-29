@@ -285,3 +285,16 @@ void deleteUserFromChannel(char *channelName, char *username)
     xmlFreeDoc(doc);
     free(docname);
 }
+
+int checkIfChannelEmpty(char* channelName)
+{
+    channelInfo info;
+    getChannel(channelName,&info);
+    if(info.users[0] == NULL){
+        printf("%s is empty",info.name);
+        return BOOL_TRUE;
+    }else{
+        printf("%s is not empty",info.name);
+        return BOOL_FALSE;
+    }
+}
