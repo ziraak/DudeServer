@@ -28,6 +28,6 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
 
 void changeField(xmlNodePtr cur, char *nodeName, char *newContent);
 
-void changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent;
+void changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
 
 #endif
