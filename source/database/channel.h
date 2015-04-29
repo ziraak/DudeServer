@@ -2,13 +2,14 @@
 // Created by desmond on 4/24/15.
 //
 
+#ifndef DUDESERVER_CHANNEL_H
+#define DUDESERVER_CHANNEL_H
+
 #include <libxml/xmlstring.h>
 #include <libxml/xmlwriter.h>
 #include <stdio.h>
+#include "database.h"
 
-
-#ifndef DUDESERVER_CHANNEL_H
-#define DUDESERVER_CHANNEL_H
 static char *const FILEFORMATSTRING = "database/channels/%s.xml";
 static xmlChar *const channelTagName = "channel";
 static xmlChar *const nameTagName = "name";
@@ -21,12 +22,6 @@ static xmlChar *const messageTagName = "message";
 static xmlChar *const timestampTagName = "timestamp";
 static xmlChar *const bodyTagName = "body";
 static const int maxMessages = 100;
-#endif //DUDESERVER_CHANNEL_H
-
-#ifndef DUDESERVER_DATABASE_H
-#include "database.h"
-#endif //DUDESERVER_DATABASE_H
-
 
 int writeChannel(channelInfo channel);
 
@@ -53,3 +48,5 @@ void deleteChannelFromUser(char *username, char *channelName);
 int getChannel(char *channelName, channelInfo *channel);
 
 int countMessages(messageInfo *message);
+
+#endif 
