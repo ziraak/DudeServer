@@ -10,7 +10,7 @@
 #include <stdio.h>
 #include "database.h"
 
-static char *const FILEFORMATSTRING = "database/channels/%s.xml";
+static char *const FILEFORMATSTRING = "xml/channels/%s.xml";
 static xmlChar *const channelTagName = "channel";
 static xmlChar *const nameTagName = "name";
 static const int maxFilenameSize = 250;

@@ -7,7 +7,7 @@
 char **getUserList()
 {
     char *docname;
-    docname = "database/userlist.xml";
+    docname = "xml/userlist.xml";
 
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -37,7 +37,7 @@ int getUser(char *username, userInfo *result)
 
 
 
-    sprintf(docname, "database/users/%s.xml", username);
+    sprintf(docname, "xml/users/%s.xml", username);
 
     if ((doc = openDoc(docname)) == NULL)
     {

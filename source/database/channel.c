@@ -105,7 +105,7 @@ int getChannel(char *channelName, channelInfo *channel)
         return -1;
     }
 
-    sprintf(docname, "database/channels/%s.xml", channelName);
+    sprintf(docname, "xml/channels/%s.xml", channelName);
 
     if ((doc = openDoc(docname)) == NULL)
     {
@@ -157,7 +157,7 @@ int getChannel(char *channelName, channelInfo *channel)
 char **getChannelList()
 {
     char *docname;
-    docname = "database/channelList.xml";
+    docname = "xml/channelList.xml";
 
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -217,7 +217,7 @@ void deleteChannel(char *channelName)
         userindex++;
     }
 
-    sprintf(docname, "database/channels/%s.xml", channelName);
+    sprintf(docname, "xml/channels/%s.xml", channelName);
 
     remove(docname);
 
@@ -229,7 +229,7 @@ void deleteChannelFromList(char *channelName)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
-    char* docname = "database/channelList.xml";
+    char* docname = "xml/channelList.xml";
 
     printf("opening document %s\n", docname);
 
@@ -259,7 +259,7 @@ void deleteChannelFromUser(char *username, char *channelName)
     char *docname;
     docname = (char *) malloc(500);
 
-    sprintf(docname, "database/users/%s.xml", username);
+    sprintf(docname, "xml/users/%s.xml", username);
     printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
