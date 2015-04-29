@@ -3,8 +3,8 @@
     <nickname>ik moet jou in mijn team</nickname>
     <password>nub</password>
     <channels>
-        <channel>batcave</channel>
         <channel>eigendunk</channel>
+        <channel>batcave</channel>
     </channels>
 <loginToken>12512</loginToken>
 </user>

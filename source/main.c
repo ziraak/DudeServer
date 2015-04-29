@@ -21,21 +21,21 @@ int main(int argc, char **argv)
             printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
                    ntohs(adres_client.sin_port));
 
-            int childpid = fork();
-            if (childpid == 0)
-            {
+//            int childpid = fork();
+//            if (childpid == 0)
+//            {
                 acknowledgeConnection(sockfd);
                 processConnectedClient(sockfd);
                 close(sockfd);
                 printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
                 // exit child
                 exit(0);
-            }
-            else if (childpid < 0)
-            {
-                perror("Fork error");
-                exit(1);
-            }
+//            }
+//            else if (childpid < 0)
+//            {
+//                perror("Fork error");
+//                exit(1);
+//            }
         }
         else
         {
@@ -66,7 +66,6 @@ void processConnectedClient(int sockfd)
                 if (result == RPL_LOGIN)
                 {
                     authenticated = BOOL_TRUE;
-                    printf("LOGGED IN: %s\n", currentUser.username);
                 }
                 sendIntegerMessageToClient(sockfd, result);
             }

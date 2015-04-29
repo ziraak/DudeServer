@@ -14,6 +14,5 @@ int substringCharacter(char *str, char **result)
     *result = malloc(i + 1);
     bzero(*result, i + 1);
     strncpy(*result, str, i);
-    printf("%s | %i\n", *result, i);
     return (int) ++i;
 }

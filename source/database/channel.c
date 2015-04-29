@@ -120,6 +120,9 @@ int getChannel(char *channelName, channelInfo *channel)
     channel->name = getValue(doc, cur, "name");
     channel->users = getListOfValues(doc, cur, "users", "user");
 
+    //TODO: per message alloceren!!!! niet in 1x
+    channel->messages = malloc(1024);
+
     int index;
     index = 0;
     while (cur != NULL)
