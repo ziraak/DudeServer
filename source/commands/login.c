@@ -3,10 +3,8 @@
 //
 
 #include "login.h"
-#include "../main.h"
-#include "../utils/utils.h"
-#include "../database/database.h"
 
+extern userInfo currentUser;
 
 int handleLoginCommand(char *message)
 {
@@ -15,24 +13,25 @@ int handleLoginCommand(char *message)
     offset = substringCharacter(message += offset, &password);
     substringCharacter(message += offset, &nickname);
 
-    int userAuthenticated = authenticateUser(username, password);
+    userInfo user;
+    int userAuthenticated = authenticateUser(username, password, &user);
     if (userAuthenticated == RPL_LOGIN)
     {
         // TODO: generate token for user
+        currentUser = user;
     }
 
     return userAuthenticated;
 }
 
-int authenticateUser(char *username, char *password)
+int authenticateUser(char *username, char *password, userInfo *result)
 {
-    userInfo user;
-    if (getUser(username, &user) < 0)
+    if (getUser(username, result) < 0)
     {
         return ERR_NOLOGIN;
     }
 
-    if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0)
+    if (strcmp(result->username, username) == 0 && strcmp(result->password, password) == 0)
     {
         return RPL_LOGIN;
     }

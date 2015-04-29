@@ -6,5 +6,5 @@
 
 int handleLoginCommand(char *message);
 
-int authenticateUser(char *username, char *password);
+int authenticateUser(char *username, char *password, userInfo *result);
 #endif
