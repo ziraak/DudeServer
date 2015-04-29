@@ -187,3 +187,14 @@ void deleteUserFromList(char *username)
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
 }
+
+void changeNickname(char* username, char* newNickname)
+{
+    changeFieldInFile("user",username,"nickname",newNickname);
+}
+
+void changePassword(char* username, char* newPassword)
+{
+    changeFieldInFile("user",username,"password",newPassword);
+}
+

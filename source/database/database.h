@@ -11,9 +11,7 @@
 #include <malloc.h>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
-
-
-void mainMedium();
+#include "../main.h"
 
 xmlDocPtr openDoc(char *docname);
 
@@ -28,5 +26,9 @@ void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
 void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
 
 void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
+
+int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
+
+int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
 
 #endif

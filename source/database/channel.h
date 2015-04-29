@@ -49,4 +49,6 @@ int getChannel(char *channelName, channelInfo *channel);
 
 int countMessages(messageInfo *message);
 
+int checkIfChannelEmpty(char* channelName);
+
 #endif 

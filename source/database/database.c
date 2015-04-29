@@ -19,7 +19,7 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 {
     xmlNodePtr cur;
 
-    if ((cur = xmlDocGetRootElement(doc))==NULL)
+    if ((cur = xmlDocGetRootElement(doc)) == NULL)
     {
         fprintf(stderr, "empty document\n");
         xmlFreeDoc(doc);
@@ -134,4 +134,49 @@ void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
         }
         cur = cur->next;
     }
+}
+
+int changeField(xmlNodePtr cur, char *nodeName, char *newContent)
+{
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) nodeName)))
+        {
+            xmlNodeSetContent(cur,(xmlChar *) newContent);
+            return BOOL_TRUE;
+        }
+        cur = cur->next;
+    }
+    return BOOL_FALSE;
+}
+
+int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    int succes;
+    char *docname = (char *) malloc(500);
+
+    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+
+    printf("opening document %s\n", docname);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return -1;
+    }
+
+    if ((cur = checkDoc(doc, fileType)) == NULL)
+    {
+        printf("error\n");
+        return -1;
+    }
+
+    succes = changeField(cur,fieldname, newContent);
+
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+    return succes;
 }
