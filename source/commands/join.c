@@ -17,6 +17,7 @@ int handleJoinCommand(char *message)
         // TODO: create channel and
         createChannel(channelName, optionalChannelKey);
     }
+    printf("%s\n", channelName);
 
     int result = authenticateChannel(channel, channelName, optionalChannelKey);
     if(result != BOOL_TRUE)
@@ -45,11 +46,17 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
 
 int joinChannel(char* channelName)
 {
-    printf("JOINING %s\n", channelName);
+    if(userHasChannel(channelName) == BOOL_TRUE)
+    {
+        return RPL_TOPIC;
+    }
+
     if(userJoinChannel(currentUser.username, channelName) == BOOL_FALSE)
     {
         return ERR_BADCHANMASK;
     }
+
+    userAddChannel(channelName);
 
     return RPL_TOPIC;
 }
@@ -58,4 +65,33 @@ int createChannel(char *channelName, char *optionalChannelKey)
 {
     // TODO: create channel
     return 0;
+}
+
+int userHasChannel(char* channelName)
+{
+    char** channels = currentUser.channels;
+
+    while(*channels != NULL)
+    {
+        if(strcmp(channelName, *channels) == 0)
+        {
+            return BOOL_TRUE;
+        }
+
+        channels++;
+    }
+
+    return BOOL_FALSE;
+}
+
+void userAddChannel(char* channelName)
+{
+    if(userHasChannel(channelName) == BOOL_FALSE)
+    {
+        char** channels = currentUser.channels;
+
+        while(*channels != NULL) { channels++; }
+
+        *channels = channelName;
+    }
 }

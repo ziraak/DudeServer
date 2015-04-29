@@ -12,4 +12,8 @@ int joinChannel(char* channelName);
 
 int createChannel(char *channelName, char *optionalChannelKey);
 
+int userHasChannel(char* channelName);
+
+void userAddChannel(char* channelName);
+
 #endif
