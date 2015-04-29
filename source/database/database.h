@@ -12,9 +12,6 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 
-
-void mainMedium();
-
 xmlDocPtr openDoc(char *docname);
 
 xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
@@ -28,5 +25,9 @@ void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
 void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
 
 void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
+
+void changeField(xmlNodePtr cur, char *nodeName, char *newContent);
+
+void changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent;
 
 #endif

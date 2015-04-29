@@ -184,3 +184,8 @@ void deleteUserFromList(char *username)
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
 }
+
+void changeNickname(char * username, char * newNickname)
+{
+    //changeFieldInFile("user","desmond","nickname");
+}
