@@ -1,11 +1,9 @@
-//
-// Created by osboxes on 28/04/15.
-//
-
 #ifndef DUDESERVER_DATABASE_H
 #define DUDESERVER_DATABASE_H
 
-
+#include "databaseStructs.h"
+#include "channel.h"
+#include "user.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -15,34 +13,7 @@
 #include <libxml/xmlreader.h>
 
 
-
-typedef struct userInfo
-{
-    char *username;
-    char *nickname;
-    char *password;
-    char **channels;
-    char *loginToken;
-} userInfo;
-
-typedef struct messageInfo
-{
-    char *writer;
-    char *timestamp;
-    char *body;
-} messageInfo;
-
-typedef struct channelInfo
-{
-    char *name;
-    char **users;
-    messageInfo *messages;
-} channelInfo;
-
-#include "channel.h"
-#include "user.h"
 void mainMedium();
-
 
 xmlDocPtr openDoc(char *docname);
 
