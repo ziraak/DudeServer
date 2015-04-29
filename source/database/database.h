@@ -5,8 +5,7 @@
 #ifndef DUDESERVER_DATABASE_H
 #define DUDESERVER_DATABASE_H
 
-#include "channel.h"
-#include "user.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -40,7 +39,8 @@ typedef struct channelInfo
     messageInfo *messages;
 } channelInfo;
 
-
+#include "channel.h"
+#include "user.h"
 void mainMedium();
 
 
