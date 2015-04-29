@@ -2,7 +2,7 @@
 #define DUDESERVER_JOIN_H
 #include "../main.h"
 #include "../utils/utils.h"
-#include "../medium.h"
+#include "../database/database.h"
 
 int handleJoinCommand(char *message);
 
