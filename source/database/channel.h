@@ -23,7 +23,10 @@ static xmlChar *const bodyTagName = "body";
 static const int maxMessages = 100;
 #endif //DUDESERVER_CHANNEL_H
 
+#ifndef DUDESERVER_DATABASE_H
 #include "database.h"
+#endif //DUDESERVER_DATABASE_H
+
 
 int writeChannel(channelInfo channel);
 

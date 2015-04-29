@@ -12,8 +12,7 @@
 
 #ifndef DUDESERVER_DATABASE_H
 #define DUDESERVER_DATABASE_H
-
-
+#endif //DUDESERVER_DATABASE_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -66,4 +65,3 @@ void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
 
 void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
 
-#endif //DUDESERVER_DATABASE_H
