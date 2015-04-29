@@ -2,18 +2,11 @@
 // Created by osboxes on 28/04/15.
 //
 
-#ifndef DUDESERVER_CHANNEL_H
-#include "channel.h"
-#endif
-
-#ifndef DUDESERVER_USER_H
-#include "user.h"
-#endif //DUDESERVER_USER_H
-
-#ifndef DUDESERVER_DATABASE_H
+#ifndef DUDESERVER_DATABASEL_H
 #define DUDESERVER_DATABASE_H
-#endif //DUDESERVER_DATABASE_H
 
+#include "channel.h"
+#include "user.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -65,3 +58,4 @@ void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
 
 void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
 
+#endif
