@@ -6,6 +6,6 @@
 int checkUser(char *userName);
 char **getUserList();
 int getUser(char *username, userInfo *result);
-void userJoinChannel(char *username, char *channelName);
+int userJoinChannel(char *username, char *channelName);
 
 #endif
