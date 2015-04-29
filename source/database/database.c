@@ -136,19 +136,21 @@ void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
     }
 }
 
-void changeField(xmlNodePtr cur, char *nodeName, char *newContent)
+int changeField(xmlNodePtr cur, char *nodeName, char *newContent)
 {
     while (cur != NULL)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) nodeName)))
         {
             xmlNodeSetContent(cur, newContent);
+            return 0;
         }
         cur = cur->next;
     }
+    return -1;
 }
 
-void changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
+int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -161,13 +163,13 @@ void changeFieldInFile(char *fileType, char *filename , char *fieldname, char *n
     if ((doc = openDoc(docname)) == NULL)
     {
         printf("error\n");
-        return;
+        return -1;
     }
 
     if ((cur = checkDoc(doc, fileType)) == NULL)
     {
         printf("error\n");
-        return;
+        return -1;
     }
 
     changeField(cur,fieldname, newContent);
