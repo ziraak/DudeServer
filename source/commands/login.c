@@ -3,6 +3,10 @@
 //
 
 #include "login.h"
+#include "../main.h"
+#include "../utils/utils.h"
+#include "../database/database.h"
+
 
 int handleLoginCommand(char *message)
 {
@@ -23,12 +27,12 @@ int handleLoginCommand(char *message)
 int authenticateUser(char *username, char *password)
 {
     userInfo user;
-    if(getUser(username, &user) < 0)
+    if (getUser(username, &user) < 0)
     {
         return ERR_NOLOGIN;
     }
 
-    if(strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0)
+    if (strcmp(user.username, username) == 0 && strcmp(user.password, password) == 0)
     {
         return RPL_LOGIN;
     }

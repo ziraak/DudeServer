@@ -1,8 +1,19 @@
 //
-// Created by osboxes on 20/04/15.
+// Created by osboxes on 28/04/15.
 //
-#ifndef MEDIUM_H
-#define MEDIUM_H
+
+#ifndef DUDESERVER_CHANNEL_H
+#include "channel.h"
+#endif
+
+#ifndef DUDESERVER_USER_H
+#include "user.h"
+#endif //DUDESERVER_USER_H
+
+#ifndef DUDESERVER_DATABASE_H
+#define DUDESERVER_DATABASE_H
+
+
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -11,6 +22,8 @@
 #include <malloc.h>
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
+
+
 
 typedef struct userInfo
 {
@@ -38,17 +51,6 @@ typedef struct channelInfo
 
 void mainMedium();
 
-int getUser(char *username, userInfo* result);
-
-int getChannel(char *channelName, channelInfo* channel);
-
-int checkChannel(char *channelName);
-
-int checkUser(char *userName);
-
-char **getUserList();
-
-char **getChannelList();
 
 xmlDocPtr openDoc(char *docname);
 
@@ -57,4 +59,11 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
 char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
 
 char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
-#endif
+
+void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
+
+void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
+
+void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
+
+#endif //DUDESERVER_DATABASE_H
