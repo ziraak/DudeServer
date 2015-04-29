@@ -198,3 +198,12 @@ void changePassword(char* username, char* newPassword)
     changeFieldInFile("user",username,"password",newPassword);
 }
 
+void assignLoginToken(char* username, char* loginToken)
+{
+    if(changeFieldInFile("user",username,"loginToken",loginToken) == BOOL_FALSE)
+    {
+        printf("new login token\n");
+        addFieldToFile("user",username,"loginToken",loginToken);
+    }
+
+}

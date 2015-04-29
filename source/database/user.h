@@ -16,7 +16,11 @@ void deleteChannelFromUser(char *username, char *channelName);
 void deleteUserFromList(char *username);
 
 void deleteUser(char *username);
+
 void changeNickname(char * username, char * newNickname);
+
 void changePassword(char* username, char* newPassword);
+
+void assignLoginToken(char* username, char* loginToken);
 
 #endif

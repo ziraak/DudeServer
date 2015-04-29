@@ -108,6 +108,35 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
     free(docname);
 }
 
+void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname = (char *) malloc(500);
+
+    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+
+    printf("opening document %s\n", docname);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    if ((cur = checkDoc(doc, fileType)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+    cur = cur->parent;
+    addChild(cur, fileType, fieldname, content);
+
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+}
+
 
 void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent)
 {
