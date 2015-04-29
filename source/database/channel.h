@@ -43,7 +43,7 @@ int checkChannel(char *channelName);
 
 char **getChannelList();
 
-void deleteChannelFromUser(char *username, char *channelName);
+void deleteUserFromChannel(char *channelName, char *username);
 
 int getChannel(char *channelName, channelInfo *channel);
 

@@ -24,7 +24,7 @@ char **getUserList()
 
 int getUser(char *username, userInfo *result)
 {
-    char*  docname = (char *) malloc(500);
+    char *docname = (char *) malloc(500);
     xmlDocPtr doc;
     xmlNodePtr cur;
 
@@ -34,7 +34,6 @@ int getUser(char *username, userInfo *result)
         fprintf(stderr, "user: %s does not exist\n", username);
         return -1;
     }
-
 
 
     sprintf(docname, "xml/users/%s.xml", username);
@@ -97,4 +96,91 @@ void userJoinChannel(char *username, char *channelName)
 
     addFieldToFileInList("user", username, "channels", "channel", channelName);
     addFieldToFileInList("channel", channelName, "users", "user", username);
+}
+
+void deleteChannelFromUser(char *username, char *channelName)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname;
+    docname = (char *) malloc(500);
+
+    sprintf(docname, "xml/users/%s.xml", username);
+    printf("opening : %s\n", docname);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    if ((cur = checkDoc(doc, "user")) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels")))
+        {
+            deleteField(doc, cur->xmlChildrenNode, channelName);
+        }
+        cur = cur->next;
+    }
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+}
+
+
+void deleteUser(char *username)
+{
+    userInfo user;
+    char *docname = (char *) malloc(500);
+
+    if (getUser(username, &user) < 0)
+    {
+        return;
+    }
+    int channelIndex;
+    channelIndex = 0;
+    while (user.channels[channelIndex] != NULL)
+    {
+        deleteUserFromChannel(user.channels[channelIndex], username);
+        channelIndex++;
+    }
+
+    sprintf(docname, "xml/users/%s.xml", username);
+
+    remove(docname);
+
+    deleteUserFromList(username);
+    free(docname);
+}
+
+void deleteUserFromList(char *username)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname = "xml/userlist.xml";
+
+    printf("opening document %s\n", docname);
+
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    if ((cur = checkDoc(doc, "users")) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+    deleteField(doc, cur, username);
+
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
 }
