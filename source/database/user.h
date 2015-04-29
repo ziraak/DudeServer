@@ -7,7 +7,9 @@
 
 #endif //DUDESERVER_USER_H
 
+#ifndef DUDESERVER_DATABASE_H
 #include "database.h"
+#endif //DUDESERVER_DATABASE_H
 
 
 
