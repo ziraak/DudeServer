@@ -1,5 +1,8 @@
 #include "main.h"
 
+userInfo currentUser;
+int authenticated = BOOL_FALSE;
+
 int main(int argc, char **argv)
 {
     flushStdout();
@@ -45,7 +48,6 @@ int main(int argc, char **argv)
 
 void processConnectedClient(int sockfd)
 {
-    int authenticated = BOOL_FALSE;
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
@@ -64,6 +66,7 @@ void processConnectedClient(int sockfd)
                 if (result == RPL_LOGIN)
                 {
                     authenticated = BOOL_TRUE;
+                    printf("LOGGED IN: %s\n", currentUser.username);
                 }
                 sendIntegerMessageToClient(sockfd, result);
             }
