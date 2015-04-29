@@ -5,3 +5,4 @@
 #include "../utils/utils.h"
 
 int handlePrivateMessageCommand(char *message);
+#endif

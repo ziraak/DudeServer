@@ -1,6 +1,8 @@
 //
 // Created by osboxes on 20/04/15.
 //
+#ifndef MEDIUM_H
+#define MEDIUM_H
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -55,3 +57,4 @@ xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
 char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
 
 char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
+#endif

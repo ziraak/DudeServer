@@ -3,9 +3,6 @@
 //
 
 #include "login.h"
-#include "../main.h"
-#include "../utils/utils.h"
-#include "../medium.h"
 
 int handleLoginCommand(char *message)
 {

@@ -16,7 +16,7 @@ int handleJoinCommand(char *message)
         createChannel(channelName, optionalChannelKey);
     }
 
-    int result = authenticateChannel(channel, channelName, optionalChannelKey)
+    int result = authenticateChannel(channel, channelName, optionalChannelKey);
     if(result != BOOL_TRUE)
     {
         return result;
@@ -36,6 +36,7 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
     if(optionalChannelKey != NULL)
     {
         //TODO: optionalChannelKey toevoegen
+        return ERR_BADCHANNELKEY;
     }
 
     if(strcmp(channel.name, channelName) == 0)
@@ -43,7 +44,7 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
         return BOOL_TRUE;
     }
 
-    return BOOL_FALSE;
+    return ERR_BADCHANMASK;
 }
 
 int joinChannel(channelInfo channel)
