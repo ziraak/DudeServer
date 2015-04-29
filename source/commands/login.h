@@ -2,7 +2,7 @@
 #define DUDESERVER_LOGIN_H
 #include "../main.h"
 #include "../utils/utils.h"
-#include "../medium.h"
+#include "../database/database.h"
 
 int handleLoginCommand(char *message);
 
