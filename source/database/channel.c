@@ -251,15 +251,14 @@ void deleteChannelFromList(char *channelName)
     xmlFreeDoc(doc);
 }
 
-
-void deleteChannelFromUser(char *username, char *channelName)
+void deleteUserFromChannel(char *channelName, char *username)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
     char *docname;
     docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/users/%s.xml", username);
+    sprintf(docname, "xml/channels/%s.xml", channelName);
     printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -268,7 +267,7 @@ void deleteChannelFromUser(char *username, char *channelName)
         return;
     }
 
-    if ((cur = checkDoc(doc, "user")) == NULL)
+    if ((cur = checkDoc(doc, "channel")) == NULL)
     {
         printf("error\n");
         return;
@@ -276,9 +275,9 @@ void deleteChannelFromUser(char *username, char *channelName)
 
     while (cur != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels")))
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "users")))
         {
-            deleteField(doc, cur->xmlChildrenNode, channelName);
+            deleteField(doc, cur->xmlChildrenNode, username);
         }
         cur = cur->next;
     }
@@ -286,4 +285,3 @@ void deleteChannelFromUser(char *username, char *channelName)
     xmlFreeDoc(doc);
     free(docname);
 }
-

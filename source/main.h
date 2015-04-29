@@ -10,6 +10,7 @@
 #include "commands/login.h"
 #include "commands/join.h"
 #include "commands/privmsg.h"
+#include "database/database.h"
 
 void processConnectedClient(int sockfd);
 
