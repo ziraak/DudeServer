@@ -90,7 +90,6 @@ void clientBusiness(int sock)
     rcv = malloc(CMD_SIZE + 1);
     bzero(rcv, CMD_SIZE + 1);
 
-    //TODO: add first recv for '100' status
     for (; ;)
     {
         ssize_t received = recv(sock, rcv, CMD_SIZE, 0);
@@ -115,7 +114,6 @@ void clientBusiness(int sock)
 
         if (strcmp(snd, "QUIT\n") == 0)
         {
-            //TODO: send quit msg
             printf("CLOSING CONNECTION, BYE BYE\n");
             close(sock);
             return;

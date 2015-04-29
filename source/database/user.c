@@ -3,6 +3,7 @@
 //
 
 #include "user.h"
+#include "../main.h"
 
 char **getUserList()
 {
@@ -86,16 +87,18 @@ int checkUser(char *userName)
     return EXIT_FAILURE;
 }
 
-void userJoinChannel(char *username, char *channelName)
+int userJoinChannel(char *username, char *channelName)
 {
     if (checkUser(username) == EXIT_FAILURE || checkChannel(channelName) == EXIT_FAILURE)
     {
         fprintf(stderr, "user: %s or channel %s does not exist\n", username, channelName);
-        return;
+        return BOOL_FALSE;
     }
 
     addFieldToFileInList("user", username, "channels", "channel", channelName);
     addFieldToFileInList("channel", channelName, "users", "user", username);
+
+    return BOOL_TRUE;
 }
 
 void deleteChannelFromUser(char *username, char *channelName)

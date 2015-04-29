@@ -8,7 +8,7 @@ int handleJoinCommand(char *message);
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey);
 
-int joinChannel(channelInfo channel);
+int joinChannel(char* channelName);
 
 int createChannel(char *channelName, char *optionalChannelKey);
 
