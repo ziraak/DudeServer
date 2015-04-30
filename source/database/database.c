@@ -240,29 +240,24 @@ void addToListFile(char* itemType,char* newItem)
 
 
 
-void createNewChannel()
+void createNewChannel(char *channelName, char *creator)
 {
     xmlDocPtr doc = NULL;       /* document pointer */
-    xmlNodePtr root_node = NULL, node = NULL, node1 = NULL;/* node pointers */
-    xmlDtdPtr dtd = NULL;       /* DTD pointer */
-    char* channelName = "area 52";
-    char* admin = "fatih";
+    xmlNodePtr root_node = NULL;
     char* docname = malloc(500);
 
     doc = xmlNewDoc(BAD_CAST "1.0");
-    root_node = xmlNewNode(NULL, BAD_CAST "Channel");
+    root_node = xmlNewNode(NULL, BAD_CAST "channel");
     xmlDocSetRootElement(doc, root_node);
     xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
     xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
     xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
-    /*
- *      * Dumping document to stdio or file
- *           */
 
     sprintf(docname,"xml/channels/%s.xml",channelName);
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
     xmlFreeDoc(doc);
     xmlCleanupParser();
 
-    //addToListFile("channel",channelName);
+    addToListFile("channel",channelName);
+    userJoinChannel(creator,channelName);
 }

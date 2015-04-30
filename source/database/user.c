@@ -207,3 +207,23 @@ void assignLoginToken(char* username, char* loginToken)
     }
 
 }
+
+void createNewUser(char* username, char* password)
+{
+    xmlDocPtr doc = NULL;       /* document pointer */
+    xmlNodePtr root_node = NULL, node = NULL;/* node pointers */
+    char* docname = malloc(500);
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    root_node = xmlNewNode(NULL, BAD_CAST "user");
+    xmlDocSetRootElement(doc, root_node);
+    xmlNewChild(root_node, NULL, BAD_CAST "nickname",BAD_CAST username);
+    xmlNewChild(root_node, NULL, BAD_CAST "password",BAD_CAST password);
+    xmlNewChild(root_node, NULL, BAD_CAST "channels",NULL);
+
+    sprintf(docname,"xml/users/%s.xml",username);
+    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+    addToListFile("user",username);
+}
