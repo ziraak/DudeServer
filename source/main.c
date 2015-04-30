@@ -13,43 +13,49 @@ int main(int argc, char **argv)
 
     listen(sock, 200);
 
+// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
     for (; ;)
     {
         clientlen = sizeof(adres_client);
         if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
         {
-            printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
-                   ntohs(adres_client.sin_port));
-
-            int childpid = fork();
-            if (childpid == 0)
-            {
-                acknowledgeConnection(sockfd);
-                processConnectedClient(sockfd);
-                close(sockfd);
-                printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
-                exit(EXIT_SUCCESS);
-            }
-            else if (childpid < 0)
-            {
-                perror("Fork error");
-                exit(EXIT_FAILURE);
-            }
+            procesConnectedClientWithFork(sockfd, adres_client);
         }
         else
         {
             printf("Server can' t accept a client.\n");
         }
     }
+#pragma clang diagnostic pop
 
     return EXIT_SUCCESS;
 }
 
-void processConnectedClient(int sockfd)
+void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
+{
+    int childpid = fork();
+    if (childpid == 0)
+    {
+        processConnectedClient(sockfd, adres_client);
+    }
+    else if (childpid < 0)
+    {
+        perror("Fork error");
+        exit(EXIT_FAILURE);
+    }
+}
+
+void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 {
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
+
+    printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
+           ntohs(adres_client.sin_port));
+    acknowledgeConnection(sockfd);
 
     while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
     {
@@ -90,6 +96,8 @@ void processConnectedClient(int sockfd)
     }
 
     close(sockfd);
+    printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
+    exit(EXIT_SUCCESS);
 }
 
 int parseMessage(char *message)

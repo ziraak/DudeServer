@@ -13,7 +13,9 @@
 #include "database/database.h"
 #include "commands/part.h"
 
-void processConnectedClient(int sockfd);
+void processConnectedClient(int sockfd, struct sockaddr_in adres_client);
+
+void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
 
 int setupServer();
 
