@@ -41,7 +41,7 @@ void deleteChannel(char *channelName);
 
 int checkChannel(char *channelName);
 
-char **getChannelList();
+char **getChannellist();
 
 void deleteUserFromChannel(char *channelName, char *username);
 

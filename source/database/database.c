@@ -209,3 +209,62 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
     free(docname);
     return succes;
 }
+void addToListFile(char* itemType,char* newItem)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname = (char *) malloc(500);
+    char *doctype = (char *) malloc(50);
+    sprintf(doctype,"%ss", itemType);
+    sprintf(docname, "xml/%slist.xml", itemType);
+
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+
+    if ((cur = checkDoc(doc, doctype)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+    cur = cur->parent;
+    addChild(cur, doctype, itemType, newItem);
+
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+    free(doctype);
+}
+
+
+
+void createNewChannel()
+{
+    xmlDocPtr doc = NULL;       /* document pointer */
+    xmlNodePtr root_node = NULL, node = NULL, node1 = NULL;/* node pointers */
+    xmlDtdPtr dtd = NULL;       /* DTD pointer */
+    char* channelName = "area 52";
+    char* admin = "fatih";
+    char* docname = malloc(500);
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    root_node = xmlNewNode(NULL, BAD_CAST "Channel");
+    xmlDocSetRootElement(doc, root_node);
+    xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
+    xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
+    /*
+ *      * Dumping document to stdio or file
+ *           */
+
+    sprintf(docname,"xml/channels/%s.xml",channelName);
+    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+
+}

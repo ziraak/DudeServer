@@ -32,4 +32,9 @@ int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
 int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
 
 void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
+
+void createNewChannel();
+
+void addToListFile(char* itemType,char* newItem);
+
 #endif

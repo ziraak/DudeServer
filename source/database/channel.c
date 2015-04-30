@@ -157,10 +157,10 @@ int getChannel(char *channelName, channelInfo *channel)
 }
 
 
-char **getChannelList()
+char **getChannellist()
 {
     char *docname;
-    docname = "xml/channelList.xml";
+    docname = "xml/channellist.xml";
 
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -183,16 +183,16 @@ int checkChannel(char *channelName)
         return EXIT_FAILURE;
     }
 
-    char **channelList;
-    channelList = getChannelList();
+    char **channellist;
+    channellist = getChannellist();
     int listIndex;
     listIndex = 0;
 
-    while (channelList[listIndex] != NULL)
+    while (channellist[listIndex] != NULL)
     {
-        if (!strcmp(channelList[listIndex], channelName))
+        if (!strcmp(channellist[listIndex], channelName))
         {
-            // printf("channel: %s found it was : %s \n",channelName, channelList[listIndex]);
+            // printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
             return EXIT_SUCCESS;
         }
         listIndex++;
@@ -232,7 +232,7 @@ void deleteChannelFromList(char *channelName)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
-    char* docname = "xml/channelList.xml";
+    char* docname = "xml/channellist.xml";
 
     printf("opening document %s\n", docname);
 
