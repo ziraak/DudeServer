@@ -218,22 +218,20 @@ void addToListFile(char* itemType,char* newItem)
     sprintf(doctype,"%ss", itemType);
     sprintf(docname, "xml/%slist.xml", itemType);
 
-
     if ((doc = openDoc(docname)) == NULL)
     {
         printf("error\n");
         return;
     }
 
-
     if ((cur = checkDoc(doc, doctype)) == NULL)
     {
         printf("error\n");
         return;
     }
+
     cur = cur->parent;
     addChild(cur, doctype, itemType, newItem);
-
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
     free(docname);
@@ -266,5 +264,5 @@ void createNewChannel()
     xmlFreeDoc(doc);
     xmlCleanupParser();
 
-
+    //addToListFile("channel",channelName);
 }
