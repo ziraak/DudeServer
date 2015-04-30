@@ -139,7 +139,7 @@ void clientBusiness(int sock)
             {
                 perror("SEND ERROR, CLOSING CLIENT");
                 close(sock);
-                exit(1);
+                exit(EXIT_FAILURE);
             }
         }
 

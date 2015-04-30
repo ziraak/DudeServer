@@ -21,21 +21,20 @@ int main(int argc, char **argv)
             printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
                    ntohs(adres_client.sin_port));
 
-//            int childpid = fork();
-//            if (childpid == 0)
-//            {
+            int childpid = fork();
+            if (childpid == 0)
+            {
                 acknowledgeConnection(sockfd);
                 processConnectedClient(sockfd);
                 close(sockfd);
                 printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
-                // exit child
-                exit(0);
-//            }
-//            else if (childpid < 0)
-//            {
-//                perror("Fork error");
-//                exit(1);
-//            }
+                exit(EXIT_SUCCESS);
+            }
+            else if (childpid < 0)
+            {
+                perror("Fork error");
+                exit(EXIT_FAILURE);
+            }
         }
         else
         {
@@ -79,7 +78,7 @@ void processConnectedClient(int sockfd)
             if (receive < 0)
             {
                 perror("Error recv");
-                exit(1);
+                exit(EXIT_FAILURE);
             }
 
             // getAllUnreadMessagesByName(); TODO: Username meegeven
@@ -129,13 +128,13 @@ int setupServer()
     if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
         perror("Socket error...");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     if (bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server)) < 0)
     {
         perror("Bind error...");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 
     return sock;
@@ -159,7 +158,7 @@ void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
     if (send(sockfd, buffer, bufferLength, 0) < 0)
     {
         perror("Error send.. ");
-        exit(1);
+        exit(EXIT_FAILURE);
     }
 }
 
