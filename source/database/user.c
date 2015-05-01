@@ -7,14 +7,11 @@
 
 char **getUserList()
 {
-    char *docname;
-    docname = "xml/userlist.xml";
-
     xmlDocPtr doc;
     xmlNodePtr cur;
     char **list;
 
-    doc = openDoc(docname);
+    doc = openDoc(DB_USERLISTLOC);
     cur = checkDoc(doc, "users");
     cur = cur->parent;
 
@@ -37,7 +34,7 @@ int getUser(char *username, userInfo *result)
     }
 
 
-    sprintf(docname, "xml/users/%s.xml", username);
+    sprintf(docname, "%s%s.xml",DB_USERLOC ,username);
 
     if ((doc = openDoc(docname)) == NULL)
     {
@@ -108,7 +105,7 @@ void deleteChannelFromUser(char *username, char *channelName)
     char *docname;
     docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/users/%s.xml", username);
+    sprintf(docname, "%s%s.xml", DB_USERLOC,username);
     printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -154,7 +151,7 @@ void deleteUser(char *username)
         channelIndex++;
     }
 
-    sprintf(docname, "xml/users/%s.xml", username);
+    sprintf(docname, "%s%s.xml",DB_USERLOC ,username);
 
     remove(docname);
 
@@ -166,12 +163,8 @@ void deleteUserFromList(char *username)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
-    char *docname = "xml/userlist.xml";
 
-    printf("opening document %s\n", docname);
-
-
-    if ((doc = openDoc(docname)) == NULL)
+    if ((doc = openDoc(DB_USERLISTLOC)) == NULL)
     {
         printf("error\n");
         return;
@@ -184,7 +177,7 @@ void deleteUserFromList(char *username)
     }
     deleteField(doc, cur, username);
 
-    xmlSaveFormatFile(docname, doc, 0);
+    xmlSaveFormatFile(DB_USERLISTLOC, doc, 0);
     xmlFreeDoc(doc);
 }
 
@@ -221,7 +214,7 @@ void createNewUser(char* username, char* password)
     xmlNewChild(root_node, NULL, BAD_CAST "password",BAD_CAST password);
     xmlNewChild(root_node, NULL, BAD_CAST "channels",NULL);
 
-    sprintf(docname,"xml/users/%s.xml",username);
+    sprintf(docname,"%s%s.xml",DB_USERLOC,username);
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
     xmlFreeDoc(doc);
     xmlCleanupParser();

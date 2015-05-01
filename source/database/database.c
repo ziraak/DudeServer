@@ -114,7 +114,7 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
 
     printf("opening document %s\n", docname);
 
@@ -186,7 +186,7 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
     int succes;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
 
     printf("opening document %s\n", docname);
 
@@ -216,7 +216,7 @@ void addToListFile(char* itemType,char* newItem)
     char *docname = (char *) malloc(500);
     char *doctype = (char *) malloc(50);
     sprintf(doctype,"%ss", itemType);
-    sprintf(docname, "xml/%slist.xml", itemType);
+    sprintf(docname, "%s%slist.xml", DB_DBLOC,itemType);
 
     if ((doc = openDoc(docname)) == NULL)
     {
@@ -253,7 +253,7 @@ void createNewChannel(char *channelName, char *creator)
     xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
     xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
 
-    sprintf(docname,"xml/channels/%s.xml",channelName);
+    sprintf(docname,"%s%s.xml",DB_CHANNELLOC,channelName);
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
     xmlFreeDoc(doc);
     xmlCleanupParser();
