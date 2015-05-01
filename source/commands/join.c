@@ -10,17 +10,17 @@ int handleJoinCommand(char *message)
     }
 
     channelInfo channel;
-    if(getChannel(channelName, &channel) < 0)
+    if(getChannel(channelName, &channel) == DB_RETURN_DOESNOTEXIST)
     {
-        // TODO: create channel and
-        createChannel(channelName, optionalChannelKey);
+        createNewChannel(channelName, currentUser.username);
     }
-    printf("%s\n", channelName);
-
-    int result = authenticateChannel(channel, channelName, optionalChannelKey);
-    if(result != BOOL_TRUE)
+    else
     {
-        return result;
+        int result = authenticateChannel(channel, channelName, optionalChannelKey);
+        if(result != BOOL_TRUE)
+        {
+            return result;
+        }
     }
 
     return joinChannel(channelName);
@@ -57,12 +57,6 @@ int joinChannel(char* channelName)
     userAddChannel(channelName);
 
     return RPL_TOPIC;
-}
-
-int createChannel(char *channelName, char *optionalChannelKey)
-{
-    // TODO: create channel
-    return 0;
 }
 
 int userHasChannel(char* channelName)

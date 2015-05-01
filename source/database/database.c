@@ -259,5 +259,4 @@ void createNewChannel(char *channelName, char *creator)
     xmlCleanupParser();
 
     addToListFile("channel",channelName);
-    userJoinChannel(creator,channelName);
 }

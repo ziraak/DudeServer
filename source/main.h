@@ -41,26 +41,6 @@ int writeMessageToDB(char *recipient, char *msgToSend);
 
 int authenticateClient(int sockfd, char buffer[]);
 
-#define RPL_SUCCESS 50 // Default success message
-#define RPL_CONNECTED 100 // CONNECT
-#define RPL_LOGIN 300 // LOGIN
-#define RPL_AWAY 301 // PRIVMSG
-#define RPL_TOPIC 303 // JOIN
-
-#define ERR_NOSUCHNICK 401
-#define ERR_NOSUCHCHANNEL 403
-#define ERR_CANNOTSENDTOCHAN 404
-#define ERR_NORECIPIENT 411
-#define ERR_NOTEXTTOSEND 412
-#define ERR_UNKNOWNCOMMAND 421
-#define ERR_NICKNAMEINUSE 433
-#define ERR_NOLOGIN 444
-#define ERR_NEEDMOREPARAMS 461
-#define ERR_CHANNELISFULL 471
-#define ERR_BANNEDFROMCHAN 474
-#define ERR_BADCHANNELKEY 475
-#define ERR_BADCHANMASK 476
-
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
 

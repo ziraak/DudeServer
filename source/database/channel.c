@@ -99,7 +99,9 @@ int getChannel(char *channelName, channelInfo *channel)
     xmlDocPtr doc;
     xmlNodePtr cur;
 
-    if (checkChannel(channelName) == EXIT_FAILURE)
+    int checkChannelResult = checkChannel(channelName);
+
+    if (checkChannelResult == EXIT_FAILURE || checkChannelResult == DB_RETURN_DOESNOTEXIST)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
         return DB_RETURN_DOESNOTEXIST;
