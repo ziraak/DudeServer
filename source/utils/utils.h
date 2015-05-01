@@ -13,11 +13,13 @@
 typedef struct commandStruct
 {
     char *command;
-    char **parameters;
     char *trailing;
+    char **parameters;
+    int parameterCount;
 } commandStruct;
 
 int substringCharacter(char *str, char **result);
 int parseCommand(char *message, commandStruct *command);
+void commandStruct_free(commandStruct* cmdStruct);
 
 #endif

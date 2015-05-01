@@ -47,8 +47,6 @@ int setupServer()
     adres_server.sin_addr.s_addr = inet_addr(server_ip);
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
-    struct userInfo newInfo;
-
     exitIfError(sock, "Socket failed while trying to start the server.");
     bindResult = bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server));
     exitIfError(bindResult, "Binding to the socket failed while starting the server.");
@@ -126,18 +124,20 @@ int authenticateClient(int sockfd, char buffer[])
 int parseMessage(char *message)
 {
     char *command = NULL;
+    commandStruct cmd;
+    parseCommand(message, &cmd);
 
     int offset = substringCharacter(message, &command);
 
-    if (commandEquals(command, "JOIN"))
+    if (commandEquals(cmd.command, "JOIN"))
     {
         return handleJoinCommand(message + offset);
     }
-    else if (commandEquals(command, "PRIVMSG"))
+    else if (commandEquals(cmd.command, "PRIVMSG"))
     {
         return handlePrivateMessageCommand(message + offset);
     }
-    else if (commandEquals(command, "PART"))
+    else if (commandEquals(cmd.command, "PART"))
     {
         return handlePartCommand(message + offset);
     }
