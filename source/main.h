@@ -12,6 +12,7 @@
 #include "commands/privmsg.h"
 #include "database/database.h"
 #include "commands/part.h"
+#include "protocolDefines.h"
 
 userInfo currentUser;
 
