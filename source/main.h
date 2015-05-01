@@ -13,6 +13,12 @@
 #include "database/database.h"
 #include "commands/part.h"
 
+userInfo currentUser;
+
+void runServer();
+
+void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
+
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client);
 
 void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
@@ -32,6 +38,8 @@ void acknowledgeConnection(int sockfd);
 int commandEquals(char *command, char *check);
 
 int writeMessageToDB(char *recipient, char *msgToSend);
+
+int authenticateClient(int sockfd, char buffer[]);
 
 #define RPL_SUCCESS 50 // Default success message
 #define RPL_CONNECTED 100 // CONNECT

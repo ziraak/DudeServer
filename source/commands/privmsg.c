@@ -1,6 +1,5 @@
 #include "privmsg.h"
 
-
 int handlePrivateMessageCommand(char *message)
 {
     char *recipient, *msgToSend;

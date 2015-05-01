@@ -1,10 +1,8 @@
 #include "join.h"
 
-extern userInfo currentUser;
-
 int handleJoinCommand(char *message)
 {
-    char *channelName, *optionalChannelKey = NULL;
+    char *channelName = NULL, *optionalChannelKey = NULL;
     int offset = substringCharacter(message, &channelName);
     if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
     {

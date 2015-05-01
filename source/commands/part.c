@@ -1,7 +1,5 @@
 #include "part.h"
 
-extern userInfo currentUser;
-
 int handlePartCommand(char *channelName)
 {
     if (checkChannel(channelName))

@@ -1,9 +1,13 @@
 #include "main.h"
 
-userInfo currentUser;
-int authenticated = BOOL_FALSE;
-
 int main(int argc, char **argv)
+{
+    runServer();
+
+    return EXIT_SUCCESS;
+}
+
+void runServer()
 {
     flushStdout();
     struct sockaddr_in adres_client;
@@ -19,18 +23,35 @@ int main(int argc, char **argv)
     for (; ;)
     {
         clientlen = sizeof(adres_client);
-        if ((sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen)) > -1)
+        sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen);
+        if (sockfd > -1)
         {
             procesConnectedClientWithFork(sockfd, adres_client);
         }
         else
         {
-            printf("Server can' t accept a client.\n");
+            perror("Server can' t accept connection with a client.\n");
         }
     }
 #pragma clang diagnostic pop
+}
 
-    return EXIT_SUCCESS;
+int setupServer()
+{
+    char *server_ip = "127.0.0.1";
+    uint16_t listenPort = 9090;
+    struct sockaddr_in adres_server;
+    int sock, bindResult;
+    adres_server.sin_family = AF_INET; // ip protocol
+    adres_server.sin_port = htons(listenPort); // change to network byte order
+    adres_server.sin_addr.s_addr = inet_addr(server_ip);
+    sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
+
+    exitIfError(sock, "Socket failed while trying to start the server.");
+    bindResult = bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server));
+    exitIfError(bindResult, "Binding to the socket failed while starting the server.");
+
+    return sock;
 }
 
 void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
@@ -40,11 +61,7 @@ void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
     {
         processConnectedClient(sockfd, adres_client);
     }
-    else if (childpid < 0)
-    {
-        perror("Fork error");
-        exit(EXIT_FAILURE);
-    }
+    exitIfError(childpid, "Error forking child");
 }
 
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
@@ -52,6 +69,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
+    int authenticated = BOOL_FALSE;
 
     printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
            ntohs(adres_client.sin_port));
@@ -59,34 +77,14 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
     while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
     {
+        exitIfError(receive, "Error receiving message from client.");
+
         if (authenticated == BOOL_FALSE)
         {
-            char *command;
-            int offset = substringCharacter(buffer, &command);
-
-            if (commandEquals(command, "LOGIN"))
-            {
-                int result = handleLoginCommand(buffer + offset);
-
-                if (result == RPL_LOGIN)
-                {
-                    authenticated = BOOL_TRUE;
-                }
-                sendIntegerMessageToClient(sockfd, result);
-            }
-            else
-            {
-                sendIntegerMessageToClient(sockfd, ERR_NOLOGIN);
-            }
+            authenticated = authenticateClient(sockfd, buffer);
         }
         else
         {
-            if (receive < 0)
-            {
-                perror("Error recv");
-                exit(EXIT_FAILURE);
-            }
-
             // getAllUnreadMessagesByName(); TODO: Username meegeven
             int result = parseMessage(buffer);
             sendIntegerMessageToClient(sockfd, result);
@@ -100,9 +98,32 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     exit(EXIT_SUCCESS);
 }
 
+int authenticateClient(int sockfd, char buffer[])
+{
+    int authenticated = BOOL_FALSE;
+    char *command = NULL;
+    int offset = substringCharacter(buffer, &command);
+
+    if (commandEquals(command, "LOGIN"))
+    {
+        int result = handleLoginCommand(buffer + offset);
+
+        if (result == RPL_LOGIN)
+        {
+            authenticated = BOOL_TRUE;
+        }
+        sendIntegerMessageToClient(sockfd, result);
+    }
+    else
+    {
+        sendIntegerMessageToClient(sockfd, ERR_NOLOGIN);
+    }
+    return authenticated;
+}
+
 int parseMessage(char *message)
 {
-    char *command;
+    char *command = NULL;
 
     int offset = substringCharacter(message, &command);
 
@@ -122,32 +143,6 @@ int parseMessage(char *message)
     return ERR_UNKNOWNCOMMAND;
 }
 
-int setupServer()
-{
-    char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
-    struct sockaddr_in adres_server;
-    int sock;
-    adres_server.sin_family = AF_INET; // ip protocol
-    adres_server.sin_port = htons(listenPort); // change to network byte order
-    adres_server.sin_addr.s_addr = inet_addr(server_ip);
-
-
-    if ((sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
-    {
-        perror("Socket error...");
-        exit(EXIT_FAILURE);
-    }
-
-    if (bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server)) < 0)
-    {
-        perror("Bind error...");
-        exit(EXIT_FAILURE);
-    }
-
-    return sock;
-}
-
 void flushStdout()
 {
     setvbuf(stdout, NULL, _IONBF, 0);
@@ -163,11 +158,8 @@ void sendIntegerMessageToClient(int sockfd, int msg)
 
 void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
 {
-    if (send(sockfd, buffer, bufferLength, 0) < 0)
-    {
-        perror("Error send.. ");
-        exit(EXIT_FAILURE);
-    }
+    ssize_t sendResult = send(sockfd, buffer, bufferLength, 0);
+    exitIfError(sendResult, "Error while sending a message to the client.");
 }
 
 void acknowledgeConnection(int sockfd)
@@ -197,4 +189,13 @@ char **getAllUnreadMessagesByName(char *username)
 int generateToken()
 {
     return rand();
+}
+
+void exitIfError(ssize_t variableToCheckForError, char *errorMessage)
+{
+    if (variableToCheckForError < 0)
+    {
+        perror(errorMessage);
+        exit(EXIT_FAILURE);
+    }
 }

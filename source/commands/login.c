@@ -4,8 +4,6 @@
 
 #include "login.h"
 
-extern userInfo currentUser;
-
 int handleLoginCommand(char *message)
 {
     char *username, *password, *nickname;
