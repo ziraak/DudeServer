@@ -39,7 +39,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9099;
+    uint16_t listenPort = 9090;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol

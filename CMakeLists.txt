@@ -1,30 +1,83 @@
+project(car)
+
 cmake_minimum_required(VERSION 3.1)
-project(DudeServer)
+set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
-set(SOURCE_FILES
-    source/utils/utils.h source/utils/utils.c
-    source/commands/login.h source/commands/login.c
-    source/commands/join.c source/commands/join.h
-    source/commands/privmsg.c source/commands/privmsg.h
-    README.md)
+###############################################################################
+# Set build features
+set(CMAKE_BUILD_TYPE Debug)
 
-set(TEST_CLIENT_FILES ${SOURCE_FILES})
+#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -lpthread")
+#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -lpthread")
 
-add_executable(DudeServer ${SOURCE_FILES} source/main.c  source/main.h
-source/database/channel.h source/database/channel.c
- source/database/user.h source/database/user.c
- source/database/database.h source/database/database.c source/database/databaseStructs.h source/commands/part.h source/commands/part.c source/database/dbDefines.h)
-add_executable(DudeTestClient source/utils/utils.h source/utils/utils.c test/client/test_client.c)
+###############################################################################
+include(CheckCSourceCompiles)
+include(CheckCSourceRuns)
+include(CheckFunctionExists)
+include(CheckIncludeFile)
+include(CheckIncludeFiles)
+include(CheckLibraryExists)
+include(CheckSymbolExists)
+include(CheckTypeSize)
 
-find_package(LibXml2)
-include_directories(${LIBXML2_INCLUDE_DIR})
-target_link_libraries(DudeServer ${LIBXML2_LIBRARIES})
-add_custom_command(TARGET DudeServer PRE_BUILD
-COMMAND ${CMAKE_COMMAND} -E remove_directory
-$<TARGET_FILE_DIR:DudeServer>/xml)
-add_custom_command(TARGET DudeServer PRE_BUILD
-COMMAND ${CMAKE_COMMAND} -E remove_directory
-$<TARGET_FILE_DIR:DudeServer>/database)
-add_custom_command(TARGET DudeServer POST_BUILD
-COMMAND ${CMAKE_COMMAND} -E copy_directory
-${CMAKE_SOURCE_DIR}/xml $<TARGET_FILE_DIR:DudeServer>/xml)
+###############################################################################
+# Check headers
+set(INCLUDES "")
+macro(ck_check_include_file header var)
+  check_include_files("${INCLUDES};${header}" ${var})
+  if(${var})
+    set(INCLUDES ${INCLUDES} ${header})
+  endif(${var})
+endmacro(ck_check_include_file)
+
+ck_check_include_file("stdlib.h" HAVE_STDLIB_H)
+
+###############################################################################
+# Check functions
+# (Nothing to check for the money example)
+
+###############################################################################
+# Check defines
+# (Nothing to check for the money example)
+
+###############################################################################
+# Check struct members
+# (Nothing to check for the money example)
+
+###############################################################################
+# Check for integer types
+# (The following are used in check.h. Regardless if they are used in
+# the project, they will need to be checked in order to use Check).
+check_type_size(intmax_t INTMAX_T)
+check_type_size(uintmax_t UINTMAX_T)
+
+check_type_size(pid_t PID_T)
+if(NOT HAVE_PID_T)
+  if(WIN32)
+    set(pid_t "int")
+  else(WIN32)
+    MESSAGE(FATAL_ERROR "pid_t doesn't exist on this platform?")
+  endif(WIN32)
+endif(NOT HAVE_PID_T)
+
+###############################################################################
+# Check libraries
+
+###############################################################################
+# Generate "config.h" from "cmake/config.h.cmake"
+configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in
+  ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+include_directories(BEFORE ${CMAKE_CURRENT_BINARY_DIR})
+add_definitions(-DHAVE_CONFIG_H)
+set(CONFIG_HEADER ${CMAKE_CURRENT_BINARY_DIR}/config.h)
+
+###############################################################################
+# Subdirectories
+add_subdirectory(source)
+add_subdirectory(test)
+
+###############################################################################
+# Unit tests
+enable_testing()
+add_test(NAME check_money COMMAND check_money)
+
