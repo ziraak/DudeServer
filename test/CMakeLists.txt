@@ -1,4 +1,4 @@
-include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../src)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/../source)
 
 # If pkg-config is not installed on the system, then the
 # CHECK_INSTALL_DIR variable must be set to the install
@@ -17,5 +17,5 @@ set(TEST_SOURCES
 add_executable(run_unit_tests ${TEST_SOURCES})
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
-add_executable(DudeTestClient ${HEADERS} client/test_client.c)
+add_executable(DudeTestClient client/test_client.c)
 target_link_libraries(DudeTestClient DudeServerLib)
