@@ -14,8 +14,8 @@ set(TEST_SOURCES
 )
 
 # entire test executable
-#add_executable(run_unit_tests ${TEST_SOURCES})
-#target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
+add_executable(run_unit_tests ${TEST_SOURCES})
+target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
-#add_executable(DudeTestClient ${HEADERS} client/test_client.c)
-#target_link_libraries(DudeTestClient DudeServerLib)
+add_executable(DudeTestClient ${HEADERS} client/test_client.c)
+target_link_libraries(DudeTestClient DudeServerLib)
