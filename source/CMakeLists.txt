@@ -1,6 +1,3 @@
-cmake_minimum_required(VERSION 3.1)
-project(DudeServer)
-
 # all files needed for just the main
 set(MAIN_SOURCES main.c)
 
