@@ -12,6 +12,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 #include "../main.h"
+#include "dbDefines.h"
 
 xmlDocPtr openDoc(char *docname);
 
@@ -32,4 +33,9 @@ int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
 int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
 
 void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
+
+void createNewChannel(char *channelName, char *creator);
+
+void addToListFile(char* itemType,char* newItem);
+
 #endif

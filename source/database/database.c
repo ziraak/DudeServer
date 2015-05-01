@@ -85,7 +85,7 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml",DB_DBLOC, fileType, filename);
 
     printf("opening document %s\n", docname);
 
@@ -114,7 +114,7 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
 
     printf("opening document %s\n", docname);
 
@@ -186,7 +186,7 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
     int succes;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
 
     printf("opening document %s\n", docname);
 
@@ -208,4 +208,56 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
     xmlFreeDoc(doc);
     free(docname);
     return succes;
+}
+void addToListFile(char* itemType,char* newItem)
+{
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    char *docname = (char *) malloc(500);
+    char *doctype = (char *) malloc(50);
+    sprintf(doctype,"%ss", itemType);
+    sprintf(docname, "%s%slist.xml", DB_DBLOC,itemType);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    if ((cur = checkDoc(doc, doctype)) == NULL)
+    {
+        printf("error\n");
+        return;
+    }
+
+    cur = cur->parent;
+    addChild(cur, doctype, itemType, newItem);
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
+    free(docname);
+    free(doctype);
+}
+
+
+
+void createNewChannel(char *channelName, char *creator)
+{
+    xmlDocPtr doc = NULL;       /* document pointer */
+    xmlNodePtr root_node = NULL;
+    char* docname = malloc(500);
+
+    doc = xmlNewDoc(BAD_CAST "1.0");
+    root_node = xmlNewNode(NULL, BAD_CAST "channel");
+    xmlDocSetRootElement(doc, root_node);
+    xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
+    xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
+
+    sprintf(docname,"%s%s.xml",DB_CHANNELLOC,channelName);
+    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
+    xmlFreeDoc(doc);
+    xmlCleanupParser();
+
+    addToListFile("channel",channelName);
+    userJoinChannel(creator,channelName);
 }

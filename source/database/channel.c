@@ -102,19 +102,20 @@ int getChannel(char *channelName, channelInfo *channel)
     if (checkChannel(channelName) == EXIT_FAILURE)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
-        return -1;
+        return DB_RETURN_DOESNOTEXIST;
     }
 
-    sprintf(docname, "xml/channels/%s.xml", channelName);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
 
     if ((doc = openDoc(docname)) == NULL)
     {
-        return -2;
+        return DB_RETURN_FILENOTFOUND;
     }
 
     if ((cur = checkDoc(doc, "channel")) == NULL)
     {
-        return -3;
+        return DB_RETURN_CORRUPTFILE;
     }
 
     channel->name = getValue(doc, cur, "name");
@@ -153,20 +154,17 @@ int getChannel(char *channelName, channelInfo *channel)
 
     xmlFreeDoc(doc);
     free(docname);
-    return 0;
+    return DB_RETURN_SUCCES;
 }
 
 
-char **getChannelList()
+char **getChannellist()
 {
-    char *docname;
-    docname = "xml/channelList.xml";
-
     xmlDocPtr doc;
     xmlNodePtr cur;
     char **list;
 
-    doc = openDoc(docname);
+    doc = openDoc(DB_CHANNELLISTLOC);
     cur = checkDoc(doc, "channels");
     cur = cur->parent;
 
@@ -183,33 +181,34 @@ int checkChannel(char *channelName)
         return EXIT_FAILURE;
     }
 
-    char **channelList;
-    channelList = getChannelList();
+    char **channellist;
+    channellist = getChannellist();
     int listIndex;
     listIndex = 0;
 
-    while (channelList[listIndex] != NULL)
+    while (channellist[listIndex] != NULL)
     {
-        if (!strcmp(channelList[listIndex], channelName))
+        if (!strcmp(channellist[listIndex], channelName))
         {
-            // printf("channel: %s found it was : %s \n",channelName, channelList[listIndex]);
-            return EXIT_SUCCESS;
+            // printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
+            return DB_RETURN_SUCCES;
         }
         listIndex++;
     }
     printf("%s not found\n", channelName);
-    return EXIT_FAILURE;
+    return DB_RETURN_DOESNOTEXIST;
 }
 
 
-void deleteChannel(char *channelName)
+int deleteChannelInDB(char *channelName)
 {
     channelInfo channel;
     char *docname = (char *) malloc(500);
+    int returnvalue = getChannel(channelName, &channel);
 
-    if (getChannel(channelName, &channel) < 0)
+    if (returnvalue != DB_RETURN_SUCCES)
     {
-        return;
+        return returnvalue;
     }
 
     int userindex;
@@ -220,60 +219,62 @@ void deleteChannel(char *channelName)
         userindex++;
     }
 
-    sprintf(docname, "xml/channels/%s.xml", channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
 
     remove(docname);
 
-    deleteChannelFromList(channelName);
-    free(docname);
+    if (deleteChannelFromList(channelName) == DB_RETURN_SUCCES)
+    {
+        free(docname);
+        return DB_RETURN_SUCCES;
+    }
+    return EXIT_FAILURE;
 }
 
-void deleteChannelFromList(char *channelName)
+int deleteChannelFromList(char *channelName)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
-    char* docname = "xml/channelList.xml";
-
-    printf("opening document %s\n", docname);
 
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((doc = openDoc(DB_CHANNELLISTLOC)) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_FILENOTFOUND;
     }
 
     if ((cur = checkDoc(doc, "channels")) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_CORRUPTFILE;
     }
     deleteField(doc, cur, channelName);
 
-    xmlSaveFormatFile(docname, doc, 0);
+    xmlSaveFormatFile(DB_CHANNELLISTLOC, doc, 0);
     xmlFreeDoc(doc);
+    return DB_RETURN_SUCCES;
 }
 
-void deleteUserFromChannel(char *channelName, char *username)
+int deleteUserFromChannel(char *channelName, char *username)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
     char *docname;
     docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/channels/%s.xml", channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
     printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_FILENOTFOUND;
     }
 
     if ((cur = checkDoc(doc, "channel")) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_CORRUPTFILE;
     }
 
     while (cur != NULL)
@@ -287,17 +288,21 @@ void deleteUserFromChannel(char *channelName, char *username)
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
     free(docname);
+    return DB_RETURN_SUCCES;
 }
 
-int checkIfChannelEmpty(char* channelName)
+int checkIfChannelEmpty(char *channelName)
 {
     channelInfo info;
-    getChannel(channelName,&info);
-    if(info.users[0] == NULL){
-        printf("%s is empty",info.name);
+    getChannel(channelName, &info);
+    if (info.users[0] == NULL)
+    {
+        printf("%s is empty", info.name);
         return BOOL_TRUE;
-    }else{
-        printf("%s is not empty",info.name);
+    }
+    else
+    {
+        printf("%s is not empty", info.name);
         return BOOL_FALSE;
     }
 }
