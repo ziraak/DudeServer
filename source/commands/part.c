@@ -10,7 +10,7 @@ int handlePartCommand(char *channelName)
 //        if () // TODO: check of channel leeg is
 //        {
 //            // TODO: DELETE channel
-//            deleteChannel(channelName);
+//            deleteChannelInDB(channelName);
 //        }
         return RPL_SUCCESS;
     }

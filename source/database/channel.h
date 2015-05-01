@@ -35,7 +35,7 @@ void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[]);
 
 void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message);
 
-void deleteChannelFromList(char *channelName);
+int deleteChannelFromList(char *channelName);
 
 void deleteChannel(char *channelName);
 
@@ -43,7 +43,7 @@ int checkChannel(char *channelName);
 
 char **getChannellist();
 
-void deleteUserFromChannel(char *channelName, char *username);
+int deleteUserFromChannel(char *channelName, char *username);
 
 int getChannel(char *channelName, channelInfo *channel);
 

@@ -85,7 +85,7 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "xml/%ss/%s.xml", fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml",DB_DBLOC, fileType, filename);
 
     printf("opening document %s\n", docname);
 

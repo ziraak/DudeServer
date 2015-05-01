@@ -12,6 +12,7 @@
 #include <libxml/parser.h>
 #include <libxml/xmlreader.h>
 #include "../main.h"
+#include "dbDefines.h"
 
 xmlDocPtr openDoc(char *docname);
 
