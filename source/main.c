@@ -26,7 +26,7 @@ void runServer()
         sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen);
         if (sockfd > -1)
         {
-            procesConnectedClientWithFork(sockfd, adres_client);
+            processConnectedClient(sockfd, adres_client); // Gebruik geen fork als je wilt debuggen!! Debugger kan je niet attachen aan andere processen behalve de parent.
         }
         else
         {
@@ -39,7 +39,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
+    uint16_t listenPort = 9099;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -54,7 +54,7 @@ int setupServer()
     return sock;
 }
 
-void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
+void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
 {
     int childpid = fork();
     if (childpid == 0)

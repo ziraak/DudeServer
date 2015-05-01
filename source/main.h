@@ -21,7 +21,7 @@ void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client);
 
-void procesConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
+void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
 
 int setupServer();
 
