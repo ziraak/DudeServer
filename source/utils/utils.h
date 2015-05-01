@@ -12,7 +12,6 @@
 
 typedef struct commandStruct
 {
-    char *message;
     char *command;
     char **parameters;
     char *trailing;
