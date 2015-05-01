@@ -31,7 +31,7 @@ int substringCharacter(char *str, char **result)
 int parseCommand(char *message, commandStruct *command)
 {
     command->message = message;
-    command->parameters = malloc(sizeof(message));
+//    command->parameters = malloc(sizeof(message));
     char** parameters = command->parameters;
     int offset = substringCharacter(message, &command->command);
 
