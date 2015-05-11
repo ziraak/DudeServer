@@ -47,6 +47,8 @@ int setupServer()
     adres_server.sin_addr.s_addr = inet_addr(server_ip);
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
 
+    struct userInfo newInfo;
+
     exitIfError(sock, "Socket failed while trying to start the server.");
     bindResult = bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server));
     exitIfError(bindResult, "Binding to the socket failed while starting the server.");

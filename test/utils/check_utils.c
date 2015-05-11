@@ -2,11 +2,13 @@
 // Created by osboxes on 30/04/15.
 //
 
+#include <stdio.h>
 #include "check_utils.h"
+#include "../../source/main.h"
 
-int test_utils_substringCharacter_inner(char* incoming, char* expected_result, int expected_offset)
+int test_utils_substringCharacter_inner(char *incoming, char *expected_result, int expected_offset)
 {
-    char* cmd = NULL;
+    char *cmd = NULL;
     int offset = 0;
 
     offset = substringCharacter(incoming, &cmd);
@@ -20,13 +22,35 @@ int test_utils_substringCharacter_inner(char* incoming, char* expected_result, i
 
 START_TEST(test_utils_substringCharacter)
     {
-        char* incoming = "sjuul fatih harmen desmond ferdi";
+        char *incoming = "sjuul fatih harmen desmond ferdi";
 
         incoming += test_utils_substringCharacter_inner(incoming, "sjuul", 6);
         incoming += test_utils_substringCharacter_inner(incoming, "fatih", 6);
         incoming += test_utils_substringCharacter_inner(incoming, "harmen", 7);
         incoming += test_utils_substringCharacter_inner(incoming, "desmond", 8);
         test_utils_substringCharacter_inner(incoming, "ferdi", 6);
+    }
+END_TEST
+
+START_TEST(test_utils_parseCommand)
+    {
+        char *incoming = "LOGIN fatih ik_ben_awesome demir :trailing ";
+        commandStruct command;
+
+        ck_assert(0 == 0);
+
+        int result = parseCommand(incoming, &command);
+
+        ck_assert_int_eq(result, BOOL_TRUE);
+//        ck_assert_str_eq(command.command, "LOGIN");
+//
+//        ck_assert_str_eq(command.parameters[0], "fatih");
+//        ck_assert_str_eq(command.parameters[1], "ik_ben_awesome");
+//        ck_assert_str_eq(command.parameters[2], "demir");
+//
+//        ck_assert_str_eq(command.trailing, "trailing ");
+//
+//        free(&command);
     }
 END_TEST
 
@@ -40,6 +64,7 @@ Suite* utils_suite(void)
     tc_util_core = tcase_create("core");
 
     tcase_add_test(tc_util_core, test_utils_substringCharacter);
+    tcase_add_test(tc_util_core, test_utils_parseCommand);
 
     suite_add_tcase(s, tc_util_core);
 
