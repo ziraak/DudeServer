@@ -6,7 +6,7 @@ int handleCreateUserCommand(char *message)
     int offset = substringCharacter(message, &username);
     substringCharacter(message += offset, &password);
 
-    if (checkUser(username) == EXIT_SUCCESS)
+    if (checkUser(username) == BOOL_TRUE)
     {
         return ERR_USERNAMEINUSE;
     }

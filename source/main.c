@@ -152,6 +152,10 @@ int parseMessage(char *message)
     {
         return handlePartCommand(message + offset);
     }
+    else if (commandEquals(command, "DELETE_USER"))
+    {
+        return handleDeleteUserCommand(currentUser.username);
+    }
 
     return ERR_UNKNOWNCOMMAND;
 }
