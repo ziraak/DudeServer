@@ -72,6 +72,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     char buffer[200];
     bzero(buffer, sizeof(buffer));
     int authenticated = BOOL_FALSE;
+    int result;
 
     printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
            ntohs(adres_client.sin_port));
@@ -83,12 +84,22 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
         if (authenticated == BOOL_FALSE)
         {
-            authenticated = authenticateClient(sockfd, buffer);
+            char *command = NULL;
+            int offset = substringCharacter(buffer, &command);
+            if (commandEquals(command, "CREATE_USER"))
+            {
+                result = handleCreateUserCommand(buffer + offset);
+                sendIntegerMessageToClient(sockfd, result);
+            }
+            else
+            {
+                authenticated = authenticateClient(sockfd, buffer);
+            }
         }
         else
         {
             // getAllUnreadMessagesByName(); TODO: Username meegeven
-            int result = parseMessage(buffer);
+            result = parseMessage(buffer);
             sendIntegerMessageToClient(sockfd, result);
         }
 
@@ -115,9 +126,6 @@ int authenticateClient(int sockfd, char buffer[])
             authenticated = BOOL_TRUE;
         }
         sendIntegerMessageToClient(sockfd, result);
-    } else if (commandEquals(command, "CREATE_USER"))
-    {
-        return handleCreateUserCommand(buffer + offset);
     }
     else
     {
