@@ -5,10 +5,14 @@
 #ifndef DUDESERVER_CHANNEL_H
 #define DUDESERVER_CHANNEL_H
 
+#include "database.h"
 #include <libxml/xmlstring.h>
 #include <libxml/xmlwriter.h>
+#include <libxml/parser.h>
+#include <libxml/xmlreader.h>
+#include <libxml/xmlmemory.h>
 #include <stdio.h>
-#include "database.h"
+
 
 static char *const FILEFORMATSTRING = "xml/channels/%s.xml";
 static xmlChar *const channelTagName = "channel";

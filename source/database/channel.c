@@ -285,52 +285,7 @@ int checkIfChannelEmpty(char *channelName)
 
 messageInfo* getMessages(char *channelName)
 {
-    char *docname = (char *) malloc(500);
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    messageInfo *messages = malloc(100);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
-
-    if ((doc = openDoc(docname)) == NULL)
-    {
-        return messages;
-    }
-
-    if ((cur = checkDoc(doc, "channel")) == NULL)
-    {
-        return messages;
-    }
-
-    int index;
-    index = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
-        {
-            xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")))
-                {
-                    messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
-                    messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
-                    index++;
-
-                }
-                curChild = curChild->next;
-            }
-        }
-
-        cur = cur->next;
-
-    }
-
-    xmlFreeDoc(doc);
-    free(docname);
-    return messages;
+    return getMessagesOnTime(channelName,0);
 }
 
 
@@ -366,10 +321,10 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp)
                 if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
                         atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
-                    printf("timestamp  :%i\n", timestamp);
-                    printf("time in db :%i\n", atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")));
+                    //printf("timestamp  :%i\n", timestamp);
+                    //printf("time in db :%i\n", atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")));
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    printf("written by: %s\n", messages[index].writer);
+                    //printf("written by: %s\n", messages[index].writer);
                     messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
                     messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
                     index++;
