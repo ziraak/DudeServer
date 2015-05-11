@@ -17,6 +17,7 @@
 #include "database/database.h"
 #include "commands/part.h"
 #include "protocolDefines.h"
+#include "time.h"
 
 userInfo currentUser;
 

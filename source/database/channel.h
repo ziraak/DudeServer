@@ -53,4 +53,6 @@ int checkIfChannelEmpty(char* channelName);
 
 messageInfo* getMessages(char *channelName);
 
+messageInfo* getMessagesOnTime(char *channelName, int timestamp);
+
 #endif 
