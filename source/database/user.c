@@ -27,7 +27,7 @@ int getUser(char *username, userInfo *result)
     xmlNodePtr cur;
 
 
-    if (checkUser(username) == EXIT_FAILURE)
+    if (checkUser(username) == BOOL_FALSE)
     {
         fprintf(stderr, "user: %s does not exist\n", username);
         return -1;
@@ -65,7 +65,7 @@ int checkUser(char *userName)
     if (userName == NULL)
     {
         fprintf(stderr, "user can not be NULL ");
-        return EXIT_FAILURE;
+        return BOOL_FALSE;
     }
     char **userList;
     userList = getUserList();
@@ -76,17 +76,17 @@ int checkUser(char *userName)
         if (!strcmp(userList[listIndex], userName))
         {
             //printf("user: %s found it was : %s \n",userName,userList[listIndex]);
-            return EXIT_SUCCESS;
+            return BOOL_TRUE;
         }
         listIndex++;
     }
     printf("%s not found\n", userName);
-    return EXIT_FAILURE;
+    return BOOL_FALSE;
 }
 
 int userJoinChannel(char *username, char *channelName)
 {
-    if (checkUser(username) == EXIT_FAILURE || checkChannel(channelName) == EXIT_FAILURE)
+    if (checkUser(username) == BOOL_FALSE || checkChannel(channelName) == BOOL_FALSE)
     {
         fprintf(stderr, "user: %s or channel %s does not exist\n", username, channelName);
         return BOOL_FALSE;

@@ -1,14 +1,11 @@
-project(car)
+project(DudeServer)
 
-cmake_minimum_required(VERSION 3.1)
+cmake_minimum_required(VERSION 2.8)
 set(CMAKE_MODULE_PATH "${CMAKE_CURRENT_SOURCE_DIR}/cmake")
 
 ###############################################################################
 # Set build features
 set(CMAKE_BUILD_TYPE Debug)
-
-#set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -lpthread")
-#set(CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -lpthread")
 
 ###############################################################################
 include(CheckCSourceCompiles)
@@ -62,6 +59,8 @@ endif(NOT HAVE_PID_T)
 
 ###############################################################################
 # Check libraries
+find_package(LibXml2)
+include_directories(${LIBXML2_INCLUDE_DIR})
 
 ###############################################################################
 # Generate "config.h" from "cmake/config.h.cmake"

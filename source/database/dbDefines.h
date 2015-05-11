@@ -1,7 +1,3 @@
-//
-// Created by osboxes on 01/05/15.
-//
-
 #ifndef DUDESERVER_DBDEFINES_H
 #define DUDESERVER_DBDEFINES_H
 
