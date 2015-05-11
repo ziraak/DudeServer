@@ -336,7 +336,6 @@ messageInfo* getMessages(char *channelName)
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp)
 {
-
     char *docname = (char *) malloc(500);
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -364,26 +363,22 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp)
             curChild = cur->xmlChildrenNode;
             while (curChild != NULL)
             {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message"))&&
-                        (int)getValue(doc, curChild->xmlChildrenNode, "timestamp") > timestamp)
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
+                        atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
-                    printf("timestamp  :%i\n",timestamp);
-                    printf("time in db :%i\n",(int)getValue(doc, curChild->xmlChildrenNode, "timestamp"));
+                    printf("timestamp  :%i\n", timestamp);
+                    printf("time in db :%i\n", atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")));
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    printf("written by: %s\n",messages[index].writer);
+                    printf("written by: %s\n", messages[index].writer);
                     messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
                     messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
                     index++;
-
                 }
                 curChild = curChild->next;
             }
         }
-
         cur = cur->next;
-
     }
-
     xmlFreeDoc(doc);
     free(docname);
     return messages;
