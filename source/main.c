@@ -156,6 +156,14 @@ int parseMessage(char *message)
     {
         return handleDeleteUserCommand(currentUser.username);
     }
+    else if (commandEquals(command, "UPDATE_NICKNAME"))
+    {
+        return handleUpdateNicknameCommand(currentUser.username, message + offset);
+    }
+    else if (commandEquals(command, "UPDATE_PASSWORD"))
+    {
+        return handleUpdatePasswordCommand(currentUser.username, message + offset);
+    }
 
     return ERR_UNKNOWNCOMMAND;
 }

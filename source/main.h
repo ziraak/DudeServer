@@ -12,6 +12,8 @@
 #include "commands/privmsg.h"
 #include "commands/create_user.h"
 #include "commands/delete_user.h"
+#include "commands/update_password.h"
+#include "commands/update_nickname.h"
 #include "database/database.h"
 #include "commands/part.h"
 #include "protocolDefines.h"

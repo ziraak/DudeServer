@@ -2,7 +2,7 @@
 
 int handleDeleteUserCommand(char *username)
 {
-    if (checkUser(username) == BOOL_FALSE)
+    if (checkUser(username) == BOOL_TRUE)
     {
         deleteUser(username);
         return RPL_SUCCESS;
