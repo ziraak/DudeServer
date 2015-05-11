@@ -43,10 +43,11 @@ void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
 void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
 {
     xmlTextWriterStartElement(xmlptr, messagesTagName);
-    while (messages->writer != NULL)
+    int i = 0;
+    while (messages[i].writer != NULL)
     {
-        writeMessageToXml(xmlptr, *messages);
-        messages++;
+        writeMessageToXml(xmlptr, messages[i]);
+        i++;
     }
     xmlTextWriterEndElement(xmlptr);
 }
@@ -63,10 +64,9 @@ void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
 int countMessages(messageInfo *message)
 {
     int total = 0;
-    while (message->writer != NULL)
+    while (message[total].writer != NULL)
     {
         total++;
-        message++;
     }
     return total;
 }
@@ -122,7 +122,7 @@ int getChannel(char *channelName, channelInfo *channel)
     channel->users = getListOfValues(doc, cur, "users", "user");
 
     //TODO: per message alloceren!!!! niet in 1x
-    channel->messages = malloc(1024);
+    channel->messages = calloc(100, sizeof(messageInfo));
 
     int index;
     index = 0;
