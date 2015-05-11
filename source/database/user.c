@@ -203,6 +203,7 @@ void assignLoginToken(char* username, char* loginToken)
 
 void createNewUser(char* username, char* password)
 {
+    printf("creating new user.\n");
     xmlDocPtr doc = NULL;       /* document pointer */
     xmlNodePtr root_node = NULL, node = NULL;/* node pointers */
     char* docname = malloc(500);

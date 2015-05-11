@@ -4,16 +4,18 @@
 
 #include "channel.h"
 
+
 int writeChannel(channelInfo channel)
 {
-    xmlTextWriterPtr file = openChannelFile(channel.name);
-    xmlTextWriterStartElement(file, channelTagName);
-    xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
-    writeUsersToChannel(file, channel.users);
-    writeMessagesToChannel(file, channel.messages);
-    xmlTextWriterEndElement(file);
-    int suc = xmlTextWriterEndDocument(file);
-    xmlFreeTextWriter(file);
+
+        xmlTextWriterPtr file = openChannelFile(channel.name);
+        xmlTextWriterStartElement(file, channelTagName);
+        xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
+        writeUsersToChannel(file, channel.users);
+        writeMessagesToChannel(file, channel.messages);
+        xmlTextWriterEndElement(file);
+        int suc = xmlTextWriterEndDocument(file);
+        xmlFreeTextWriter(file);
     return suc;
 }
 
@@ -26,7 +28,6 @@ xmlTextWriterPtr openChannelFile(char *channelName)
 
 void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
 {
-
     xmlTextWriterStartElement(xmlptr, usersTagName);
     while (users != NULL)
     {
