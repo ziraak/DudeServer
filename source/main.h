@@ -42,8 +42,6 @@ void acknowledgeConnection(int sockfd);
 
 int commandEquals(char *command, char *check);
 
-int writeMessageToDB(char *recipient, char *msgToSend);
-
 int authenticateClient(int sockfd, char buffer[]);
 
 #define BOOL_TRUE 1

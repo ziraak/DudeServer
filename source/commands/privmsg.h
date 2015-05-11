@@ -5,4 +5,7 @@
 #include "../utils/utils.h"
 
 int handlePrivateMessageCommand(char *message);
+
+int writeMessageToDB(char *msgToSend, char *channel);
+
 #endif

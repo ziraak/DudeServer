@@ -39,7 +39,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
+    uint16_t listenPort = 9091;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -196,12 +196,6 @@ void acknowledgeConnection(int sockfd)
 int commandEquals(char *command, char *check)
 {
     return strcmp(command, check) == 0;
-}
-
-int writeMessageToDB(char *recipient, char *msgToSend)
-{
-    // TODO: Write message to the file of given user
-    return 0;
 }
 
 char **getAllUnreadMessagesByName(char *username)
