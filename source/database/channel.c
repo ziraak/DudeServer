@@ -123,37 +123,8 @@ int getChannel(char *channelName, channelInfo *channel)
 
     channel->name = getValue(doc, cur, "name");
     channel->users = getListOfValues(doc, cur, "users", "user");
-
-    //TODO: per message alloceren!!!! niet in 1x
-    channel->messages = calloc(100, sizeof(messageInfo));
-
-    int index;
-    index = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
-        {
-            xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")))
-                {
-
-                    message.writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    message.timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
-                    message.body = getValue(doc, curChild->xmlChildrenNode, "body");
-                    channel->messages[index] = message;
-                    index++;
-
-                }
-                curChild = curChild->next;
-            }
-        }
-
-        cur = cur->next;
-
-    }
+    channel->messages = getMessages(channelName);
+    
 
     xmlFreeDoc(doc);
     free(docname);
@@ -308,4 +279,56 @@ int checkIfChannelEmpty(char *channelName)
         printf("%s is not empty", info.name);
         return BOOL_FALSE;
     }
+}
+
+
+
+messageInfo* getMessages(char *channelName)
+{
+    char *docname = (char *) malloc(500);
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    messageInfo *messages = malloc(100);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        return messages;
+    }
+
+    if ((cur = checkDoc(doc, "channel")) == NULL)
+    {
+        return messages;
+    }
+
+    int index;
+    index = 0;
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
+        {
+            xmlNodePtr curChild;
+            curChild = cur->xmlChildrenNode;
+            while (curChild != NULL)
+            {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")))
+                {
+                    messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
+                    messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
+                    messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
+                    index++;
+
+                }
+                curChild = curChild->next;
+            }
+        }
+
+        cur = cur->next;
+
+    }
+
+    xmlFreeDoc(doc);
+    free(docname);
+    return messages;
 }
