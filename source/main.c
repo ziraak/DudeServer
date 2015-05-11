@@ -115,6 +115,9 @@ int authenticateClient(int sockfd, char buffer[])
             authenticated = BOOL_TRUE;
         }
         sendIntegerMessageToClient(sockfd, result);
+    } else if (commandEquals(command, "CREATE_USER"))
+    {
+        return handleCreateUserCommand(buffer + offset);
     }
     else
     {

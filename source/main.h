@@ -10,6 +10,7 @@
 #include "commands/login.h"
 #include "commands/join.h"
 #include "commands/privmsg.h"
+#include "commands/create_user.h"
 #include "database/database.h"
 #include "commands/part.h"
 #include "protocolDefines.h"
