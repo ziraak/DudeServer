@@ -52,7 +52,7 @@ char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
     return (char *) key;
 }
 
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
+char** getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
 {
     char **key;
     key = calloc(50, 1000);
@@ -87,7 +87,7 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
 
     sprintf(docname, "%s%ss/%s.xml",DB_DBLOC, fileType, filename);
 
-    printf("opening document %s\n", docname);
+   // printf("opening document %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
     {
