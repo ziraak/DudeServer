@@ -49,12 +49,12 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
 
 int joinChannel(char* channelName)
 {
-    if(userHasChannel(channelName) == BOOL_TRUE)
+    if(userHasChannel(channelName) == DB_RETURN_SUCCES)
     {
         return RPL_TOPIC;
     }
 
-    if(userJoinChannel(currentUser.username, channelName) == BOOL_FALSE)
+    if(userJoinChannel(currentUser.username, channelName) == DB_RETURN_DOESNOTEXIST)
     {
         return ERR_BADCHANMASK;
     }

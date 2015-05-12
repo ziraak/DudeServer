@@ -27,6 +27,15 @@ START_TEST(test_login_command_wrong_password)
     }
 END_TEST
 
+START_TEST(test_join_channel)
+    {
+        commandStruct cmdStruct;
+        parseCommand("JOIN batcave", &cmdStruct);
+        int resultLogin = handleJoinCommand(cmdStruct);
+        ck_assert_int_eq(RPL_TOPIC, resultLogin);
+    }
+END_TEST
+
 Suite* commands_suite()
 {
     Suite *suite;
@@ -38,8 +47,9 @@ Suite* commands_suite()
 
     // Specifieke volgorde voor deze scenario.
     tcase_add_test(tc_util_core, test_create_user_command);
-    tcase_add_test(tc_util_core, test_login_command);
     tcase_add_test(tc_util_core, test_login_command_wrong_password);
+    tcase_add_test(tc_util_core, test_login_command);
+    tcase_add_test(tc_util_core, test_join_channel);
 
     suite_add_tcase(suite, tc_util_core);
 
@@ -55,6 +65,7 @@ int testSuiteCommand()
     suite = commands_suite();
     sRunner = srunner_create(suite);
 
+    srunner_set_fork_status(sRunner, CK_NOFORK);
     srunner_run_all(sRunner, CK_NORMAL);
     number_tests_failed = srunner_ntests_failed(sRunner);
     srunner_free(sRunner);
