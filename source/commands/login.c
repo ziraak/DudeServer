@@ -6,7 +6,7 @@
 
 int handleLoginCommand(commandStruct cmd)
 {
-    if(cmd.parameterCount < 4)
+    if(cmd.parameterCount < 3)
     {
         return ERR_NEEDMOREPARAMS;
     }
