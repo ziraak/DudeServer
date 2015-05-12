@@ -152,7 +152,7 @@ int checkChannel(char *channelName)
     if (channelName == NULL)
     {
         fprintf(stderr, "channel can not be NULL ");
-        return EXIT_FAILURE;
+        return DB_RETURN_NULLPOINTER;
     }
 
     char **channellist;
@@ -164,8 +164,8 @@ int checkChannel(char *channelName)
     {
         if (!strcmp(channellist[listIndex], channelName))
         {
-            // printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
-            return DB_RETURN_SUCCES;
+            printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
+            return BOOL_TRUE;
         }
         listIndex++;
     }

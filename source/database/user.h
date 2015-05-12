@@ -23,6 +23,6 @@ void changePassword(char* username, char* newPassword);
 
 void assignLoginToken(char* username, char* loginToken);
 
-void createNewUser(char* username, char* password);
+int createNewUser(char *username, char *password);
 
 #endif
