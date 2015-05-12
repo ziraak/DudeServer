@@ -18,6 +18,15 @@ START_TEST(test_login_command)
     }
 END_TEST
 
+START_TEST(test_login_command_wrong_password)
+    {
+        commandStruct cmdStruct;
+        parseCommand("LOGIN fatihTestUser testPassword2 testNickname", &cmdStruct);
+        int resultLogin = handleLoginCommand(cmdStruct);
+        ck_assert_int_eq(ERR_NOLOGIN, resultLogin);
+    }
+END_TEST
+
 Suite* commands_suite()
 {
     Suite *suite;
@@ -30,6 +39,7 @@ Suite* commands_suite()
     // Specifieke volgorde voor deze scenario.
     tcase_add_test(tc_util_core, test_create_user_command);
     tcase_add_test(tc_util_core, test_login_command);
+    tcase_add_test(tc_util_core, test_login_command_wrong_password);
 
     suite_add_tcase(suite, tc_util_core);
 
