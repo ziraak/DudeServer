@@ -39,15 +39,13 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9091;
+    uint16_t listenPort = 9090;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
     adres_server.sin_port = htons(listenPort); // change to network byte order
     adres_server.sin_addr.s_addr = inet_addr(server_ip);
     sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    struct userInfo newInfo;
 
     exitIfError(sock, "Socket failed while trying to start the server.");
     bindResult = bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server));

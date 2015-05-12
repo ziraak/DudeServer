@@ -79,4 +79,3 @@ add_subdirectory(test)
 # Unit tests
 enable_testing()
 add_test(NAME check_money COMMAND check_money)
-

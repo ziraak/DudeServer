@@ -1,10 +1,4 @@
-//
-// Created by osboxes on 30/04/15.
-//
-
-#include <stdio.h>
 #include "check_utils.h"
-#include "../../source/main.h"
 
 int test_utils_substringCharacter_inner(char *incoming, char *expected_result, int expected_offset)
 {

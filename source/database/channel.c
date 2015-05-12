@@ -193,7 +193,7 @@ int checkChannel(char *channelName)
     {
         if (!strcmp(channellist[listIndex], channelName))
         {
-            // printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
+            printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
             return DB_RETURN_SUCCES;
         }
         listIndex++;

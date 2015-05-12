@@ -15,7 +15,6 @@ int handleLoginCommand(char *message)
     int userAuthenticated = authenticateUser(username, password, &user);
     if (userAuthenticated == RPL_LOGIN)
     {
-        // TODO: generate token for user
         currentUser = user;
     }
 
