@@ -1,14 +1,11 @@
-//
-// Created by osboxes on 01/05/15.
-//
-
-#include "utils/check_utils.h"
-#include "database/check_user.h"
+#include "main.h"
 
 int main()
 {
-    int utils = utils_tests();
-     utils += user_tests();
+    int numberOfFailedTests = 0;
+    //numberOfFailedTests += utils_tests();
+    numberOfFailedTests += testSuiteCommand();
+    //numberOfFailedTests += user_tests();
 
-    return (utils > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
+    return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

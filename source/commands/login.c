@@ -31,7 +31,7 @@ int handleLoginCommand(commandStruct cmd)
 
 int authenticateUser(char *username, char *password, userInfo *result)
 {
-    if (getUser(username, result) < 0)
+    if (getUser(username, result) != DB_RETURN_SUCCES)
     {
         return ERR_NOLOGIN;
     }

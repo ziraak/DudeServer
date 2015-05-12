@@ -2,7 +2,9 @@
 
 START_TEST(test_login_command)
     {
-        int resultLogin = handleLoginCommand("fatih nub testNickname");
+        commandStruct cmdStruct;
+        parseCommand("LOGIN fatih nub testNickname", &cmdStruct);
+        int resultLogin = handleLoginCommand(cmdStruct);
         ck_assert_int_eq(RPL_LOGIN, resultLogin);
     }
 END_TEST

@@ -61,7 +61,7 @@ int getUser(char *username, userInfo *result)
     result->loginToken = getValue(doc, cur, "loginToken");
 
     xmlFreeDoc(doc);
-    return 0;
+    return DB_RETURN_SUCCES;
 }
 
 int checkUser(char *userName)
