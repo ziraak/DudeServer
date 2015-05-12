@@ -6,14 +6,13 @@
 
 int handleLoginCommand(commandStruct cmd)
 {
-    if(cmd.parameterCount < 3)
+    if(cmd.parameterCount < 2)
     {
         return ERR_NEEDMOREPARAMS;
     }
 
     char *username = cmd.parameters[0],
-            *password = cmd.parameters[1],
-            *nickname = cmd.parameters[2];
+            *password = cmd.parameters[1];
 
     userInfo user;
     int userAuthenticated = authenticateUser(username, password, &user);
@@ -21,6 +20,11 @@ int handleLoginCommand(commandStruct cmd)
     {
         // TODO: generate token for user
         currentUser = user;
+    }
+
+    if(cmd.parameterCount > 2)
+    {
+        // TODO: doe iets met nickname op cmd.parameters[2]
     }
 
     return userAuthenticated;
