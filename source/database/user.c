@@ -31,12 +31,14 @@ int getUser(char *username, userInfo *result)
     if (userReturn == DB_RETURN_NULLPOINTER)
     {
         return userReturn;
-    } else if(userReturn != BOOL_TRUE){
+    }
+    else if (userReturn != BOOL_TRUE)
+    {
         return DB_RETURN_DOESNOTEXIST;
     }
 
 
-    sprintf(docname, "%s%s.xml",DB_USERLOC ,username);
+    sprintf(docname, "%s%s.xml", DB_USERLOC, username);
 
     if ((doc = openDoc(docname)) == NULL)
     {
@@ -88,16 +90,21 @@ int checkUser(char *userName)
 
 int userJoinChannel(char *username, char *channelName)
 {
-    if (checkUser(username) == BOOL_FALSE || checkChannel(channelName) == BOOL_FALSE)
+    if (checkUser(username) != BOOL_TRUE)
     {
-        fprintf(stderr, "user: %s or channel %s does not exist\n", username, channelName);
-        return BOOL_FALSE;
+        fprintf(stderr, "user: %s  does not exist\n", username);
+        return DB_RETURN_DOESNOTEXIST;
+    }
+    else if (checkChannel(channelName) != BOOL_TRUE)
+    {
+        fprintf(stderr, " channel %s does not exist\n", channelName);
+        return DB_RETURN_DOESNOTEXIST;
     }
 
     addFieldToFileInList("user", username, "channels", "channel", channelName);
     addFieldToFileInList("channel", channelName, "users", "user", username);
 
-    return BOOL_TRUE;
+    return DB_RETURN_SUCCES;
 }
 
 void deleteChannelFromUser(char *username, char *channelName)
@@ -106,7 +113,7 @@ void deleteChannelFromUser(char *username, char *channelName)
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
-    sprintf(docname, "%s%s.xml", DB_USERLOC,username);
+    sprintf(docname, "%s%s.xml", DB_USERLOC, username);
     printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -152,7 +159,7 @@ void deleteUser(char *username)
         channelIndex++;
     }
 
-    sprintf(docname, "%s%s.xml",DB_USERLOC ,username);
+    sprintf(docname, "%s%s.xml", DB_USERLOC, username);
 
     remove(docname);
 
@@ -182,22 +189,22 @@ void deleteUserFromList(char *username)
     xmlFreeDoc(doc);
 }
 
-void changeNickname(char* username, char* newNickname)
+void changeNickname(char *username, char *newNickname)
 {
-    changeFieldInFile("user",username,"nickname",newNickname);
+    changeFieldInFile("user", username, "nickname", newNickname);
 }
 
-void changePassword(char* username, char* newPassword)
+void changePassword(char *username, char *newPassword)
 {
-    changeFieldInFile("user",username,"password",newPassword);
+    changeFieldInFile("user", username, "password", newPassword);
 }
 
-void assignLoginToken(char* username, char* loginToken)
+void assignLoginToken(char *username, char *loginToken)
 {
-    if(changeFieldInFile("user",username,"loginToken",loginToken) == BOOL_FALSE)
+    if (changeFieldInFile("user", username, "loginToken", loginToken) == BOOL_FALSE)
     {
         printf("new login token\n");
-        addFieldToFile("user",username,"loginToken",loginToken);
+        addFieldToFile("user", username, "loginToken", loginToken);
     }
 
 }
@@ -211,14 +218,16 @@ int createNewUser(char *username, char *password)
     if (userReturn == DB_RETURN_NULLPOINTER || password == NULL)
     {
         return DB_RETURN_NULLPOINTER;
-    } else if(userReturn != BOOL_FALSE){
+    }
+    else if (userReturn != BOOL_FALSE)
+    {
         return DB_RETURN_ALREADYEXISTS;
     }
 
     char *docname = (char *) malloc(500);
-    sprintf(docname, "%s%s.xml",DB_USERLOC ,username);
+    sprintf(docname, "%s%s.xml", DB_USERLOC, username);
 
-    if ( openDoc(docname) != NULL)
+    if (openDoc(docname) != NULL)
     {
         free(docname);
         return DB_RETURN_ALREADYEXISTS;
@@ -232,15 +241,15 @@ int createNewUser(char *username, char *password)
     doc = xmlNewDoc(BAD_CAST "1.0");
     root_node = xmlNewNode(NULL, BAD_CAST "user");
     xmlDocSetRootElement(doc, root_node);
-    xmlNewChild(root_node, NULL, BAD_CAST "nickname",BAD_CAST username);
-    xmlNewChild(root_node, NULL, BAD_CAST "password",BAD_CAST password);
-    xmlNewChild(root_node, NULL, BAD_CAST "channels",NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "nickname", BAD_CAST username);
+    xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
+    xmlNewChild(root_node, NULL, BAD_CAST "channels", NULL);
 
 
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
     xmlFreeDoc(doc);
     xmlCleanupParser();
-    addToListFile("user",username);
+    addToListFile("user", username);
     free(docname);
     return DB_RETURN_SUCCES;
 }
