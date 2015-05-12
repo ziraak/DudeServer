@@ -1,10 +1,10 @@
 #include "delete_user.h"
 
-int handleDeleteUserCommand(char *username)
+int handleDeleteUserCommand()
 {
-    if (checkUser(username) == BOOL_TRUE)
+    if (checkUser(currentUser.username) == BOOL_TRUE)
     {
-        deleteUser(username);
+        deleteUser(currentUser.username);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;
