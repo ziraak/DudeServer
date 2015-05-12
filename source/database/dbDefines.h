@@ -5,7 +5,9 @@
 #define DB_RETURN_FILENOTFOUND -2
 #define DB_RETURN_DOESNOTEXIST -1
 #define DB_RETURN_CORRUPTFILE -3
+#define DB_RETURN_NULLPOINTER -666
 #define DB_RETURN_SUCCES 0
+#define DB_RETURN_ALREADYEXISTS -4
 
 //file locations
 #define DB_DBLOC "xml/"
