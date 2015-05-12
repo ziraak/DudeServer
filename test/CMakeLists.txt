@@ -25,7 +25,7 @@ target_link_libraries(DudeTestClient DudeServerLib)
 # remove all older database files
 add_custom_command(TARGET run_unit_tests PRE_BUILD
 COMMAND ${CMAKE_COMMAND} -E remove_directory
-$<TARGET_FILE_DIR:DudeServer>/xml)
+$<TARGET_FILE_DIR:run_unit_tests>/xml)
 add_custom_command(TARGET run_unit_tests POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory
 ${CMAKE_SOURCE_DIR}/xml $<TARGET_FILE_DIR:run_unit_tests>/xml)

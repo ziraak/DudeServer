@@ -4,57 +4,95 @@
 
 #include "check_user.h"
 
+char *uName = "dummy";
+char *cName = "testChannel";
+char *bannedName = "banned";
+char *newUname = "dummy2";
+
+
+
+
+//check user tests------------------------------------------------------------------------------------------------
+
 START_TEST(checkUser_test_NULL)
     {
-        ck_assert_int_eq(checkUser(NULL),DB_RETURN_NULLPOINTER);
+        ck_assert_int_eq(checkUser(NULL), DB_RETURN_NULLPOINTER);
     }
 END_TEST
 
 START_TEST(checkUser_test_false)
     {
-        ck_assert_int_eq(checkUser("retard"),BOOL_FALSE);
+        ck_assert_int_eq(checkUser("retard"), BOOL_FALSE);
     }
 END_TEST
 
 START_TEST(checkUser_test_true)
     {
-        ck_assert_int_eq(checkUser("dummy"),BOOL_TRUE);
+        ck_assert_int_eq(checkUser(uName), BOOL_TRUE);
     }
 END_TEST
 
+//create user tests------------------------------------------------------------------------------------
+
 START_TEST(createUser_test_alreadyExists)
     {
-        ck_assert_int_eq(createNewUser("dummy","aksf"),DB_RETURN_ALREADYEXISTS);
+        ck_assert_int_eq(createNewUser(uName, "a"), DB_RETURN_ALREADYEXISTS);
     }
 END_TEST
 
 START_TEST(createUser_test_alreadyExistsButBanned)
     {
-        ck_assert_int_eq(createNewUser("banned","aksf"),DB_RETURN_ALREADYEXISTS);
+        ck_assert_int_eq(createNewUser(bannedName, "a"), DB_RETURN_ALREADYEXISTS);
     }
 END_TEST
 
+START_TEST(createUser_test_NULL)
+    {
+        ck_assert_int_eq(createNewUser(NULL, "a"), DB_RETURN_NULLPOINTER);
+        ck_assert_int_eq(createNewUser(newUname, NULL), DB_RETURN_NULLPOINTER);
+    }
+END_TEST
+
+START_TEST(createUser_test_CORRECT)
+    {
+        userInfo user;
+        ck_assert_int_eq(createNewUser(newUname, "a"), DB_RETURN_SUCCES);
+        ck_assert_int_eq(getUser(newUname,&user),DB_RETURN_SUCCES);
+        ck_assert_str_eq(user.nickname,newUname);
+        ck_assert_str_eq(user.password,"a");
+        ck_assert_str_eq(user.username,newUname);
+    }
+END_TEST
+
+
+// Join channel tests -------------------------------------------------------------------------------------
+
 START_TEST(userJoinChannel_test_correct)
     {
-        ck_assert_int_eq(userJoinChannel("fatih","rovers"),DB_RETURN_SUCCES);
-
+        ck_assert_int_eq(userJoinChannel(uName, cName), DB_RETURN_SUCCES);
+        userInfo user;
+        channelInfo channel;
+        ck_assert_int_eq(getUser(uName, &user), DB_RETURN_SUCCES);
+        ck_assert_str_eq(user.channels[0], cName);
+        ck_assert_int_eq(getChannel(cName, &channel), DB_RETURN_SUCCES);
+        ck_assert_str_eq(channel.users[0], uName);
     }
 END_TEST
 
 START_TEST(userJoinChannel_test_wrongChannel)
     {
-        ck_assert_int_eq(userJoinChannel("dummy","rover"),DB_RETURN_DOESNOTEXIST);
+        ck_assert_int_eq(userJoinChannel(uName, "a"), DB_RETURN_DOESNOTEXIST);
     }
 END_TEST
 
 START_TEST(userJoinChannel_test_wrongUser)
     {
-        ck_assert_int_eq(userJoinChannel("retard","batcave"),DB_RETURN_DOESNOTEXIST);
+        ck_assert_int_eq(userJoinChannel("a", cName), DB_RETURN_DOESNOTEXIST);
     }
 END_TEST
 
-
-Suite* user_suite(void)
+//----------------___---------------------------------------_____--------------___----__----__----__----__---___---_-----_----
+Suite *user_suite(void)
 {
     Suite *s;
     TCase *tc_user_core;
@@ -64,20 +102,24 @@ Suite* user_suite(void)
 
     tc_user_core = tcase_create("core");
 
-//    tcase_add_test(tc_user_core, checkUser_test_NULL);
-//    tcase_add_test(tc_user_core, checkUser_test_false);
-//    tcase_add_test(tc_user_core, checkUser_test_true);
-//    tcase_add_test(tc_user_core, createUser_test_alreadyExists);
-//    tcase_add_test(tc_user_core, createUser_test_alreadyExistsButBanned);
+    tcase_add_test(tc_user_core, checkUser_test_NULL);
+    tcase_add_test(tc_user_core, checkUser_test_false);
+    tcase_add_test(tc_user_core, checkUser_test_true);
+
+    tcase_add_test(tc_user_core, createUser_test_alreadyExists);
+    tcase_add_test(tc_user_core, createUser_test_alreadyExistsButBanned);
+    tcase_add_test(tc_user_core, createUser_test_NULL);
+    tcase_add_test(tc_user_core, createUser_test_CORRECT);
+
     tcase_add_test(tc_user_core, userJoinChannel_test_correct);
     tcase_add_test(tc_user_core, userJoinChannel_test_wrongChannel);
     tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
+
 
     suite_add_tcase(s, tc_user_core);
 
     return s;
 }
-
 
 
 int user_tests()

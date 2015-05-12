@@ -102,10 +102,10 @@ int getChannel(char *channelName, channelInfo *channel)
 
     int checkChannelResult = checkChannel(channelName);
 
-    if (checkChannelResult == EXIT_FAILURE || checkChannelResult == DB_RETURN_DOESNOTEXIST)
+    if (checkChannelResult == DB_RETURN_NULLPOINTER || checkChannelResult == DB_RETURN_DOESNOTEXIST)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
-        return DB_RETURN_DOESNOTEXIST;
+        return checkChannelResult;
     }
 
 
@@ -164,12 +164,12 @@ int checkChannel(char *channelName)
     {
         if (!strcmp(channellist[listIndex], channelName))
         {
-            printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
+            //printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
             return BOOL_TRUE;
         }
         listIndex++;
     }
-    printf("%s not found\n", channelName);
+    //printf("%s not found\n", channelName);
     return DB_RETURN_DOESNOTEXIST;
 }
 

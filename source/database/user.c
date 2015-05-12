@@ -234,7 +234,7 @@ int createNewUser(char *username, char *password)
     }
 
 
-    printf("creating new user.\n");
+    //printf("creating new user.\n");
     xmlDocPtr doc = NULL;       /* document pointer */
     xmlNodePtr root_node = NULL;/* node pointers */
 
