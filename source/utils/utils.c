@@ -81,7 +81,7 @@ int parseCommand(char *message, commandStruct *command)
     return BOOL_TRUE;
 }
 
-void commandStruct_free(commandStruct* cmdStruct)
+void commandStruct_free(commandStruct *cmdStruct)
 {
     if(cmdStruct == NULL) return;
     if(cmdStruct->parameters != NULL) free(cmdStruct->parameters);

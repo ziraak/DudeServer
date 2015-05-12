@@ -6,6 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "utils/commandStruct.h"
 #include "utils/utils.h"
 #include "commands/login.h"
 #include "commands/join.h"

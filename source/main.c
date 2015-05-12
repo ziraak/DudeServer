@@ -103,10 +103,12 @@ int authenticateClient(int sockfd, char buffer[])
     int authenticated = BOOL_FALSE;
     char *command = NULL;
     int offset = substringCharacter(buffer, &command);
+    commandStruct cmd;
+    parseCommand(buffer, &cmd);
 
     if (commandEquals(command, "LOGIN"))
     {
-        int result = handleLoginCommand(buffer + offset);
+        int result = handleLoginCommand(cmd);
 
         if (result == RPL_LOGIN)
         {
@@ -141,6 +143,8 @@ int parseMessage(char *message)
     {
         return handlePartCommand(message + offset);
     }
+
+    commandStruct_free(&cmd);
 
     return ERR_UNKNOWNCOMMAND;
 }
