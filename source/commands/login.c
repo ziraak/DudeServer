@@ -4,18 +4,26 @@
 
 #include "login.h"
 
-int handleLoginCommand(char *message)
+int handleLoginCommand(commandStruct cmd)
 {
-    char *username, *password, *nickname;
-    int offset = substringCharacter(message, &username);
-    offset = substringCharacter(message += offset, &password);
-    substringCharacter(message += offset, &nickname);
+    if(cmd.parameterCount < 2)
+    {
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    char *username = cmd.parameters[0],
+            *password = cmd.parameters[1];
 
     userInfo user;
     int userAuthenticated = authenticateUser(username, password, &user);
     if (userAuthenticated == RPL_LOGIN)
     {
         currentUser = user;
+    }
+
+    if(cmd.parameterCount > 2)
+    {
+        // TODO: doe iets met nickname op cmd.parameters[2]
     }
 
     return userAuthenticated;

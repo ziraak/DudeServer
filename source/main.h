@@ -6,6 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "utils/commandStruct.h"
 #include "utils/utils.h"
 #include "commands/login.h"
 #include "commands/join.h"
@@ -17,6 +18,7 @@
 #include "database/database.h"
 #include "commands/part.h"
 #include "protocolDefines.h"
+#include "time.h"
 
 userInfo currentUser;
 
@@ -42,9 +44,11 @@ void acknowledgeConnection(int sockfd);
 
 int commandEquals(char *command, char *check);
 
-int authenticateClient(int sockfd, char buffer[]);
+int authenticateClient(int sockfd, commandStruct cmd);
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
+
+#define MINIMUM_PASSWORD_LENGTH 6
 
 #endif

@@ -5,6 +5,6 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleUpdatePasswordCommand(char *username, char *password);
+int handleUpdatePasswordCommand(commandStruct cmd);
 
 #endif //DUDESERVER_UPDATE_PASSWORD_H

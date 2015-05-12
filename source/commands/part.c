@@ -1,7 +1,14 @@
 #include "part.h"
 
-int handlePartCommand(char *channelName)
+int handlePartCommand(commandStruct cmd)
 {
+    if(cmd.parameterCount < 1)
+    {
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    char *channelName = cmd.parameters[0];
+
     if (checkChannel(channelName) == EXIT_SUCCESS)
     {
         deleteUserFromChannel(channelName, currentUser.username);
@@ -9,8 +16,8 @@ int handlePartCommand(char *channelName)
         if (checkIfChannelEmpty(channelName))
         {
             deleteChannelInDB(channelName);
-            return RPL_SUCCESS;
         }
+        return RPL_SUCCESS;
     }
     return ERR_NOSUCHCHANNEL;
 }

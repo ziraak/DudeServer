@@ -1,10 +1,20 @@
 #include "update_password.h"
 
-int handleUpdatePasswordCommand(char *username, char *password)
+int handleUpdatePasswordCommand(commandStruct cmd)
 {
-    if (checkUser(username) == BOOL_TRUE)
+    if(cmd.parameterCount < 1)
     {
-        changePassword(username, password);
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    if (strlen(cmd.parameters[0]) < MINIMUM_PASSWORD_LENGTH)
+    {
+        return ERR_PASSWORDTOOSHORT;
+    }
+
+    if (checkUser(currentUser.username) == BOOL_TRUE)
+    {
+        changePassword(currentUser.username, cmd.parameters[0]);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;

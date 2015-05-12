@@ -123,37 +123,8 @@ int getChannel(char *channelName, channelInfo *channel)
 
     channel->name = getValue(doc, cur, "name");
     channel->users = getListOfValues(doc, cur, "users", "user");
-
-    //TODO: per message alloceren!!!! niet in 1x
-    channel->messages = calloc(100, sizeof(messageInfo));
-
-    int index;
-    index = 0;
-    while (cur != NULL)
-    {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
-        {
-            xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
-            {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")))
-                {
-
-                    message.writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    message.timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
-                    message.body = getValue(doc, curChild->xmlChildrenNode, "body");
-                    channel->messages[index] = message;
-                    index++;
-
-                }
-                curChild = curChild->next;
-            }
-        }
-
-        cur = cur->next;
-
-    }
+    channel->messages = getMessages(channelName);
+    
 
     xmlFreeDoc(doc);
     free(docname);
@@ -181,7 +152,7 @@ int checkChannel(char *channelName)
     if (channelName == NULL)
     {
         fprintf(stderr, "channel can not be NULL ");
-        return EXIT_FAILURE;
+        return DB_RETURN_NULLPOINTER;
     }
 
     char **channellist;
@@ -194,7 +165,7 @@ int checkChannel(char *channelName)
         if (!strcmp(channellist[listIndex], channelName))
         {
             printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
-            return DB_RETURN_SUCCES;
+            return BOOL_TRUE;
         }
         listIndex++;
     }
@@ -308,4 +279,62 @@ int checkIfChannelEmpty(char *channelName)
         printf("%s is not empty", info.name);
         return BOOL_FALSE;
     }
+}
+
+
+
+messageInfo* getMessages(char *channelName)
+{
+    return getMessagesOnTime(channelName,0);
+}
+
+
+messageInfo* getMessagesOnTime(char *channelName, int timestamp)
+{
+    char *docname = (char *) malloc(500);
+    xmlDocPtr doc;
+    xmlNodePtr cur;
+    messageInfo *messages = malloc(100);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+
+    if ((doc = openDoc(docname)) == NULL)
+    {
+        return messages;
+    }
+
+    if ((cur = checkDoc(doc, "channel")) == NULL)
+    {
+        return messages;
+    }
+
+    int index;
+    index = 0;
+    while (cur != NULL)
+    {
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
+        {
+            xmlNodePtr curChild;
+            curChild = cur->xmlChildrenNode;
+            while (curChild != NULL)
+            {
+                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
+                        atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
+                {
+                    //printf("timestamp  :%i\n", timestamp);
+                    //printf("time in db :%i\n", atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")));
+                    messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
+                    //printf("written by: %s\n", messages[index].writer);
+                    messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
+                    messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
+                    index++;
+                }
+                curChild = curChild->next;
+            }
+        }
+        cur = cur->next;
+    }
+    xmlFreeDoc(doc);
+    free(docname);
+    return messages;
 }

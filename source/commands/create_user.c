@@ -1,10 +1,14 @@
 #include "create_user.h"
 
-int handleCreateUserCommand(char *message)
+int handleCreateUserCommand(commandStruct cmd)
 {
-    char *username = NULL, *password = NULL;
-    int offset = substringCharacter(message, &username);
-    substringCharacter(message += offset, &password);
+    if(cmd.parameterCount < 2)
+    {
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    char *username = cmd.parameters[0],
+            *password = cmd.parameters[1];
 
     if (checkUser(username) == BOOL_TRUE)
     {
@@ -12,7 +16,7 @@ int handleCreateUserCommand(char *message)
     }
     else
     {
-        if (strlen(password) > 5)
+        if (strlen(password) >= MINIMUM_PASSWORD_LENGTH)
         {
             createNewUser(username, password);
             return RPL_SUCCESS;
