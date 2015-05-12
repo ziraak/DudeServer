@@ -39,7 +39,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9091;
+    uint16_t listenPort = 9090;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -144,25 +144,25 @@ int parseMessage(char *message)
 
     if (commandEquals(cmd.command, "JOIN"))
     {
-        return handleJoinCommand(message + offset);
+        return handleJoinCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PRIVMSG"))
     {
-        return handlePrivateMessageCommand(message + offset);
+        return handlePrivateMessageCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PART"))
     {
-        return handlePartCommand(message + offset);
+        return handlePartCommand(cmd);
     }
-    else if (commandEquals(command, "DELETE_USER"))
+    else if (commandEquals(cmd.command, "DELETE_USER"))
     {
         return handleDeleteUserCommand(currentUser.username);
     }
-    else if (commandEquals(command, "UPDATE_NICKNAME"))
+    else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
     {
         return handleUpdateNicknameCommand(currentUser.username, message + offset);
     }
-    else if (commandEquals(command, "UPDATE_PASSWORD"))
+    else if (commandEquals(cmd.command, "UPDATE_PASSWORD"))
     {
         return handleUpdatePasswordCommand(currentUser.username, message + offset);
     }

@@ -1,12 +1,17 @@
 #include "join.h"
 
-int handleJoinCommand(char *message)
+int handleJoinCommand(commandStruct cmd)
 {
-    char *channelName = NULL, *optionalChannelKey = NULL;
-    int offset = substringCharacter(message, &channelName);
-    if (!(*(message + offset) == '\n' || *(message + offset) == '\0'))
+    if(cmd.parameterCount < 1)
     {
-        substringCharacter(message += offset, &optionalChannelKey);
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    char *channelName = cmd.parameters[0], *optionalChannelKey = NULL;
+
+    if(cmd.parameterCount > 1)
+    {
+        optionalChannelKey = cmd.parameters[1];
     }
 
     channelInfo channel;
