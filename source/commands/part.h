@@ -4,6 +4,6 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handlePartCommand(char *message);
+int handlePartCommand(commandStruct cmd);
 
 #endif //DUDESERVER_PART_H

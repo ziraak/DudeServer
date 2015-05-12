@@ -39,7 +39,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9091;
+    uint16_t listenPort = 9090;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -82,16 +82,17 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
         if (authenticated == BOOL_FALSE)
         {
-            char *command = NULL;
-            int offset = substringCharacter(buffer, &command);
-            if (commandEquals(command, "CREATE_USER"))
+            commandStruct cmd;
+            parseCommand(buffer, &cmd);
+
+            if (commandEquals(cmd.command, "CREATE_USER"))
             {
-                result = handleCreateUserCommand(buffer + offset);
+                result = handleCreateUserCommand(cmd);
                 sendIntegerMessageToClient(sockfd, result);
             }
             else
             {
-                authenticated = authenticateClient(sockfd, buffer);
+                authenticated = authenticateClient(sockfd, cmd);
             }
         }
         else
@@ -109,15 +110,11 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     exit(EXIT_SUCCESS);
 }
 
-int authenticateClient(int sockfd, char buffer[])
+int authenticateClient(int sockfd, commandStruct cmd)
 {
     int authenticated = BOOL_FALSE;
-    char *command = NULL;
-    int offset = substringCharacter(buffer, &command);
-    commandStruct cmd;
-    parseCommand(buffer, &cmd);
 
-    if (commandEquals(command, "LOGIN"))
+    if (commandEquals(cmd.command, "LOGIN"))
     {
         int result = handleLoginCommand(cmd);
 
@@ -141,35 +138,36 @@ int parseMessage(char *message)
     parseCommand(message, &cmd);
 
     int offset = substringCharacter(message, &command);
+    int result = ERR_UNKNOWNCOMMAND;
 
     if (commandEquals(cmd.command, "JOIN"))
     {
-        return handleJoinCommand(message + offset);
+        result = handleJoinCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PRIVMSG"))
     {
-        return handlePrivateMessageCommand(message + offset);
+        result = handlePrivateMessageCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PART"))
     {
-        return handlePartCommand(message + offset);
+        result = handlePartCommand(cmd);
     }
-    else if (commandEquals(command, "DELETE_USER"))
+    else if (commandEquals(cmd.command, "DELETE_USER"))
     {
-        return handleDeleteUserCommand(currentUser.username);
+        result = handleDeleteUserCommand();
     }
-    else if (commandEquals(command, "UPDATE_NICKNAME"))
+    else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
     {
-        return handleUpdateNicknameCommand(currentUser.username, message + offset);
+        result = handleUpdateNicknameCommand(cmd);
     }
-    else if (commandEquals(command, "UPDATE_PASSWORD"))
+    else if (commandEquals(cmd.command, "UPDATE_PASSWORD"))
     {
-        return handleUpdatePasswordCommand(currentUser.username, message + offset);
+        result = handleUpdatePasswordCommand(cmd);
     }
 
     commandStruct_free(&cmd);
 
-    return ERR_UNKNOWNCOMMAND;
+    return result;
 }
 
 void flushStdout()

@@ -4,7 +4,7 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleJoinCommand(char *message);
+int handleJoinCommand(commandStruct cmd);
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey);
 

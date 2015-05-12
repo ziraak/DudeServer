@@ -44,9 +44,11 @@ void acknowledgeConnection(int sockfd);
 
 int commandEquals(char *command, char *check);
 
-int authenticateClient(int sockfd, char buffer[]);
+int authenticateClient(int sockfd, commandStruct cmd);
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
+
+#define MINIMUM_PASSWORD_LENGTH 6
 
 #endif
