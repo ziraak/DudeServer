@@ -141,35 +141,36 @@ int parseMessage(char *message)
     parseCommand(message, &cmd);
 
     int offset = substringCharacter(message, &command);
+    int result = ERR_UNKNOWNCOMMAND;
 
     if (commandEquals(cmd.command, "JOIN"))
     {
-        return handleJoinCommand(cmd);
+        result = handleJoinCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PRIVMSG"))
     {
-        return handlePrivateMessageCommand(cmd);
+        result = handlePrivateMessageCommand(cmd);
     }
     else if (commandEquals(cmd.command, "PART"))
     {
-        return handlePartCommand(cmd);
+        result = handlePartCommand(cmd);
     }
     else if (commandEquals(cmd.command, "DELETE_USER"))
     {
-        return handleDeleteUserCommand(currentUser.username);
+        result = handleDeleteUserCommand(currentUser.username);
     }
     else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
     {
-        return handleUpdateNicknameCommand(currentUser.username, message + offset);
+        result = handleUpdateNicknameCommand(currentUser.username, message + offset);
     }
     else if (commandEquals(cmd.command, "UPDATE_PASSWORD"))
     {
-        return handleUpdatePasswordCommand(currentUser.username, message + offset);
+        result = handleUpdatePasswordCommand(currentUser.username, message + offset);
     }
 
     commandStruct_free(&cmd);
 
-    return ERR_UNKNOWNCOMMAND;
+    return result;
 }
 
 void flushStdout()
