@@ -1,9 +1,18 @@
 #include "test_suite_commands.h"
 
+START_TEST(test_create_user_command)
+    {
+        commandStruct cmdStruct;
+        parseCommand("CREATE_USER fatihTestUser testPassword", &cmdStruct);
+        int resultLogin = handleCreateUserCommand(cmdStruct);
+        ck_assert_int_eq(RPL_SUCCESS, resultLogin);
+    }
+END_TEST
+
 START_TEST(test_login_command)
     {
         commandStruct cmdStruct;
-        parseCommand("LOGIN fatih nub testNickname", &cmdStruct);
+        parseCommand("LOGIN fatihTestUser testPassword testNickname", &cmdStruct);
         int resultLogin = handleLoginCommand(cmdStruct);
         ck_assert_int_eq(RPL_LOGIN, resultLogin);
     }
@@ -18,6 +27,8 @@ Suite* commands_suite()
 
     tc_util_core = tcase_create("core");
 
+    // Specifieke volgorde voor deze scenario.
+    tcase_add_test(tc_util_core, test_create_user_command);
     tcase_add_test(tc_util_core, test_login_command);
 
     suite_add_tcase(suite, tc_util_core);
