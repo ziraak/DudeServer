@@ -4,12 +4,16 @@
 
 #include "login.h"
 
-int handleLoginCommand(char *message)
+int handleLoginCommand(commandStruct cmd)
 {
-    char *username, *password, *nickname;
-    int offset = substringCharacter(message, &username);
-    offset = substringCharacter(message += offset, &password);
-    substringCharacter(message += offset, &nickname);
+    if(cmd.parameterCount < 4)
+    {
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    char *username = cmd.parameters[0],
+            *password = cmd.parameters[1],
+            *nickname = cmd.parameters[2];
 
     userInfo user;
     int userAuthenticated = authenticateUser(username, password, &user);

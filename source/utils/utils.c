@@ -18,37 +18,73 @@ int find(char *str, char find)
 
 int substringCharacter(char *str, char **result)
 {
+    if(*str == ':' || *str == '\0')
+    {
+        return -1;
+    }
+
     char find = ' ';
     size_t i = strcspn(str, &find);
     *result = malloc(i + 1);
     bzero(*result, i + 1);
     strncpy(*result, str, i);
-    return (int) ++i;
+
+    str += i;
+    while(*str == find) { str++; i++; }
+
+    return (int) i;
 }
 
 int parseCommand(char *message, commandStruct *command)
 {
     size_t m_size = sizeof(message);
-    command = malloc(m_size * 2);
 
-    command->parameters = malloc(m_size);
-    char** parameters = command->parameters;
+    char** parameters = NULL;
+    parameters = realloc(parameters, m_size);
     int offset = substringCharacter(message, &command->command);
+    message += offset;
 
-    while(find(message, ' ') < find(message, ':'))
+    int i = 0;
+    for(; ; i++)
     {
-        char* result = NULL;
-        offset = substringCharacter(message += offset, &result);
+        int off = find(message, ' '),
+            semicolon = find(message, ':');
 
-        if(offset < 1)
+        if((semicolon != -1 && semicolon < off) && off > 1)
         {
             break;
         }
 
-        *command->parameters = result;
-        command->parameters++;
-        free(result);
+        off = substringCharacter(message, &parameters[i]);
+        if(off < 0)
+        {
+            break;
+        }
+        message += off;
     }
 
+    command->parameterCount = i;
+
+    if(find(message, ':') != -1)
+    {
+        command->trailing = malloc(strlen(message) + 1);
+        bzero(command->trailing, strlen(message) + 1);
+        strncpy(command->trailing, ++message, strlen(message));
+    }
+    else
+    {
+        command->trailing = NULL;
+    }
+
+    command->parameters = parameters;
+
     return BOOL_TRUE;
+}
+
+void commandStruct_free(commandStruct *cmdStruct)
+{
+    if(cmdStruct == NULL) return;
+    if(cmdStruct->parameters != NULL) free(cmdStruct->parameters);
+    if(cmdStruct->command != NULL) free(cmdStruct->command);
+    if(cmdStruct->trailing != NULL) free(cmdStruct->trailing);
 }

@@ -4,7 +4,7 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleLoginCommand(char *message);
+int handleLoginCommand(commandStruct cmd);
 
 int authenticateUser(char *username, char *password, userInfo *result);
 #endif
