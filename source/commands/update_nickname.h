@@ -5,6 +5,6 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleUpdateNicknameCommand(char *username, char *nickname);
+int handleUpdateNicknameCommand(commandStruct cmd);
 
 #endif //DUDESERVER_UPDATE_USERNAME_H

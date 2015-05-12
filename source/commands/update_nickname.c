@@ -1,10 +1,15 @@
 #include "update_nickname.h"
 
-int handleUpdateNicknameCommand(char *username, char *nickname)
+int handleUpdateNicknameCommand(commandStruct cmd)
 {
-    if (checkUser(username) == BOOL_TRUE)
+    if(cmd.parameterCount < 1)
     {
-        changeNickname(username, nickname);
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    if (checkUser(currentUser.username) == BOOL_TRUE)
+    {
+        changeNickname(currentUser.username, cmd.parameters[0]);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;

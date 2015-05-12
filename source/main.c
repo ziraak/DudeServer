@@ -82,16 +82,17 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
         if (authenticated == BOOL_FALSE)
         {
-            char *command = NULL;
-            int offset = substringCharacter(buffer, &command);
-            if (commandEquals(command, "CREATE_USER"))
+            commandStruct cmd;
+            parseCommand(buffer, &cmd);
+
+            if (commandEquals(cmd.command, "CREATE_USER"))
             {
-                result = handleCreateUserCommand(buffer + offset);
+                result = handleCreateUserCommand(cmd);
                 sendIntegerMessageToClient(sockfd, result);
             }
             else
             {
-                authenticated = authenticateClient(sockfd, buffer);
+                authenticated = authenticateClient(sockfd, cmd);
             }
         }
         else
@@ -109,15 +110,11 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     exit(EXIT_SUCCESS);
 }
 
-int authenticateClient(int sockfd, char buffer[])
+int authenticateClient(int sockfd, commandStruct cmd)
 {
     int authenticated = BOOL_FALSE;
-    char *command = NULL;
-    int offset = substringCharacter(buffer, &command);
-    commandStruct cmd;
-    parseCommand(buffer, &cmd);
 
-    if (commandEquals(command, "LOGIN"))
+    if (commandEquals(cmd.command, "LOGIN"))
     {
         int result = handleLoginCommand(cmd);
 
@@ -157,15 +154,15 @@ int parseMessage(char *message)
     }
     else if (commandEquals(cmd.command, "DELETE_USER"))
     {
-        result = handleDeleteUserCommand(currentUser.username);
+        result = handleDeleteUserCommand();
     }
     else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
     {
-        result = handleUpdateNicknameCommand(currentUser.username, message + offset);
+        result = handleUpdateNicknameCommand(cmd);
     }
     else if (commandEquals(cmd.command, "UPDATE_PASSWORD"))
     {
-        result = handleUpdatePasswordCommand(currentUser.username, message + offset);
+        result = handleUpdatePasswordCommand(cmd);
     }
 
     commandStruct_free(&cmd);

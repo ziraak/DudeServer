@@ -5,6 +5,6 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleCreateUserCommand(char *message);
+int handleCreateUserCommand(commandStruct cmd);
 
 #endif //DUDESERVER_CREATE_USER_H
