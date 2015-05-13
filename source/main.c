@@ -41,7 +41,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
+    uint16_t listenPort = 9091;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -98,7 +98,6 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
                 if(authenticated == BOOL_TRUE)
                 {
                     getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
-                    gms.timestamp = 1431349400;
 
                     if(getAllUnreadMessages(&gms) == BOOL_TRUE)
                     {
