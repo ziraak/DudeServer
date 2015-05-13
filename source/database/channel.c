@@ -1,9 +1,4 @@
-//
-// Created by desmond on 4/24/15.
-//
-
 #include "channel.h"
-
 
 int writeChannel(channelInfo channel)
 {
@@ -163,12 +158,10 @@ int checkChannel(char *channelName)
     {
         if (!strcmp(channellist[listIndex], channelName))
         {
-            //printf("channel: %s found it was : %s \n",channelName, channellist[listIndex]);
             return BOOL_TRUE;
         }
         listIndex++;
     }
-    //printf("%s not found\n", channelName);
     return DB_RETURN_DOESNOTEXIST;
 }
 
@@ -322,10 +315,7 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp)
                 if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
                         atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
-                    //printf("timestamp  :%i\n", timestamp);
-                    //printf("time in db :%i\n", atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")));
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    //printf("written by: %s\n", messages[index].writer);
                     messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
                     messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
                     index++;
