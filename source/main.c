@@ -85,7 +85,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
             commandStruct cmd;
             parseCommand(buffer, &cmd);
 
-            if (commandEquals(cmd.command, "CREATE_USER"))
+            if (commandEquals(cmd, "CREATE_USER"))
             {
                 result = handleCreateUserCommand(cmd);
                 sendIntegerMessageToClient(sockfd, result);
@@ -93,11 +93,21 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
             else
             {
                 authenticated = authenticateClient(sockfd, cmd);
+
+                if(authenticated == BOOL_TRUE)
+                {
+                    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
+                    gms.timestamp = 1431349400;
+
+                    if(getAllUnreadMessages(&gms) == BOOL_TRUE)
+                    {
+                        processMessages(&gms, sockfd);
+                    }
+                }
             }
         }
         else
         {
-            // getAllUnreadMessagesByName(); TODO: Username meegeven
             result = parseMessage(buffer);
             sendIntegerMessageToClient(sockfd, result);
         }
@@ -114,7 +124,7 @@ int authenticateClient(int sockfd, commandStruct cmd)
 {
     int authenticated = BOOL_FALSE;
 
-    if (commandEquals(cmd.command, "LOGIN"))
+    if (commandEquals(cmd, "LOGIN"))
     {
         int result = handleLoginCommand(cmd);
 
@@ -133,34 +143,32 @@ int authenticateClient(int sockfd, commandStruct cmd)
 
 int parseMessage(char *message)
 {
-    char *command = NULL;
     commandStruct cmd;
     parseCommand(message, &cmd);
 
-    int offset = substringCharacter(message, &command);
     int result = ERR_UNKNOWNCOMMAND;
 
-    if (commandEquals(cmd.command, "JOIN"))
+    if (commandEquals(cmd, "JOIN"))
     {
         result = handleJoinCommand(cmd);
     }
-    else if (commandEquals(cmd.command, "PRIVMSG"))
+    else if (commandEquals(cmd, "PRIVMSG"))
     {
         result = handlePrivateMessageCommand(cmd);
     }
-    else if (commandEquals(cmd.command, "PART"))
+    else if (commandEquals(cmd, "PART"))
     {
         result = handlePartCommand(cmd);
     }
-    else if (commandEquals(cmd.command, "DELETE_USER"))
+    else if (commandEquals(cmd, "DELETE_USER"))
     {
         result = handleDeleteUserCommand();
     }
-    else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
+    else if (commandEquals(cmd, "UPDATE_NICKNAME"))
     {
         result = handleUpdateNicknameCommand(cmd);
     }
-    else if (commandEquals(cmd.command, "UPDATE_PASSWORD"))
+    else if (commandEquals(cmd, "UPDATE_PASSWORD"))
     {
         result = handleUpdatePasswordCommand(cmd);
     }
@@ -195,16 +203,9 @@ void acknowledgeConnection(int sockfd)
     sendIntegerMessageToClient(sockfd, buffer);
 }
 
-int commandEquals(char *command, char *check)
+int commandEquals(commandStruct cmd, char *check)
 {
-    return strcmp(command, check) == 0;
-}
-
-char **getAllUnreadMessagesByName(char *username)
-{
-    // TODO: Get all unread messages
-    char **allUnreadMessages;
-    return allUnreadMessages;
+    return strcmp(cmd.command, check) == 0;
 }
 
 int generateToken()

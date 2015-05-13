@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include "utils/commandStruct.h"
 #include "utils/utils.h"
+#include "messages/messages.h"
 #include "commands/login.h"
 #include "commands/join.h"
 #include "commands/privmsg.h"
@@ -42,7 +43,7 @@ int parseMessage(char *message);
 
 void acknowledgeConnection(int sockfd);
 
-int commandEquals(char *command, char *check);
+int commandEquals(commandStruct cmd, char *check);
 
 int authenticateClient(int sockfd, commandStruct cmd);
 
@@ -50,5 +51,7 @@ int authenticateClient(int sockfd, commandStruct cmd);
 #define BOOL_FALSE 0
 
 #define MINIMUM_PASSWORD_LENGTH 6
+
+#define MAXIMUM_MESSAGE_LENGTH 1024
 
 #endif
