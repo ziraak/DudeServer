@@ -1,9 +1,4 @@
-//
-// Created by osboxes on 28/04/15.
-//
-
 #include "database.h"
-
 
 xmlDocPtr openDoc(char *docname)
 {
@@ -89,13 +84,11 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
 
     if ((doc = openDoc(docname)) == NULL)
     {
-        printf("error\n");
         return;
     }
 
     if ((cur = checkDoc(doc, fileType)) == NULL)
     {
-        printf("error\n");
         return;
     }
 
@@ -212,13 +205,11 @@ void addToListFile(char* itemType,char* newItem)
 
     if ((doc = openDoc(docname)) == NULL)
     {
-        printf("error\n");
         return;
     }
 
     if ((cur = checkDoc(doc, doctype)) == NULL)
     {
-        printf("error\n");
         return;
     }
 
