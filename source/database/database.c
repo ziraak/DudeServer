@@ -242,6 +242,12 @@ void addToListFile(char* itemType,char* newItem)
 
 void createNewChannel(char *channelName, char *creator)
 {
+    // TODO: Functie verplaatsen naar channel.c
+    // TODO: creator wordt niet gebruikt.
+    // TODO: docname wordt niet gefree'd
+    // TODO: doc renamen naar iets als xmlDocPtr
+    // TODO: UTF-8 constante
+    // TODO: malloc(500)?
     xmlDocPtr doc = NULL;       /* document pointer */
     xmlNodePtr root_node = NULL;
     char* docname = malloc(500);
@@ -253,10 +259,10 @@ void createNewChannel(char *channelName, char *creator)
     xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
     xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
 
-    sprintf(docname,"%s%s.xml",DB_CHANNELLOC,channelName);
-    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1); // TODO: Magic number?
     xmlFreeDoc(doc);
     xmlCleanupParser();
 
-    addToListFile("channel",channelName);
+    addToListFile("channel", channelName);
 }

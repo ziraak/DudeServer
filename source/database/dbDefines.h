@@ -9,6 +9,7 @@
 #define DB_RETURN_SUCCES 0
 #define DB_RETURN_ALREADYEXISTS -4
 
+// TODO: defines voluit schrijven
 //file locations
 #define DB_DBLOC "xml/"
 #define DB_CHANNELLOC "xml/channels/"

@@ -96,7 +96,6 @@ int writeMessageToChannel(char *channelName, messageInfo message)
 int getChannel(char *channelName, channelInfo *channel)
 {
     char *docname = (char *) malloc(500);
-    messageInfo message;
     xmlDocPtr doc;
     xmlNodePtr cur;
 
@@ -285,12 +284,15 @@ int checkIfChannelEmpty(char *channelName)
 
 messageInfo* getMessages(char *channelName)
 {
-    return getMessagesOnTime(channelName,0);
+    return getMessagesOnTime(channelName, 0);
 }
 
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp)
 {
+    // TODO: naamgeving aanpassen
+    // TODO: them mallocs lengte
+    // TODO: overbodige code in commentaar verwijderen
     char *docname = (char *) malloc(500);
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -308,8 +310,7 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp)
         return messages;
     }
 
-    int index;
-    index = 0;
+    int index = 0;
     while (cur != NULL)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
