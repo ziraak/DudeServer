@@ -57,6 +57,28 @@ START_TEST(test_part_channel_command)
     }
 END_TEST
 
+START_TEST(test_update_nickname_command)
+    {
+        commandStruct cmdStruct;
+        parseCommand("UPDATE_NICKNAME changedNick", &cmdStruct);
+        currentUser.username = "fatihTestUser";
+        int resultPartChannel = handleUpdateNicknameCommand(cmdStruct);
+        commandStruct_free(&cmdStruct);
+        ck_assert_int_eq(RPL_SUCCESS, resultPartChannel);
+    }
+END_TEST
+
+START_TEST(test_update_password_command)
+    {
+        commandStruct cmdStruct;
+        parseCommand("UPDATE_PASSWORD changedPass", &cmdStruct);
+        currentUser.username = "fatihTestUser";
+        int resultPartChannel = handleUpdatePasswordCommand(cmdStruct);
+        commandStruct_free(&cmdStruct);
+        ck_assert_int_eq(RPL_SUCCESS, resultPartChannel);
+    }
+END_TEST
+
 Suite* commands_suite()
 {
     Suite *suite;
@@ -71,6 +93,8 @@ Suite* commands_suite()
     tcase_add_test(tc_util_core, test_login_command_wrong_password);
     tcase_add_test(tc_util_core, test_login_command);
     tcase_add_test(tc_util_core, test_join_channel);
+    tcase_add_test(tc_util_core, test_update_nickname_command);
+    tcase_add_test(tc_util_core, test_update_password_command);
     tcase_add_test(tc_util_core, test_delete_user);
     tcase_add_test(tc_util_core, test_part_channel_command);
 
