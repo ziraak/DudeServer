@@ -83,8 +83,23 @@ int parseCommand(char *message, commandStruct *command)
 
 void commandStruct_free(commandStruct *cmdStruct)
 {
-    if(cmdStruct == NULL) return;
-    if(cmdStruct->parameters != NULL) free(cmdStruct->parameters);
-    if(cmdStruct->command != NULL) free(cmdStruct->command);
-    if(cmdStruct->trailing != NULL) free(cmdStruct->trailing);
+    if(cmdStruct == NULL)
+    {
+        return;
+    }
+
+    if(cmdStruct->parameters != NULL)
+    {
+        free(cmdStruct->parameters);
+    }
+
+    if(cmdStruct->command != NULL)
+    {
+        free(cmdStruct->command);
+    }
+
+    if(cmdStruct->trailing != NULL)
+    {
+        free(cmdStruct->trailing);
+    }
 }
