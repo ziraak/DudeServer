@@ -14,18 +14,18 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
 
     messageInfo* messages = getMessagesOnTime(channelName, timestamp);
 
-    char** msgs = malloc(1);
+    char** msgs = malloc(sizeof(char));
     int messageCount = 0;
-    while(messages->writer != NULL && messages->body != NULL)
+    while(messages[messageCount].writer != NULL && messages[messageCount].body != NULL)
     {
         char* msg;
-        convertChannelMessageToString(*messages, channelName, &msg);
+        convertChannelMessageToString(messages[messageCount], channelName, &msg);
 
         msgs[messageCount] = malloc(sizeof(char) * strlen(msg));
         strcpy(msgs[messageCount], msg);
         free(msg);
 
-        messages++;
+        messageInfo_free(&messages[messageCount]);
         messageCount++;
     }
 
@@ -72,17 +72,21 @@ int processMessages(getMessagesStruct *gms, int sockfd)
     return BOOL_TRUE;
 }
 
-getMessagesStruct getMessagesStruct_initialize(char** channels)
+getMessagesStruct getMessagesStruct_initialize(char** channels, int timestamp)
 {
     getMessagesStruct gms;
-    gms.timestamp = 1431349400;
-    gms.channels = channels;
-    gms.channelCount = 0;
+    gms.timestamp = timestamp;
+    gms.channels = malloc(sizeof(char));
 
-    while(*channels != NULL)
+    int i = 0;
+    while(channels[i] != NULL)
     {
-        gms.channelCount++; channels++;
+        gms.channels[i] = malloc(strlen(channels[i]) + 1);
+        sprintf(gms.channels[i], "%s", channels[i]);
+        i++;
     }
+
+    gms.channelCount = i;
 
     return gms;
 }

@@ -3,6 +3,7 @@
 
 #include "../main.h"
 #include "../database/databaseStructs.h"
+#include "../database/databaseStructs_free.h"
 
 typedef struct channelMessagesStruct
 {
@@ -25,7 +26,7 @@ int getAllUnreadMessages(getMessagesStruct *gms);
 
 int processMessages(getMessagesStruct *gms, int sockfd);
 
-getMessagesStruct getMessagesStruct_initialize(char** channels);
+getMessagesStruct getMessagesStruct_initialize(char** channels, int timestamp);
 
 void getMessagesStruct_free(getMessagesStruct *gms);
 

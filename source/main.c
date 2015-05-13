@@ -68,8 +68,7 @@ void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
 
 void checkUnreadMessages(char* timestamp, int sockfd)
 {
-    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
-    gms.timestamp = atoi(timestamp);
+    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels, atoi(timestamp));
 
     if(getAllUnreadMessages(&gms) == BOOL_TRUE)
     {
@@ -182,7 +181,7 @@ int parseMessage(char *message, int sockfd)
     }
     else if (commandEquals(cmd, "POLL") && cmd.parameterCount > 0)
     {
-//        checkUnreadMessages(cmd.parameters[0], sockfd);
+        checkUnreadMessages(cmd.parameters[0], sockfd);
         result = RPL_SUCCESS;
     }
 

@@ -4,7 +4,7 @@ set(MAIN_SOURCES main.c)
 # all files contained inside the library
 set(LIB_SOURCES utils/utils.c
     commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c
-    database/database.c database/channel.c database/user.c
+    database/database.c database/channel.c database/user.c database/databaseStructs_free.c
     messages/messages.c)
 
 # all header files
