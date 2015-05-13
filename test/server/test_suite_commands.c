@@ -4,8 +4,8 @@ START_TEST(test_create_user_command)
     {
         commandStruct cmdStruct;
         parseCommand("CREATE_USER fatihTestUser testPassword", &cmdStruct);
-        int resultLogin = handleCreateUserCommand(cmdStruct);
-        ck_assert_int_eq(RPL_SUCCESS, resultLogin);
+        int resultCreateUser = handleCreateUserCommand(cmdStruct);
+        ck_assert_int_eq(RPL_SUCCESS, resultCreateUser);
     }
 END_TEST
 
@@ -31,15 +31,15 @@ START_TEST(test_join_channel)
     {
         commandStruct cmdStruct;
         parseCommand("JOIN batcaveTestChannel", &cmdStruct);
-        int resultLogin = handleJoinCommand(cmdStruct);
-        ck_assert_int_eq(RPL_TOPIC, resultLogin);
+        int resultJoinChannel = handleJoinCommand(cmdStruct);
+        ck_assert_int_eq(RPL_TOPIC, resultJoinChannel);
     }
 END_TEST
 
 START_TEST(test_delete_user)
     {
-        int resultLogin = handleDeleteUserCommand();
-        ck_assert_int_eq(RPL_SUCCESS, resultLogin);
+        int resultDeleteUser = handleDeleteUserCommand();
+        ck_assert_int_eq(RPL_SUCCESS, resultDeleteUser);
     }
 END_TEST
 
@@ -47,8 +47,8 @@ START_TEST(test_part_channel_command)
     {
         commandStruct cmdStruct;
         parseCommand("PART batcaveTestChannel", &cmdStruct);
-        int resultLogin = handlePartCommand(cmdStruct);
-        ck_assert_int_eq(RPL_SUCCESS, resultLogin);
+        int resultPartChannel = handlePartCommand(cmdStruct);
+        ck_assert_int_eq(RPL_SUCCESS, resultPartChannel);
     }
 END_TEST
 
