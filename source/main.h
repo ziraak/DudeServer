@@ -21,6 +21,13 @@
 #include "protocolDefines.h"
 #include "time.h"
 
+#define BOOL_TRUE 1
+#define BOOL_FALSE 0
+
+#define MINIMUM_PASSWORD_LENGTH 6
+
+#define MAXIMUM_MESSAGE_LENGTH 1024
+
 userInfo currentUser;
 
 void runServer();
@@ -46,12 +53,5 @@ void acknowledgeConnection(int sockfd);
 int commandEquals(commandStruct cmd, char *check);
 
 int authenticateClient(int sockfd, commandStruct cmd);
-
-#define BOOL_TRUE 1
-#define BOOL_FALSE 0
-
-#define MINIMUM_PASSWORD_LENGTH 6
-
-#define MAXIMUM_MESSAGE_LENGTH 1024
 
 #endif

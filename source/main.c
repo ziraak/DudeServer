@@ -1,5 +1,7 @@
 #include "main.h"
 
+int authenticated = BOOL_FALSE;
+
 int main(int argc, char **argv)
 {
     runServer();
@@ -69,7 +71,6 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
     ssize_t receive;
     char buffer[200];
     bzero(buffer, sizeof(buffer));
-    int authenticated = BOOL_FALSE;
     int result;
 
     printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
@@ -122,7 +123,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
 int authenticateClient(int sockfd, commandStruct cmd)
 {
-    int authenticated = BOOL_FALSE;
+    authenticated = BOOL_FALSE;
 
     if (commandEquals(cmd, "LOGIN"))
     {
@@ -163,6 +164,7 @@ int parseMessage(char *message)
     else if (commandEquals(cmd, "DELETE_USER"))
     {
         result = handleDeleteUserCommand(); // TODO: nog steeds authenticated
+        authenticated = BOOL_FALSE;
     }
     else if (commandEquals(cmd, "UPDATE_NICKNAME"))
     {
