@@ -70,9 +70,7 @@ START_TEST(test_utils_parseCommand_two_words)
     {
         commandStruct command;
         int result = parseCommand("JOIN batcave", &command);
-        int resultLogin = handleJoinCommand(command);
 
-        ck_assert_int_eq(resultLogin, ERR_NOLOGIN);
         ck_assert_int_eq(result, BOOL_TRUE);
 
         ck_assert_str_eq(command.command, "JOIN");
