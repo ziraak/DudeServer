@@ -38,9 +38,16 @@ END_TEST
 
 START_TEST(test_delete_user)
     {
+        int resultLogin = handleDeleteUserCommand();
+        ck_assert_int_eq(RPL_SUCCESS, resultLogin);
+    }
+END_TEST
+
+START_TEST(test_part_channel_command)
+    {
         commandStruct cmdStruct;
-        parseCommand("DELETE_USER fatihTestUser", &cmdStruct);
-        int resultLogin = handleDeleteUserCommand(cmdStruct);
+        parseCommand("PART batcaveTestChannel", &cmdStruct);
+        int resultLogin = handlePartCommand(cmdStruct);
         ck_assert_int_eq(RPL_SUCCESS, resultLogin);
     }
 END_TEST
@@ -60,6 +67,7 @@ Suite* commands_suite()
     tcase_add_test(tc_util_core, test_login_command);
     tcase_add_test(tc_util_core, test_join_channel);
     tcase_add_test(tc_util_core, test_delete_user);
+    tcase_add_test(tc_util_core, test_part_channel_command);
 
 
     suite_add_tcase(suite, tc_util_core);
