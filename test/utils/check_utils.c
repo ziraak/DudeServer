@@ -66,6 +66,22 @@ START_TEST(test_utils_parseCommand_trailing)
     }
 END_TEST
 
+START_TEST(test_utils_parseCommand_two_words)
+    {
+        commandStruct command;
+        int result = parseCommand("JOIN batcave", &command);
+
+        ck_assert_int_eq(result, BOOL_TRUE);
+
+        ck_assert_str_eq(command.command, "JOIN");
+
+        ck_assert_str_eq(command.parameters[0], "batcave");
+        ck_assert_int_eq(command.parameterCount, 1);
+
+        commandStruct_free(&command);
+    }
+END_TEST
+
 Suite* utils_suite(void)
 {
     Suite *s;
@@ -79,6 +95,7 @@ Suite* utils_suite(void)
 
     tcase_add_test(tc_util_core, test_utils_parseCommand_no_trailing);
     tcase_add_test(tc_util_core, test_utils_parseCommand_trailing);
+    tcase_add_test(tc_util_core, test_utils_parseCommand_two_words);
 
     suite_add_tcase(s, tc_util_core);
 

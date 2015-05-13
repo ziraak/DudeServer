@@ -122,18 +122,13 @@ void clientBusiness(int sock)
         {
             if (strcmp(snd, "LOGIN\n") == 0)
             {
-                char *lgn = "LOGIN fatih secretpassword fatihawesome";
-                send(sock, lgn, sizeof(lgn), 0);
+                char *lgn = "LOGIN fatih nub";
+                send(sock, lgn, strlen(lgn), 0);
             }
             else if (strcmp(snd, "JOIN\n") == 0)
             {
-                char *lgn = "JOIN batcave batmanisawesome";
-                send(sock, lgn, sizeof(lgn), 0);
-            }
-            else if (strcmp(snd, "JOINZP\n") == 0)
-            {
                 char *lgn = "JOIN batcave";
-                send(sock, lgn, sizeof(lgn), 0);
+                send(sock, lgn, strlen(lgn), 0);
             }
             else if (send(sock, snd, len, 0) < 0)
             {

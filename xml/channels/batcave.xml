@@ -6,6 +6,8 @@
         <user>desmond</user>
         <user>fatih</user>
         <user>ferdi</user>
+        channelMessagesStruct cms = ;
+
         <user>sjuul</user>
         <user>harmen</user>
     </users>
