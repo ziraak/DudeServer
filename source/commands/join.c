@@ -15,17 +15,22 @@ int handleJoinCommand(commandStruct cmd)
     }
 
     channelInfo channel;
-    if(getChannel(channelName, &channel) == DB_RETURN_DOESNOTEXIST)
+    int resultGetChannel = getChannel(channelName, &channel);
+    if(resultGetChannel == DB_RETURN_DOESNOTEXIST)
     {
         createNewChannel(channelName, currentUser.username);
     }
-    else
+    else if (resultGetChannel == DB_RETURN_SUCCES)
     {
         int result = authenticateChannel(channel, channelName, optionalChannelKey);
         if(result != BOOL_TRUE)
         {
             return result;
         }
+    }
+    else
+    {
+        return resultGetChannel;
     }
 
     return joinChannel(channelName);
