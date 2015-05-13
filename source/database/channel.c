@@ -278,49 +278,48 @@ messageInfo *getMessages(char *channelName)
 
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
-    // TODO: naamgeving aanpassen
     // TODO: them mallocs lengte
     // TODO: overbodige code in commentaar verwijderen
     char *docname = (char *) malloc(500);
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
     messageInfo *messages = malloc(100);
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
         return messages;
     }
 
-    if ((cur = checkDoc(doc, "channel")) == NULL)
+    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
         return messages;
     }
 
     int index = 0;
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "messages")))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) "messages")))
         {
             xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
+            curChild = nodePtr->xmlChildrenNode;
             while (curChild != NULL)
             {
                 if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
-                    atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
+                    atoi(getValue(docPtr, curChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
-                    messages[index].body = getValue(doc, curChild->xmlChildrenNode, "body");
+                    messages[index].timestamp = getValue(docPtr, curChild->xmlChildrenNode, "timestamp");
+                    messages[index].body = getValue(docPtr, curChild->xmlChildrenNode, "body");
                     index++;
                 }
                 curChild = curChild->next;
             }
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
-    xmlFreeDoc(doc);
+    xmlFreeDoc(docPtr);
     free(docname);
     return messages;
 }
