@@ -9,7 +9,7 @@ int handlePartCommand(commandStruct cmd)
 
     char *channelName = cmd.parameters[0];
 
-    if (checkChannel(channelName) == EXIT_SUCCESS)
+    if (checkChannel(channelName) == BOOL_TRUE)
     {
         deleteUserFromChannel(channelName, currentUser.username);
 
