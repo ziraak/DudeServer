@@ -2,15 +2,14 @@
 
 int writeChannel(channelInfo channel)
 {
-
-        xmlTextWriterPtr file = openChannelFile(channel.name);
-        xmlTextWriterStartElement(file, channelTagName);
-        xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
-        writeUsersToChannel(file, channel.users);
-        writeMessagesToChannel(file, channel.messages);
-        xmlTextWriterEndElement(file);
-        int suc = xmlTextWriterEndDocument(file);
-        xmlFreeTextWriter(file);
+    xmlTextWriterPtr file = openChannelFile(channel.name);
+    xmlTextWriterStartElement(file, channelTagName);
+    xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
+    writeUsersToChannel(file, channel.users);
+    writeMessagesToChannel(file, channel.messages);
+    xmlTextWriterEndElement(file);
+    int suc = xmlTextWriterEndDocument(file);
+    xmlFreeTextWriter(file);
     return suc;
 }
 
@@ -83,7 +82,6 @@ int writeMessageToChannel(char *channelName, messageInfo message)
     {
         ci.messages = &ci.messages[1];
     }
-
     return writeChannel(ci);
 }
 
@@ -102,7 +100,6 @@ int getChannel(char *channelName, channelInfo *channel)
         return checkChannelResult;
     }
 
-
     sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -118,7 +115,6 @@ int getChannel(char *channelName, channelInfo *channel)
     channel->name = getValue(doc, cur, "name");
     channel->users = getListOfValues(doc, cur, "users", "user");
     channel->messages = getMessages(channelName);
-    
 
     xmlFreeDoc(doc);
     free(docname);
@@ -274,14 +270,13 @@ int checkIfChannelEmpty(char *channelName)
 }
 
 
-
-messageInfo* getMessages(char *channelName)
+messageInfo *getMessages(char *channelName)
 {
     return getMessagesOnTime(channelName, 0);
 }
 
 
-messageInfo* getMessagesOnTime(char *channelName, int timestamp)
+messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
     // TODO: naamgeving aanpassen
     // TODO: them mallocs lengte
@@ -313,7 +308,7 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp)
             while (curChild != NULL)
             {
                 if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
-                        atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
+                    atoi(getValue(doc, curChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
                     messages[index].timestamp = getValue(doc, curChild->xmlChildrenNode, "timestamp");
