@@ -225,17 +225,14 @@ int deleteUserFromChannel(char *channelName, char *username)
     docname = (char *) malloc(500);
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
-    printf("opening : %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
     {
-        printf("error\n");
         return DB_RETURN_FILENOTFOUND;
     }
 
     if ((cur = checkDoc(doc, "channel")) == NULL)
     {
-        printf("error\n");
         return DB_RETURN_CORRUPTFILE;
     }
 
@@ -259,27 +256,22 @@ int checkIfChannelEmpty(char *channelName)
     getChannel(channelName, &info);
     if (info.users[0] == NULL)
     {
-        printf("%s is empty", info.name);
         return BOOL_TRUE;
     }
     else
     {
-        printf("%s is not empty", info.name);
         return BOOL_FALSE;
     }
 }
-
 
 messageInfo *getMessages(char *channelName)
 {
     return getMessagesOnTime(channelName, 0);
 }
 
-
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
     // TODO: them mallocs lengte
-    // TODO: overbodige code in commentaar verwijderen
     char *docname = (char *) malloc(500);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
