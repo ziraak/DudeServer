@@ -30,7 +30,7 @@ END_TEST
 START_TEST(test_join_channel)
     {
         commandStruct cmdStruct;
-        parseCommand("JOIN batcave", &cmdStruct);
+        parseCommand("JOIN batcaveTestChannel", &cmdStruct);
         int resultLogin = handleJoinCommand(cmdStruct);
         ck_assert_int_eq(RPL_TOPIC, resultLogin);
     }
