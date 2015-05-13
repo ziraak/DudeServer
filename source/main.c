@@ -154,7 +154,7 @@ int parseMessage(char *message)
     }
     else if (commandEquals(cmd.command, "DELETE_USER"))
     {
-        result = handleDeleteUserCommand();
+        result = handleDeleteUserCommand(); // TODO: nog steeds authenticated
     }
     else if (commandEquals(cmd.command, "UPDATE_NICKNAME"))
     {
