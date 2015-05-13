@@ -87,8 +87,6 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
 
     sprintf(docname, "%s%ss/%s.xml",DB_DBLOC, fileType, filename);
 
-   // printf("opening document %s\n", docname);
-
     if ((doc = openDoc(docname)) == NULL)
     {
         printf("error\n");
@@ -115,8 +113,6 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     char *docname = (char *) malloc(500);
 
     sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
-
-    printf("opening document %s\n", docname);
 
     if ((doc = openDoc(docname)) == NULL)
     {
@@ -188,17 +184,13 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
 
     sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
 
-    printf("opening document %s\n", docname);
-
     if ((doc = openDoc(docname)) == NULL)
     {
-        printf("error\n");
         return -1;
     }
 
     if ((cur = checkDoc(doc, fileType)) == NULL)
     {
-        printf("error\n");
         return -1;
     }
 
