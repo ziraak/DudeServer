@@ -32,6 +32,8 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     cms.messages = msgs;
     cms.messageCount = messageCount;
 
+    // TODO: free alle messageInfo's
+
     return cms;
 }
 
@@ -65,6 +67,8 @@ int processMessages(getMessagesStruct *gms, int sockfd)
         }
     }
 
+    getMessagesStruct_free(gms);
+
     return BOOL_TRUE;
 }
 
@@ -85,5 +89,23 @@ getMessagesStruct getMessagesStruct_initialize(char** channels)
 
 void getMessagesStruct_free(getMessagesStruct *gms)
 {
+    if(gms == NULL)
+    {
+        return;
+    }
 
+    if(gms->channels != NULL)
+    {
+        free(gms->channels);
+    }
+
+    if(gms->channelMessages != NULL)
+    {
+        int i;
+        for(i = 0; i < gms->channelCount; i++)
+        {
+            free(gms->channelMessages[i].channelName);
+            free(gms->channelMessages[i].messages);
+        }
+    }
 }
