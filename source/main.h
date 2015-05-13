@@ -29,6 +29,7 @@
 #define MAXIMUM_MESSAGE_LENGTH 1024
 
 userInfo currentUser;
+struct timespec sendWait;
 
 void runServer();
 
@@ -46,7 +47,7 @@ void sendIntegerMessageToClient(int sockfd, int msg);
 
 void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength);
 
-int parseMessage(char *message);
+int parseMessage(char *message, int sockfd);
 
 void acknowledgeConnection(int sockfd);
 
