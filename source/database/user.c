@@ -14,6 +14,7 @@ char **getUserList()
     cur = checkDoc(doc, "users");
     cur = cur->parent;
 
+    //TODO: pointer names
     list = getListOfValues(doc, cur, "users", "user");
     return list;
 }
@@ -21,6 +22,8 @@ char **getUserList()
 
 int getUser(char *username, userInfo *result)
 {
+    //TODO: malloc
+    //TODO: pointer names
     char *docname = (char *) malloc(500);
     xmlDocPtr doc;
     xmlNodePtr cur;
@@ -48,6 +51,8 @@ int getUser(char *username, userInfo *result)
         return DB_RETURN_CORRUPTFILE;
     }
 
+
+    //TODO: malloc
     result->username = malloc(30);
     result->nickname = malloc(30);
     result->password = malloc(30);
@@ -60,6 +65,7 @@ int getUser(char *username, userInfo *result)
     result->loginToken = getValue(doc, cur, "loginToken");
 
     xmlFreeDoc(doc);
+    //TODO: frees
     return DB_RETURN_SUCCES;
 }
 
@@ -110,6 +116,8 @@ void deleteChannelFromUser(char *username, char *channelName)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+    //TODO: malloc
+    //TODO: pointer names
     char *docname = (char *) malloc(500);
 
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
@@ -146,6 +154,7 @@ void deleteUser(char *username)
     userInfo user;
     char *docname = (char *) malloc(500);
 
+    //TODO: malloc
     if (getUser(username, &user) < 0)
     {
         return;
@@ -170,6 +179,8 @@ void deleteUserFromList(char *username)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+
+    //TODO: pointer names
 
     if ((doc = openDoc(DB_USERLISTLOCATION)) == NULL)
     {
@@ -223,6 +234,9 @@ int createNewUser(char *username, char *password)
         return DB_RETURN_ALREADYEXISTS;
     }
 
+    //TODO: malloc
+    //TODO: pointer names
+
     char *docname = (char *) malloc(500);
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
 
@@ -247,6 +261,7 @@ int createNewUser(char *username, char *password)
 
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
     xmlFreeDoc(doc);
+
     xmlCleanupParser();
     addToListFile("user", username);
     free(docname);

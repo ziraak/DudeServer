@@ -2,6 +2,7 @@
 
 xmlDocPtr openDoc(char *docname)
 {
+    //TODO: pointer names
     xmlDocPtr doc = xmlParseFile(docname);
     if (doc == NULL)
     {
@@ -13,7 +14,7 @@ xmlDocPtr openDoc(char *docname)
 xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
 {
     xmlNodePtr cur;
-
+    //TODO: pointer names
     if ((cur = xmlDocGetRootElement(doc)) == NULL)
     {
         fprintf(stderr, "empty document\n");
@@ -36,6 +37,7 @@ char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
 {
     xmlChar *key;
 
+    //TODO: pointer names
     while (cur != NULL)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname)))
@@ -51,6 +53,9 @@ char** getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fiel
 {
     char **key;
     key = calloc(50, 1000);
+
+    //TODO: malloc
+    //TODO: pointer names
     int i;
     i = 0;
     while (cur != NULL)
@@ -80,6 +85,8 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
+    //TODO: malloc
+    //TODO: pointer names
     sprintf(docname, "%s%ss/%s.xml",DB_DBLOCATION, fileType, filename);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -93,8 +100,7 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
     }
 
     addChild(cur, listname, fieldname, content);
-
-    xmlSaveFormatFile(docname, doc, 0);
+    xmlSaveFormatFile(docname, doc, 0);//TODO: magic number
     xmlFreeDoc(doc);
     free(docname);
 }
@@ -105,6 +111,8 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
+    //TODO: malloc
+    //TODO: pointer names
     sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
 
     if ((doc = openDoc(docname)) == NULL)
@@ -120,8 +128,7 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     }
     cur = cur->parent;
     addChild(cur, fileType, fieldname, content);
-
-    xmlSaveFormatFile(docname, doc, 0);
+    xmlSaveFormatFile(docname, doc, 0);//TODO: magic number
     xmlFreeDoc(doc);
     free(docname);
 }
@@ -129,6 +136,7 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
 
 void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent)
 {
+    //TODO: pointer names
     while (cur != NULL)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) parent)))
@@ -144,6 +152,7 @@ void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent)
 
 void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
 {
+    //TODO: pointer names
     while (cur != NULL)
     {
         if ((!xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), (xmlChar *) fieldText)))
@@ -156,6 +165,7 @@ void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
 
 int changeField(xmlNodePtr cur, char *nodeName, char *newContent)
 {
+    //TODO: pointer names
     while (cur != NULL)
     {
         if ((!xmlStrcmp(cur->name, (const xmlChar *) nodeName)))
@@ -174,21 +184,22 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
     xmlNodePtr cur;
     int succes;
     char *docname = (char *) malloc(500);
-
+    //TODO: malloc
+    //TODO: pointer names
     sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
 
     if ((doc = openDoc(docname)) == NULL)
     {
-        return -1;
+        return DB_RETURN_FILENOTFOUND;
     }
 
     if ((cur = checkDoc(doc, fileType)) == NULL)
     {
-        return -1;
+        return DB_RETURN_CORRUPTFILE;
     }
 
     succes = changeField(cur,fieldname, newContent);
-
+//TODO: magic number
     xmlSaveFormatFile(docname, doc, 0);
     xmlFreeDoc(doc);
     free(docname);
@@ -198,6 +209,8 @@ void addToListFile(char* itemType,char* newItem)
 {
     xmlDocPtr doc;
     xmlNodePtr cur;
+    //TODO: malloc
+    //TODO: pointer names
     char *docname = (char *) malloc(500);
     char *doctype = (char *) malloc(50);
     sprintf(doctype,"%ss", itemType);
