@@ -64,7 +64,6 @@ int parseCommand(char *message, commandStruct *command)
     }
 
     command->parameterCount = i;
-    command->parameters[i] = NULL;
 
     if(find(message, ':') != -1)
     {

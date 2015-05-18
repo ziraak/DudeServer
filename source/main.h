@@ -45,7 +45,7 @@ void flushStdout();
 
 void sendIntegerMessageToClient(int sockfd, int msg);
 
-void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength);
+void sendMessageToClient(int sockfd, char *buffer);
 
 int parseMessage(char *message, int sockfd);
 

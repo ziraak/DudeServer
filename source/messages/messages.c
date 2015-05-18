@@ -50,12 +50,9 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
         messageCount++;
     }
 
-    cms.messages[resultCount] = NULL;
-
     cms.messages = msgs;
+    cms.messages[resultCount] = NULL;
     cms.messageCount = resultCount;
-
-    // TODO: free alle messageInfo's
 
     return cms;
 }
@@ -86,7 +83,7 @@ int processMessages(getMessagesStruct *gms, int sockfd)
     {
         for(j = 0; j < gms->channelMessages[i].messageCount; j++)
         {
-            sendMessageToClient(sockfd, gms->channelMessages[i].messages[j], strlen(gms->channelMessages[i].messages[j]));
+            sendMessageToClient(sockfd, gms->channelMessages[i].messages[j]);
         }
     }
 
@@ -132,7 +129,13 @@ void getMessagesStruct_free(getMessagesStruct *gms)
         for(i = 0; i < gms->channelCount; i++)
         {
             free(gms->channelMessages[i].channelName);
-            free(gms->channelMessages[i].messages);
+
+            int j = 0;
+            while(gms->channelMessages[i].messages[j] != NULL)
+            {
+                free(gms->channelMessages[i].messages[j]);
+                j++;
+            }
         }
     }
 }
