@@ -52,7 +52,7 @@ char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
 char** getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
 {
     char **key;
-    key = calloc(50, 1000);
+    key = calloc(50, 500);
 
     //TODO: malloc
     //TODO: pointer names

@@ -107,7 +107,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
                 if(authenticated == BOOL_TRUE)
                 {
-                    checkUnreadMessages("1431349400", sockfd);
+                    checkUnreadMessages("1431349400", sockfd); //1431349399
                 }
             }
         }
@@ -208,7 +208,7 @@ void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
     ssize_t sendResult = send(sockfd, buffer, bufferLength, 0);
 
     struct timespec remaining;
-    remaining.tv_nsec = sendWait.tv_nsec;
+    remaining.tv_nsec = sendWait.tv_nsec = 500;
     remaining.tv_sec = sendWait.tv_sec;
 
     nanosleep(&sendWait, &remaining);

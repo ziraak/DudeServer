@@ -311,6 +311,11 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
         }
         nodePtr = nodePtr->next;
     }
+
+    messages[index].writer = NULL;
+    messages[index].body = NULL;
+    messages[index].timestamp = NULL;
+
     xmlFreeDoc(docPtr);
     free(docname);
     return messages;

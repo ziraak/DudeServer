@@ -1,36 +1,59 @@
 #include "messages.h"
 
-void convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
+int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
+    if(msg.timestamp == NULL || msg.writer == NULL || msg.body == NULL || channelName == NULL)
+    {
+        return BOOL_FALSE;
+    }
+
     *str = malloc(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
     sprintf(*str, "UNREAD %s %s %s :%s\0", channelName, msg.writer, msg.timestamp, msg.body);
+
+    return BOOL_TRUE;
 }
 
 channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
 {
     channelMessagesStruct cms;
 
+    if(channelName == NULL)
+    {
+        return cms;
+    }
+
     cms.channelName = channelName;
 
     messageInfo* messages = getMessagesOnTime(channelName, timestamp);
 
+    if(messages == NULL)
+    {
+        return cms;
+    }
+
     char** msgs = malloc(sizeof(char));
-    int messageCount = 0;
+    int messageCount = 0,
+        resultCount = 0;
     while(messages[messageCount].writer != NULL && messages[messageCount].body != NULL)
     {
         char* msg;
-        convertChannelMessageToString(messages[messageCount], channelName, &msg);
 
-        msgs[messageCount] = malloc(sizeof(char) * strlen(msg));
-        strcpy(msgs[messageCount], msg);
-        free(msg);
+        if(convertChannelMessageToString(messages[messageCount], channelName, &msg) == BOOL_TRUE)
+        {
+            msgs[resultCount] = malloc(sizeof(char) * strlen(msg));
+            strcpy(msgs[resultCount], msg);
+            free(msg);
+            resultCount++;
+        }
 
         messageInfo_free(&messages[messageCount]);
         messageCount++;
     }
 
+    cms.messages[resultCount] = NULL;
+
     cms.messages = msgs;
-    cms.messageCount = messageCount;
+    cms.messageCount = resultCount;
 
     // TODO: free alle messageInfo's
 
