@@ -88,35 +88,43 @@ int writeMessageToChannel(char *channelName, messageInfo message)
 
 int getChannel(char *channelName, channelInfo *channel)
 {
-    char *docname = (char *) malloc(500);
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
 
     int checkChannelResult = checkChannel(channelName);
 
     if (checkChannelResult == DB_RETURN_NULLPOINTER || checkChannelResult == DB_RETURN_DOESNOTEXIST)
     {
         fprintf(stderr, "channel: %s does not exist\n", channelName);
+
+        free(docname);
         return checkChannelResult;
     }
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
+        xmlFreeDoc(docPtr);
+        free(docname);
         return DB_RETURN_FILENOTFOUND;
     }
 
-    if ((cur = checkDoc(doc, "channel")) == NULL)
+    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
+        free(docname);
         return DB_RETURN_CORRUPTFILE;
     }
 
-    channel->name = getValue(doc, cur, "name");
-    channel->users = getListOfValues(doc, cur, "users", "user");
+    channel->name = getValue(docPtr, nodePtr, "name");
+    channel->users = getListOfValues(docPtr, nodePtr, "users", "user");
     channel->messages = getMessages(channelName);
 
-    xmlFreeDoc(doc);
+    xmlFreeNode(nodePtr);
+    xmlFreeDoc(docPtr);
     free(docname);
     return DB_RETURN_SUCCES;
 }
@@ -124,15 +132,18 @@ int getChannel(char *channelName, channelInfo *channel)
 
 char **getChannellist()
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
     char **list;
 
-    doc = openDoc(DB_CHANNELLISTLOC);
-    cur = checkDoc(doc, "channels");
-    cur = cur->parent;
+    docPtr = openDoc(DB_CHANNELLISTLOCATION);
+    nodePtr = checkDoc(docPtr, "channels");
+    nodePtr = nodePtr->parent;
 
-    list = getListOfValues(doc, cur, "channels", "channel");
+    list = getListOfValues(docPtr, nodePtr, "channels", "channel");
+
+    xmlFreeNode(nodePtr);
+    xmlFreeDoc(docPtr);
     return list;
 }
 
@@ -165,11 +176,12 @@ int checkChannel(char *channelName)
 int deleteChannelInDB(char *channelName)
 {
     channelInfo channel;
-    char *docname = (char *) malloc(500);
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     int returnvalue = getChannel(channelName, &channel);
 
     if (returnvalue != DB_RETURN_SUCCES)
     {
+        free(docname);
         return returnvalue;
     }
 
@@ -181,71 +193,81 @@ int deleteChannelInDB(char *channelName)
         userindex++;
     }
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
     remove(docname);
-
+    free(docname);
     if (deleteChannelFromList(channelName) == DB_RETURN_SUCCES)
     {
-        free(docname);
         return DB_RETURN_SUCCES;
     }
+
     return EXIT_FAILURE;
 }
 
 int deleteChannelFromList(char *channelName)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
 
 
-    if ((doc = openDoc(DB_CHANNELLISTLOC)) == NULL)
+    if ((docPtr = openDoc(DB_CHANNELLISTLOCATION)) == NULL)
     {
+        xmlFreeDoc(docPtr);
         printf("error\n");
         return DB_RETURN_FILENOTFOUND;
     }
 
-    if ((cur = checkDoc(doc, "channels")) == NULL)
+    if ((nodePtr = checkDoc(docPtr, "channels")) == NULL)
     {
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
         printf("error\n");
         return DB_RETURN_CORRUPTFILE;
     }
-    deleteField(doc, cur, channelName);
+    deleteField(docPtr, nodePtr, channelName);
 
-    xmlSaveFormatFile(DB_CHANNELLISTLOC, doc, 0);
-    xmlFreeDoc(doc);
+    xmlSaveFormatFile(DB_CHANNELLISTLOCATION, docPtr, DB_FORMAT);
+    xmlFreeNode(nodePtr);
+    xmlFreeDoc(docPtr);
     return DB_RETURN_SUCCES;
 }
 
 int deleteUserFromChannel(char *channelName, char *username)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
     char *docname;
-    docname = (char *) malloc(500);
+    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
+        free(docname);
+        xmlFreeDoc(docPtr);
         return DB_RETURN_FILENOTFOUND;
     }
 
-    if ((cur = checkDoc(doc, "channel")) == NULL)
+    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
+        free(docname);
+        xmlFreeDoc(docPtr);
+        xmlFreeNode(nodePtr);
         return DB_RETURN_CORRUPTFILE;
     }
 
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) "users")))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) "users")))
         {
-            deleteField(doc, cur->xmlChildrenNode, username);
+            deleteField(docPtr, nodePtr->xmlChildrenNode, username);
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
-    xmlSaveFormatFile(docname, doc, 0);
-    xmlFreeDoc(doc);
+    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlFreeNode(nodePtr);
+    xmlFreeDoc(docPtr);
     free(docname);
     return DB_RETURN_SUCCES;
 }
@@ -271,21 +293,27 @@ messageInfo *getMessages(char *channelName)
 
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
-    // TODO: them mallocs lengte
-    char *docname = (char *) malloc(500);
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
     messageInfo *messages = malloc(100);
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
+        free(docname);
+        free(messages);
+        xmlFreeDoc(docPtr);
         return messages;
     }
 
     if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
+        free(docname);
+        free(messages);
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
         return messages;
     }
 
@@ -294,24 +322,51 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     {
         if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) "messages")))
         {
-            xmlNodePtr curChild;
-            curChild = nodePtr->xmlChildrenNode;
-            while (curChild != NULL)
+            xmlNodePtr nodePtrChild;
+            nodePtrChild = nodePtr->xmlChildrenNode;
+            while (nodePtrChild != NULL)
             {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
-                    atoi(getValue(docPtr, curChild->xmlChildrenNode, "timestamp")) > timestamp)
+                if ((!xmlStrcmp(nodePtrChild->name, (const xmlChar *) "message")) &&
+                    atoi(getValue(docPtr, nodePtrChild->xmlChildrenNode, "timestamp")) > timestamp)
                 {
-                    messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
-                    messages[index].timestamp = getValue(docPtr, curChild->xmlChildrenNode, "timestamp");
-                    messages[index].body = getValue(docPtr, curChild->xmlChildrenNode, "body");
+                    messages[index].writer = (char *) xmlGetProp(nodePtrChild, (xmlChar *) "user");
+                    messages[index].timestamp = getValue(docPtr, nodePtrChild->xmlChildrenNode, "timestamp");
+                    messages[index].body = getValue(docPtr, nodePtrChild->xmlChildrenNode, "body");
                     index++;
                 }
-                curChild = curChild->next;
+                nodePtrChild = nodePtrChild->next;
             }
+            xmlFreeNode(nodePtrChild);
         }
         nodePtr = nodePtr->next;
     }
+    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
     free(docname);
     return messages;
+}
+
+
+
+void createNewChannel(char *channelName)
+{
+    xmlDocPtr docPtr = NULL;
+    xmlNodePtr root_node = NULL;
+    char* docname = malloc(DB_DOCNAMEMEMORYSPACE);
+
+    docPtr = xmlNewDoc(BAD_CAST "1.0");
+    root_node = xmlNewNode(NULL, BAD_CAST "channel");
+    xmlDocSetRootElement(docPtr, root_node);
+    xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
+    xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+    xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING , DB_FORMAT);
+    xmlFreeNode(root_node);
+    xmlFreeDoc(docPtr);
+    xmlCleanupParser();
+
+    addToListFile("channel", channelName);
+    free(docname);
 }

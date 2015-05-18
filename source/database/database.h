@@ -34,7 +34,6 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
 
 void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
 
-void createNewChannel(char *channelName, char *creator);
 
 void addToListFile(char* itemType,char* newItem);
 
