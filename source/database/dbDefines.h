@@ -1,6 +1,15 @@
 #ifndef DUDESERVER_DBDEFINES_H
 #define DUDESERVER_DBDEFINES_H
 
+
+#define DB_DOCNAMEMEMORYSPACE 500
+#define DB_FORMAT 1
+//1 is indent, 0 is no indent
+#define DB_XML_ENCODING "UTF-8"
+
+
+
+
 //returns:
 #define DB_RETURN_FILENOTFOUND -2
 #define DB_RETURN_DOESNOTEXIST -1
@@ -9,12 +18,12 @@
 #define DB_RETURN_SUCCES 0
 #define DB_RETURN_ALREADYEXISTS -4
 
-// TODO: defines voluit schrijven
+
 //file locations
-#define DB_DBLOC "xml/"
-#define DB_CHANNELLOC "xml/channels/"
-#define DB_CHANNELLISTLOC "xml/channellist.xml"
-#define DB_USERLISTLOC "xml/userlist.xml"
-#define DB_USERLOC "xml/users/"
+#define DB_DBLOCATION "xml/"
+#define DB_CHANNELLOCATION "xml/channels/"
+#define DB_CHANNELLISTLOCATION "xml/channellist.xml"
+#define DB_USERLISTLOCATION "xml/userlist.xml"
+#define DB_USERLOCATION "xml/users/"
 
 #endif //DUDESERVER_DBDEFINES_H

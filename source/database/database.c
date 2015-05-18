@@ -2,250 +2,227 @@
 
 xmlDocPtr openDoc(char *docname)
 {
-    xmlDocPtr doc = xmlParseFile(docname);
-    if (doc == NULL)
+    xmlDocPtr docPtr = xmlParseFile(docname);
+    if (docPtr == NULL)
     {
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
     }
-    return doc;
+    return docPtr;
 }
 
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType)
+xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)
 {
-    xmlNodePtr cur;
+    xmlNodePtr nodePtr;
 
-    if ((cur = xmlDocGetRootElement(doc)) == NULL)
+    if ((nodePtr = xmlDocGetRootElement(docPtr)) == NULL)
     {
         fprintf(stderr, "empty document\n");
-        xmlFreeDoc(doc);
+        xmlFreeDoc(docPtr);
         return NULL;
     }
 
-    if (xmlStrcmp(cur->name, (const xmlChar *) docType))
+    if (xmlStrcmp(nodePtr->name, (const xmlChar *) docType))
     {
         fprintf(stderr, "document of the wrong type, this is not a %s\n", docType);
-        xmlFreeDoc(doc);
+        xmlFreeDoc(docPtr);
         return NULL;
     }
 
-    cur = cur->xmlChildrenNode;
-    return cur;
+    nodePtr = nodePtr->xmlChildrenNode;
+    return nodePtr;
 }
 
-char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
+char *getValue(xmlDocPtr docPtr, xmlNodePtr nodePtr, char *fieldname)
 {
     xmlChar *key;
 
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) fieldname)))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) fieldname)))
         {
-            key = xmlNodeListGetString(doc, cur->xmlChildrenNode, 1);
+            key = xmlNodeListGetString(docPtr, nodePtr->xmlChildrenNode, 1);
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
     return (char *) key;
 }
 
-char** getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
+char** getListOfValues(xmlDocPtr docPtr, xmlNodePtr nodePtr, char *listname, char *fieldname)
 {
     char **key;
     key = calloc(50, 1000);
     int i;
     i = 0;
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) listname)))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) listname)))
         {
-            xmlNodePtr curChild;
-            curChild = cur->xmlChildrenNode;
-            while (curChild != NULL)
+            xmlNodePtr nodePtrChild;
+            nodePtrChild = nodePtr->xmlChildrenNode;
+            while (nodePtrChild != NULL)
             {
-                if ((!xmlStrcmp(curChild->name, (const xmlChar *) fieldname)))
+                if ((!xmlStrcmp(nodePtrChild->name, (const xmlChar *) fieldname)))
                 {
-                    key[i] = (char *) xmlNodeListGetString(doc, curChild->xmlChildrenNode, 1);
+                    key[i] = (char *) xmlNodeListGetString(docPtr, nodePtrChild->xmlChildrenNode, 1);
                     i++;
                 }
-                curChild = curChild->next;
+                nodePtrChild = nodePtrChild->next;
             }
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
     return key;
 }
 
 void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    char *docname = (char *) malloc(500);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
 
-    sprintf(docname, "%s%ss/%s.xml",DB_DBLOC, fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION, fileType, filename);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
         return;
     }
 
-    if ((cur = checkDoc(doc, fileType)) == NULL)
+    if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
         return;
     }
 
-    addChild(cur, listname, fieldname, content);
+    addChild(nodePtr, listname, fieldname, content);
 
-    xmlSaveFormatFile(docname, doc, 0);
-    xmlFreeDoc(doc);
+    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
 }
 
 void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    char *docname = (char *) malloc(500);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
 
-    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
         printf("error\n");
         return;
     }
 
-    if ((cur = checkDoc(doc, fileType)) == NULL)
+    if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
         printf("error\n");
         return;
     }
-    cur = cur->parent;
-    addChild(cur, fileType, fieldname, content);
+    nodePtr = nodePtr->parent;
+    addChild(nodePtr, fileType, fieldname, content);
 
-    xmlSaveFormatFile(docname, doc, 0);
-    xmlFreeDoc(doc);
+    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
 }
 
 
-void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent)
+void addChild(xmlNodePtr nodePtr, char *parent, char *child, char *childContent)
 {
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) parent)))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) parent)))
         {
-            xmlNewTextChild(cur, NULL, (xmlChar *) child, (xmlChar *) childContent);
+            xmlNewTextChild(nodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
             break;
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
 
 }
 
 
-void deleteField(xmlDocPtr doc, xmlNodePtr cur, char *fieldText)
+void deleteField(xmlDocPtr docPtr, xmlNodePtr nodePtr, char *fieldText)
 {
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(xmlNodeListGetString(doc, cur->xmlChildrenNode, 1), (xmlChar *) fieldText)))
+        if ((!xmlStrcmp(xmlNodeListGetString(docPtr, nodePtr->xmlChildrenNode, 1), (xmlChar *) fieldText)))
         {
-            xmlUnlinkNode(cur);
+            xmlUnlinkNode(nodePtr);
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
 }
 
-int changeField(xmlNodePtr cur, char *nodeName, char *newContent)
+int changeField(xmlNodePtr nodePtr, char *nodeName, char *newContent)
 {
-    while (cur != NULL)
+    while (nodePtr != NULL)
     {
-        if ((!xmlStrcmp(cur->name, (const xmlChar *) nodeName)))
+        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) nodeName)))
         {
-            xmlNodeSetContent(cur,(xmlChar *) newContent);
-            return BOOL_TRUE;
+            xmlNodeSetContent(nodePtr,(xmlChar *) newContent);
+            return DB_RETURN_SUCCES;
         }
-        cur = cur->next;
+        nodePtr = nodePtr->next;
     }
-    return BOOL_FALSE;
+    return DB_RETURN_DOESNOTEXIST;
 }
 
 int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
     int succes;
-    char *docname = (char *) malloc(500);
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
 
-    sprintf(docname, "%s%ss/%s.xml", DB_DBLOC,fileType, filename);
+    sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
-        return -1;
+        return DB_RETURN_FILENOTFOUND;
     }
 
-    if ((cur = checkDoc(doc, fileType)) == NULL)
+    if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
-        return -1;
+        return DB_RETURN_CORRUPTFILE;
     }
 
-    succes = changeField(cur,fieldname, newContent);
+    succes = changeField(nodePtr,fieldname, newContent);
 
-    xmlSaveFormatFile(docname, doc, 0);
-    xmlFreeDoc(doc);
+    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
     return succes;
 }
 void addToListFile(char* itemType,char* newItem)
 {
-    xmlDocPtr doc;
-    xmlNodePtr cur;
-    char *docname = (char *) malloc(500);
-    char *doctype = (char *) malloc(50);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    char *doctype = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     sprintf(doctype,"%ss", itemType);
-    sprintf(docname, "%s%slist.xml", DB_DBLOC,itemType);
+    sprintf(docname, "%s%slist.xml", DB_DBLOCATION,itemType);
 
-    if ((doc = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(docname)) == NULL)
     {
         return;
     }
 
-    if ((cur = checkDoc(doc, doctype)) == NULL)
+    if ((nodePtr = checkDoc(docPtr, doctype)) == NULL)
     {
         return;
     }
 
-    cur = cur->parent;
-    addChild(cur, doctype, itemType, newItem);
-    xmlSaveFormatFile(docname, doc, 0);
-    xmlFreeDoc(doc);
+    nodePtr = nodePtr->parent;
+    addChild(nodePtr, doctype, itemType, newItem);
+    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
     free(doctype);
 }
 
 
-
-void createNewChannel(char *channelName, char *creator)
-{
-    // TODO: Functie verplaatsen naar channel.c
-    // TODO: creator wordt niet gebruikt.
-    // TODO: docname wordt niet gefree'd
-    // TODO: doc renamen naar iets als xmlDocPtr
-    // TODO: UTF-8 constante
-    // TODO: malloc(500)?
-    xmlDocPtr doc = NULL;       /* document pointer */
-    xmlNodePtr root_node = NULL;
-    char* docname = malloc(500);
-
-    doc = xmlNewDoc(BAD_CAST "1.0");
-    root_node = xmlNewNode(NULL, BAD_CAST "channel");
-    xmlDocSetRootElement(doc, root_node);
-    xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
-    xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
-    xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOC, channelName);
-    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1); // TODO: Magic number?
-    xmlFreeDoc(doc);
-    xmlCleanupParser();
-
-    addToListFile("channel", channelName);
-}
