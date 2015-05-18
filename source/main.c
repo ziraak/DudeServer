@@ -66,6 +66,17 @@ void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
     exitIfError(childpid, "Error forking child");
 }
 
+void checkUnreadMessages(char* timestamp, int sockfd)
+{
+    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
+    gms.timestamp = atoi(timestamp);
+
+    if(getAllUnreadMessages(&gms) == BOOL_TRUE)
+    {
+        processMessages(&gms, sockfd);
+    }
+}
+
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 {
     ssize_t receive;
@@ -97,19 +108,13 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
                 if(authenticated == BOOL_TRUE)
                 {
-                    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
-                    gms.timestamp = 1431349400;
-
-                    if(getAllUnreadMessages(&gms) == BOOL_TRUE)
-                    {
-                        processMessages(&gms, sockfd);
-                    }
+                    checkUnreadMessages("1431349400", sockfd);
                 }
             }
         }
         else
         {
-            result = parseMessage(buffer);
+            result = parseMessage(buffer, sockfd);
             sendIntegerMessageToClient(sockfd, result);
         }
 
@@ -142,8 +147,9 @@ int authenticateClient(int sockfd, commandStruct cmd)
     return authenticated;
 }
 
-int parseMessage(char *message)
+int parseMessage(char *message, int sockfd)
 {
+    // TODO: sockfd moet hier weg?? moest even voor POLL
     commandStruct cmd;
     parseCommand(message, &cmd);
 
@@ -174,6 +180,11 @@ int parseMessage(char *message)
     {
         result = handleUpdatePasswordCommand(cmd);
     }
+    else if (commandEquals(cmd, "POLL") && cmd.parameterCount > 0)
+    {
+//        checkUnreadMessages(cmd.parameters[0], sockfd);
+        result = RPL_SUCCESS;
+    }
 
     commandStruct_free(&cmd);
 
@@ -196,6 +207,13 @@ void sendIntegerMessageToClient(int sockfd, int msg)
 void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
 {
     ssize_t sendResult = send(sockfd, buffer, bufferLength, 0);
+
+    struct timespec remaining;
+    remaining.tv_nsec = sendWait.tv_nsec;
+    remaining.tv_sec = sendWait.tv_sec;
+
+    nanosleep(&sendWait, &remaining);
+
     exitIfError(sendResult, "Error while sending a message to the client.");
 }
 

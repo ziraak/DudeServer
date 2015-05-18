@@ -41,7 +41,7 @@ int getAllUnreadMessages(getMessagesStruct *gms)
 {
     if(gms->channelCount == 0)
     {
-        return BOOL_TRUE;
+        return BOOL_FALSE;
     }
 
     int i;
@@ -75,7 +75,7 @@ int processMessages(getMessagesStruct *gms, int sockfd)
 getMessagesStruct getMessagesStruct_initialize(char** channels)
 {
     getMessagesStruct gms;
-
+    gms.timestamp = 1431349400;
     gms.channels = channels;
     gms.channelCount = 0;
 
