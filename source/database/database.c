@@ -6,7 +6,6 @@ xmlDocPtr openDoc(char *docname)
     if (docPtr == NULL)
     {
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
-        xmlFreeDoc(docPtr);
     }
     return docPtr;
 }
@@ -18,7 +17,6 @@ xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)
     if ((nodePtr = xmlDocGetRootElement(docPtr)) == NULL)
     {
         fprintf(stderr, "empty document\n");
-        xmlFreeNode(nodePtr);
         xmlFreeDoc(docPtr);
         return NULL;
     }
@@ -26,7 +24,6 @@ xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)
     if (xmlStrcmp(nodePtr->name, (const xmlChar *) docType))
     {
         fprintf(stderr, "document of the wrong type, this is not a %s\n", docType);
-        xmlFreeNode(nodePtr);
         xmlFreeDoc(docPtr);
         return NULL;
     }
@@ -87,24 +84,19 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
-        xmlFreeDoc(docPtr);
-        free(docname);
         return;
     }
 
     if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
-        xmlFreeNode(nodePtr);
-        xmlFreeDoc(docPtr);
-        free(docname);
         return;
     }
 
     addChild(nodePtr, listname, fieldname, content);
 
     xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
-    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
 }
 
@@ -118,17 +110,12 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
-        xmlFreeDoc(docPtr);
-        free(docname);
         printf("error\n");
         return;
     }
 
     if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
-        xmlFreeNode(nodePtr);
-        xmlFreeDoc(docPtr);
-        free(docname);
         printf("error\n");
         return;
     }
@@ -136,9 +123,10 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
     addChild(nodePtr, fileType, fieldname, content);
 
     xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
-    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
-    free(docname);}
+    xmlFreeNode(nodePtr);
+    free(docname);
+}
 
 
 void addChild(xmlNodePtr nodePtr, char *parent, char *child, char *childContent)
@@ -193,24 +181,19 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
-        xmlFreeDoc(docPtr);
-        free(docname);
         return DB_RETURN_FILENOTFOUND;
     }
 
     if ((nodePtr = checkDoc(docPtr, fileType)) == NULL)
     {
-        xmlFreeNode(nodePtr);
-        xmlFreeDoc(docPtr);
-        free(docname);
         return DB_RETURN_CORRUPTFILE;
     }
 
     succes = changeField(nodePtr,fieldname, newContent);
 
     xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
-    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
+    xmlFreeNode(nodePtr);
     free(docname);
     return succes;
 }
@@ -225,18 +208,11 @@ void addToListFile(char* itemType,char* newItem)
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
-        xmlFreeDoc(docPtr);
-        free(docname);
-        free(doctype);
         return;
     }
 
     if ((nodePtr = checkDoc(docPtr, doctype)) == NULL)
     {
-        xmlFreeNode(nodePtr);
-        xmlFreeDoc(docPtr);
-        free(docname);
-        free(doctype);
         return;
     }
 
