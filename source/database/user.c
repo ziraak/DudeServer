@@ -15,6 +15,8 @@ char **getUserList()
     nodePtr = nodePtr->parent;
 
     list = getListOfValues(docPtr, nodePtr, "users", "user");
+    xmlFreeNode(nodePtr);
+    xmlFreeDoc(docPtr);
     return list;
 }
 
@@ -41,13 +43,18 @@ int getUser(char *username, userInfo *result)
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
+        xmlFreeDoc(docPtr);
+        free(docname);
         return DB_RETURN_FILENOTFOUND;
     }
     if ((nodePtr = checkDoc(docPtr, "user")) == NULL)
     {
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
+        free(docname);
         return DB_RETURN_CORRUPTFILE;
     }
-
+    //TODO : define length for username,nickname password!!!!
     result->username = malloc(30);
     result->nickname = malloc(30);
     result->password = malloc(30);
@@ -59,11 +66,13 @@ int getUser(char *username, userInfo *result)
     result->channels = getListOfValues(docPtr, nodePtr, "channels", "channel");
     result->loginToken = getValue(docPtr, nodePtr, "loginToken");
 
+    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
+    free(docname);
     return DB_RETURN_SUCCES;
 }
 
-int checkUser(char *userName)
+int checkUser(char *userName)//TODO: change function name to something like checkIfUserExists
 {
     if (userName == NULL)
     {
@@ -110,19 +119,25 @@ void deleteChannelFromUser(char *username, char *channelName)
 {
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
-    char *docname = (char *) malloc(500);
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
 
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
     printf("opening : %s\n", docname);
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
+        xmlFreeDoc(docPtr);
+        free(docname);
         printf("error\n");
         return;
     }
 
     if ((nodePtr = checkDoc(docPtr, "user")) == NULL)
     {
+
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
+        free(docname);
         printf("error\n");
         return;
     }
@@ -136,6 +151,7 @@ void deleteChannelFromUser(char *username, char *channelName)
         nodePtr = nodePtr->next;
     }
     xmlSaveFormatFile(docname, docPtr, 0);
+    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
     free(docname);
 }
@@ -148,6 +164,7 @@ void deleteUser(char *username)
 
     if (getUser(username, &user) < 0)
     {
+        free(docname);
         return;
     }
     int channelIndex;
@@ -173,18 +190,23 @@ void deleteUserFromList(char *username)
 
     if ((docPtr = openDoc(DB_USERLISTLOCATION)) == NULL)
     {
+        xmlFreeDoc(docPtr);
         printf("error\n");
         return;
     }
 
     if ((nodePtr = checkDoc(docPtr, "users")) == NULL)
     {
+        xmlFreeNode(nodePtr);
+        xmlFreeDoc(docPtr);
         printf("error\n");
         return;
     }
     deleteField(docPtr, nodePtr, username);
 
     xmlSaveFormatFile(DB_USERLISTLOCATION, docPtr, 0);
+
+    xmlFreeNode(nodePtr);
     xmlFreeDoc(docPtr);
 }
 
@@ -243,12 +265,12 @@ int createNewUser(char *username, char *password)
     xmlNewChild(root_node, NULL, BAD_CAST "nickname", BAD_CAST username);
     xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
     xmlNewChild(root_node, NULL, BAD_CAST "channels", NULL);
-
-
     xmlSaveFormatFileEnc(docname, docPtr, "UTF-8", 1);
-    xmlFreeDoc(docPtr);
-    xmlCleanupParser();
     addToListFile("user", username);
+
+    xmlFreeNode(root_node);
+    xmlFreeDoc(docPtr);
     free(docname);
+    xmlCleanupParser();
     return DB_RETURN_SUCCES;
 }
