@@ -6,24 +6,24 @@
 
 char **getUserList()
 {
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
+    xmlDocPtr doc;
+    xmlNodePtr cur;
     char **list;
 
-    docPtr = openDoc(DB_USERLISTLOCATION);
-    nodePtr = checkDoc(docPtr, "users");
-    nodePtr = nodePtr->parent;
+    doc = openDoc(DB_USERLISTLOCATION);
+    cur = checkDoc(doc, "users");
+    cur = cur->parent;
 
-    list = getListOfValues(docPtr, nodePtr, "users", "user");
+    list = getListOfValues(doc, cur, "users", "user");
     return list;
 }
 
 
 int getUser(char *username, userInfo *result)
 {
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
+    char *docname = (char *) malloc(500);
+    xmlDocPtr doc;
+    xmlNodePtr cur;
 
     int userReturn = checkUser(username);
 
@@ -39,11 +39,11 @@ int getUser(char *username, userInfo *result)
 
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
 
-    if ((docPtr = openDoc(docname)) == NULL)
+    if ((doc = openDoc(docname)) == NULL)
     {
         return DB_RETURN_FILENOTFOUND;
     }
-    if ((nodePtr = checkDoc(docPtr, "user")) == NULL)
+    if ((cur = checkDoc(doc, "user")) == NULL)
     {
         return DB_RETURN_CORRUPTFILE;
     }
@@ -54,12 +54,12 @@ int getUser(char *username, userInfo *result)
     result->channels = malloc(1000);
 
     strcpy(result->username, username);
-    strcpy(result->nickname, getValue(docPtr, nodePtr, "nickname"));
-    strcpy(result->password, getValue(docPtr, nodePtr, "password"));
-    result->channels = getListOfValues(docPtr, nodePtr, "channels", "channel");
-    result->loginToken = getValue(docPtr, nodePtr, "loginToken");
+    strcpy(result->nickname, getValue(doc, cur, "nickname"));
+    strcpy(result->password, getValue(doc, cur, "password"));
+    result->channels = getListOfValues(doc, cur, "channels", "channel");
+    result->loginToken = getValue(doc, cur, "loginToken");
 
-    xmlFreeDoc(docPtr);
+    xmlFreeDoc(doc);
     return DB_RETURN_SUCCES;
 }
 
@@ -108,35 +108,35 @@ int userJoinChannel(char *username, char *channelName)
 
 void deleteChannelFromUser(char *username, char *channelName)
 {
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
+    xmlDocPtr doc;
+    xmlNodePtr cur;
     char *docname = (char *) malloc(500);
 
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
     printf("opening : %s\n", docname);
 
-    if ((docPtr = openDoc(docname)) == NULL)
+    if ((doc = openDoc(docname)) == NULL)
     {
         printf("error\n");
         return;
     }
 
-    if ((nodePtr = checkDoc(docPtr, "user")) == NULL)
+    if ((cur = checkDoc(doc, "user")) == NULL)
     {
         printf("error\n");
         return;
     }
 
-    while (nodePtr != NULL)
+    while (cur != NULL)
     {
-        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) "channels")))
+        if ((!xmlStrcmp(cur->name, (const xmlChar *) "channels")))
         {
-            deleteField(docPtr, nodePtr->xmlChildrenNode, channelName);
+            deleteField(doc, cur->xmlChildrenNode, channelName);
         }
-        nodePtr = nodePtr->next;
+        cur = cur->next;
     }
-    xmlSaveFormatFile(docname, docPtr, 0);
-    xmlFreeDoc(docPtr);
+    xmlSaveFormatFile(docname, doc, 0);
+    xmlFreeDoc(doc);
     free(docname);
 }
 
@@ -168,24 +168,24 @@ void deleteUser(char *username)
 
 void deleteUserFromList(char *username)
 {
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
+    xmlDocPtr doc;
+    xmlNodePtr cur;
 
-    if ((docPtr = openDoc(DB_USERLISTLOCATION)) == NULL)
+    if ((doc = openDoc(DB_USERLISTLOCATION)) == NULL)
     {
         printf("error\n");
         return;
     }
 
-    if ((nodePtr = checkDoc(docPtr, "users")) == NULL)
+    if ((cur = checkDoc(doc, "users")) == NULL)
     {
         printf("error\n");
         return;
     }
-    deleteField(docPtr, nodePtr, username);
+    deleteField(doc, cur, username);
 
-    xmlSaveFormatFile(DB_USERLISTLOCATION, docPtr, 0);
-    xmlFreeDoc(docPtr);
+    xmlSaveFormatFile(DB_USERLISTLOCATION, doc, 0);
+    xmlFreeDoc(doc);
 }
 
 void changeNickname(char *username, char *newNickname)
@@ -234,19 +234,19 @@ int createNewUser(char *username, char *password)
 
 
     //printf("creating new user.\n");
-    xmlDocPtr docPtr = NULL;       /* document pointer */
+    xmlDocPtr doc = NULL;       /* document pointer */
     xmlNodePtr root_node = NULL;/* node pointers */
 
-    docPtr = xmlNewDoc(BAD_CAST "1.0");
+    doc = xmlNewDoc(BAD_CAST "1.0");
     root_node = xmlNewNode(NULL, BAD_CAST "user");
-    xmlDocSetRootElement(docPtr, root_node);
+    xmlDocSetRootElement(doc, root_node);
     xmlNewChild(root_node, NULL, BAD_CAST "nickname", BAD_CAST username);
     xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
     xmlNewChild(root_node, NULL, BAD_CAST "channels", NULL);
 
 
-    xmlSaveFormatFileEnc(docname, docPtr, "UTF-8", 1);
-    xmlFreeDoc(docPtr);
+    xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1);
+    xmlFreeDoc(doc);
     xmlCleanupParser();
     addToListFile("user", username);
     free(docname);
