@@ -54,7 +54,7 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
 
 int joinChannel(char* channelName)
 {
-    if(userHasChannel(channelName) == DB_RETURN_SUCCES)
+    if(userHasChannel(channelName) == BOOL_TRUE)
     {
         return RPL_TOPIC;
     }
