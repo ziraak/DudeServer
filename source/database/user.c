@@ -139,7 +139,7 @@ void deleteChannelFromUser(char *username, char *channelName)
         }
         currentNodePtr = currentNodePtr->next;
     }
-    xmlSaveFormatFile(docname, docPtr, DB_FORMAT);
+    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
     free(docname);
 }
@@ -189,7 +189,7 @@ void deleteUserFromList(char *username)
     }
     deleteField(docPtr, currentNodePtr, username);
 
-    xmlSaveFormatFile(DB_USERLISTLOCATION, docPtr, DB_FORMAT);
+    xmlSaveFormatFile(DB_USERLISTLOCATION, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
 }
 
@@ -250,7 +250,7 @@ int createNewUser(char *username, char *password)
     xmlNewChild(root_node, NULL, BAD_CAST "channels", NULL);
 
 
-    xmlSaveFormatFileEnc(docname, docPtr, "UTF-8", DB_FORMAT);
+    xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
 
     xmlCleanupParser();
