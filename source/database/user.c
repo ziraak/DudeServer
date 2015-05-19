@@ -56,7 +56,7 @@ int getUser(char *username, userInfo *result)
     result->username = malloc(30);
     result->nickname = malloc(30);
     result->password = malloc(30);
-    result->channels = malloc(1000);
+//    result->channels = malloc(1000);
 
     strcpy(result->username, username);
     strcpy(result->nickname, getValue(doc, cur, "nickname"));

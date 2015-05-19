@@ -3,30 +3,27 @@
 
 #include "../main.h"
 #include "../database/databaseStructs.h"
+#include "../database/databaseStructs_free.h"
 
 typedef struct channelMessagesStruct
 {
     char* channelName;
-
     char** messages;
     int messageCount;
 } channelMessagesStruct;
 
-typedef struct getMessagesStruct
+typedef struct pollStruct
 {
     int timestamp;
     char** channels;
 
     channelMessagesStruct* channelMessages;
     int channelCount;
-} getMessagesStruct;
+} pollStruct;
 
-int getAllUnreadMessages(getMessagesStruct *gms);
+pollStruct pollStruct_initialize(char **channels, int timestamp);
+void pollStruct_free(pollStruct *ps);
 
-int processMessages(getMessagesStruct *gms, int sockfd);
-
-getMessagesStruct getMessagesStruct_initialize(char** channels);
-
-void getMessagesStruct_free(getMessagesStruct *gms);
+int handlePollCommand(commandStruct cmd, int sockfd);
 
 #endif //DUDESERVER_MESSAGES_H

@@ -41,7 +41,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
+    uint16_t listenPort = 9091;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -66,17 +66,6 @@ void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
     exitIfError(childpid, "Error forking child");
 }
 
-void checkUnreadMessages(char* timestamp, int sockfd)
-{
-    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels);
-    gms.timestamp = atoi(timestamp);
-
-    if(getAllUnreadMessages(&gms) == BOOL_TRUE)
-    {
-        processMessages(&gms, sockfd);
-    }
-}
-
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 {
     ssize_t receive;
@@ -94,8 +83,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
         if (authenticated == BOOL_FALSE)
         {
-            commandStruct cmd;
-            parseCommand(buffer, &cmd);
+            commandStruct cmd = commandStruct_initialize(buffer);
 
             if (commandEquals(cmd, "CREATE_USER"))
             {
@@ -108,7 +96,9 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
                 if(authenticated == BOOL_TRUE)
                 {
-                    checkUnreadMessages("1431349400", sockfd);
+                    commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
+                    handlePollCommand(pollCmd, sockfd); //1431349399
+                    commandStruct_free(&pollCmd);
                 }
             }
         }
@@ -150,8 +140,7 @@ int authenticateClient(int sockfd, commandStruct cmd)
 int parseMessage(char *message, int sockfd)
 {
     // TODO: sockfd moet hier weg?? moest even voor POLL
-    commandStruct cmd;
-    parseCommand(message, &cmd);
+    commandStruct cmd = commandStruct_initialize(message);
 
     int result = ERR_UNKNOWNCOMMAND;
 
@@ -180,10 +169,9 @@ int parseMessage(char *message, int sockfd)
     {
         result = handleUpdatePasswordCommand(cmd);
     }
-    else if (commandEquals(cmd, "POLL") && cmd.parameterCount > 0)
+    else if (commandEquals(cmd, "POLL"))
     {
-//        checkUnreadMessages(cmd.parameters[0], sockfd);
-        result = RPL_SUCCESS;
+        result = handlePollCommand(cmd, sockfd);
     }
 
     commandStruct_free(&cmd);
@@ -194,27 +182,6 @@ int parseMessage(char *message, int sockfd)
 void flushStdout()
 {
     setvbuf(stdout, NULL, _IONBF, 0);
-}
-
-void sendIntegerMessageToClient(int sockfd, int msg)
-{
-    char *dest = malloc(3);
-    sprintf(dest, "%i", msg);
-    sendMessageToClient(sockfd, dest, sizeof(dest));
-    free(dest);
-}
-
-void sendMessageToClient(int sockfd, char *buffer, size_t bufferLength)
-{
-    ssize_t sendResult = send(sockfd, buffer, bufferLength, 0);
-
-    struct timespec remaining;
-    remaining.tv_nsec = sendWait.tv_nsec;
-    remaining.tv_sec = sendWait.tv_sec;
-
-    nanosleep(&sendWait, &remaining);
-
-    exitIfError(sendResult, "Error while sending a message to the client.");
 }
 
 void acknowledgeConnection(int sockfd)

@@ -28,10 +28,7 @@ END_TEST
 
 START_TEST(test_utils_parseCommand_no_trailing)
     {
-        commandStruct command;
-        int result = parseCommand("LOGIN fatih ik_ben_awesome demir", &command);
-
-        ck_assert_int_eq(result, BOOL_TRUE);
+        commandStruct command = commandStruct_initialize("LOGIN fatih ik_ben_awesome demir");
 
         ck_assert_str_eq(command.command, "LOGIN");
 
@@ -48,10 +45,7 @@ END_TEST
 
 START_TEST(test_utils_parseCommand_trailing)
     {
-        commandStruct command;
-        int result = parseCommand("LOGIN fatih ik_ben_awesome demir :trailing string yo", &command);
-
-        ck_assert_int_eq(result, BOOL_TRUE);
+        commandStruct command = commandStruct_initialize("LOGIN fatih ik_ben_awesome demir :trailing string yo");
 
         ck_assert_str_eq(command.command, "LOGIN");
 
@@ -68,10 +62,7 @@ END_TEST
 
 START_TEST(test_utils_parseCommand_two_words)
     {
-        commandStruct command;
-        int result = parseCommand("JOIN batcave", &command);
-
-        ck_assert_int_eq(result, BOOL_TRUE);
+        commandStruct command = commandStruct_initialize("JOIN batcave");
 
         ck_assert_str_eq(command.command, "JOIN");
 
@@ -111,6 +102,7 @@ int utils_tests()
     s = utils_suite();
     sr = srunner_create(s);
 
+    srunner_set_fork_status(sr, CK_NOFORK);
     srunner_run_all(sr, CK_NORMAL);
     number_failed = srunner_ntests_failed(sr);
     srunner_free(sr);

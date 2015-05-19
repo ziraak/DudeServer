@@ -3,9 +3,12 @@
 <channel>
     <name>eigendunk</name>
     <users>
-        <user>fatih</user>
         <user>alibaba</user>
     </users>
     <messages>
+        <message user="alibaba">
+            <timestamp>1431349400</timestamp>
+            <body>"i'm batman"</body>
+        </message>
     </messages>
 </channel>

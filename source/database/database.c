@@ -52,7 +52,7 @@ char *getValue(xmlDocPtr doc, xmlNodePtr cur, char *fieldname)
 char** getListOfValues(xmlDocPtr doc, xmlNodePtr cur, char *listname, char *fieldname)
 {
     char **key;
-    key = calloc(50, 1000);
+    key = calloc(50, 500);
 
     //TODO: malloc
     //TODO: pointer names
@@ -258,7 +258,6 @@ void createNewChannel(char *channelName)
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1); // TODO: Magic number?
     xmlFreeDoc(doc);
-    xmlCleanupParser();
 
     addToListFile("channel", channelName);
 }

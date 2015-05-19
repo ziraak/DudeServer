@@ -12,7 +12,8 @@
 
 #define CMD_SIZE 256
 
-void clientBusiness(int sock);
+void clientBusinessSend(int sock);
+void clientBusinessReceive(int sock);
 
 int getServerSocket(int port, char *ip);
 
@@ -77,15 +78,60 @@ int main(int argc, char **argv)
         sock = getServerSocket(atoi(argv[2]), argv[1]);
     }
 
-
-    clientBusiness(sock);
+    int childpid = fork();
+    if (childpid == 0)
+    {
+        clientBusinessSend(sock);
+    }
+    else
+    {
+        clientBusinessReceive(sock);
+    }
 
     return EXIT_SUCCESS;
 }
 
-void clientBusiness(int sock)
+void clientBusinessSend(int sock)
 {
-    char *snd, *rcv;
+    char *snd = NULL;
+
+    for (; ;)
+    {
+        int len = prompt(CMD_SIZE, &snd, "COMMAND: ");
+
+        if (strcmp(snd, "QUIT\n") == 0)
+        {
+            printf("CLOSING CONNECTION, BYE BYE\n");
+            close(sock);
+            return;
+        }
+        else if (strcmp(snd, "") != 0)
+        {
+            if (strcmp(snd, "LOGIN\n") == 0)
+            {
+                char *lgn = "LOGIN fatih nub";
+                send(sock, lgn, strlen(lgn), 0);
+            }
+            else if (strcmp(snd, "JOIN\n") == 0)
+            {
+                char *lgn = "JOIN batcave";
+                send(sock, lgn, strlen(lgn), 0);
+            }
+            else if (send(sock, snd, (size_t)len, 0) < 0)
+            {
+                perror("SEND ERROR, CLOSING CLIENT");
+                close(sock);
+                exit(EXIT_FAILURE);
+            }
+        }
+
+        free(snd);
+    }
+}
+
+void clientBusinessReceive(int sock)
+{
+    char *rcv = NULL;
 
     rcv = malloc(CMD_SIZE + 1);
     bzero(rcv, CMD_SIZE + 1);
@@ -110,35 +156,7 @@ void clientBusiness(int sock)
             printf("RECEIVED: '%s'\n", rcv);
         }
 
-        int len = prompt(CMD_SIZE, &snd, "COMMAND: ");
-
-        if (strcmp(snd, "QUIT\n") == 0)
-        {
-            printf("CLOSING CONNECTION, BYE BYE\n");
-            close(sock);
-            return;
-        }
-        else if (strcmp(snd, "") != 0)
-        {
-            if (strcmp(snd, "LOGIN\n") == 0)
-            {
-                char *lgn = "LOGIN fatih nub";
-                send(sock, lgn, strlen(lgn), 0);
-            }
-            else if (strcmp(snd, "JOIN\n") == 0)
-            {
-                char *lgn = "JOIN batcave";
-                send(sock, lgn, strlen(lgn), 0);
-            }
-            else if (send(sock, snd, len, 0) < 0)
-            {
-                perror("SEND ERROR, CLOSING CLIENT");
-                close(sock);
-                exit(EXIT_FAILURE);
-            }
-        }
-
-        free(snd);
+        bzero(rcv, CMD_SIZE + 1);
     }
 }
 
@@ -150,7 +168,7 @@ int getServerSocket(int port, char *ip)
     bzero(&addr, sizeof(addr));
 
     addr.sin_family = AF_INET;
-    addr.sin_port = htons(port);
+    addr.sin_port = htons((uint16_t)port);
     addr.sin_addr.s_addr = inet_addr(ip);
 
     if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
