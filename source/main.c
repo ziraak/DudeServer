@@ -41,7 +41,7 @@ void runServer()
 int setupServer()
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9090;
+    uint16_t listenPort = 9091;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
@@ -83,8 +83,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
         if (authenticated == BOOL_FALSE)
         {
-            commandStruct cmd;
-            parseCommand(buffer, &cmd);
+            commandStruct cmd = commandStruct_initialize(buffer);
 
             if (commandEquals(cmd, "CREATE_USER"))
             {
@@ -97,8 +96,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
                 if(authenticated == BOOL_TRUE)
                 {
-                    commandStruct pollCmd;
-                    parseCommand("POLL 1400000000", &pollCmd);
+                    commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
                     handlePollCommand(pollCmd, sockfd); //1431349399
                     commandStruct_free(&pollCmd);
                 }
@@ -142,8 +140,7 @@ int authenticateClient(int sockfd, commandStruct cmd)
 int parseMessage(char *message, int sockfd)
 {
     // TODO: sockfd moet hier weg?? moest even voor POLL
-    commandStruct cmd;
-    parseCommand(message, &cmd);
+    commandStruct cmd = commandStruct_initialize(message);
 
     int result = ERR_UNKNOWNCOMMAND;
 
@@ -172,7 +169,7 @@ int parseMessage(char *message, int sockfd)
     {
         result = handleUpdatePasswordCommand(cmd);
     }
-    else if (commandEquals(cmd, "POLL") && cmd.parameterCount > 0)
+    else if (commandEquals(cmd, "POLL"))
     {
         result = handlePollCommand(cmd, sockfd);
     }

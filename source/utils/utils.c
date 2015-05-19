@@ -6,14 +6,15 @@
 
 int find(char *str, char find)
 {
-    size_t offset = strcspn(str, &find);
+    char* e = strchr(str, find);
 
-    if(offset == strlen(str))
+    if(e == NULL)
     {
         return -1;
     }
 
-    return (int)offset;
+    int index = (int)(e - str);
+    return index;
 }
 
 int substringCharacter(char *str, char **result)
@@ -23,39 +24,39 @@ int substringCharacter(char *str, char **result)
         return -1;
     }
 
-    char find = ' ';
-    size_t i = strcspn(str, &find);
+    size_t i = strcspn(str, " ");
     *result = malloc(i + 1);
     bzero(*result, i + 1);
     strncpy(*result, str, i);
 
     str += i;
-    while(*str == find) { str++; i++; }
+    while(*str == ' ') { str++; i++; }
 
     return (int) i;
 }
 
-int parseCommand(char *message, commandStruct *command)
+commandStruct commandStruct_initialize(char *message)
 {
-    size_t m_size = sizeof(message);
+    char *command = NULL,
+         *trailing = NULL,
+         **parameters = NULL;
+    parameters = realloc(parameters, strlen(message));
 
-    char** parameters = NULL;
-    parameters = realloc(parameters, m_size);
-    int offset = substringCharacter(message, &command->command);
+    int offset = substringCharacter(message, &command);
     message += offset;
 
-    int i = 0;
-    for(; ; i++)
+    int parameterCount = 0;
+    for(; ; parameterCount++)
     {
         int off = find(message, ' '),
-            semicolon = find(message, ':');
+                semicolon = find(message, ':');
 
         if((semicolon != -1 && semicolon < off) && off > 1)
         {
             break;
         }
 
-        off = substringCharacter(message, &parameters[i]);
+        off = substringCharacter(message, &parameters[parameterCount]);
         if(off < 0)
         {
             break;
@@ -63,22 +64,20 @@ int parseCommand(char *message, commandStruct *command)
         message += off;
     }
 
-    command->parameterCount = i;
-
     if(find(message, ':') != -1)
     {
-        command->trailing = malloc(strlen(message) + 1);
-        bzero(command->trailing, strlen(message) + 1);
-        strncpy(command->trailing, ++message, strlen(message));
+        trailing = malloc(strlen(message) + 1);
+        bzero(trailing, strlen(message) + 1);
+        strncpy(trailing, ++message, strlen(message));
     }
     else
     {
-        command->trailing = NULL;
+        trailing = NULL;
     }
 
-    command->parameters = parameters;
+    commandStruct cmd = { .parameterCount = parameterCount, .command = command, .trailing = trailing, .parameters = parameters };
 
-    return BOOL_TRUE;
+    return cmd;
 }
 
 void commandStruct_free(commandStruct *cmdStruct)
@@ -90,7 +89,12 @@ void commandStruct_free(commandStruct *cmdStruct)
 
     if(cmdStruct->parameters != NULL)
     {
-        free(cmdStruct->parameters);
+        int j = 0;
+        while(cmdStruct->parameters[j] != NULL && j < cmdStruct->parameterCount)
+        {
+            free(cmdStruct->parameters[j]);
+            j++;
+        }
     }
 
     if(cmdStruct->command != NULL)

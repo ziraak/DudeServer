@@ -2,8 +2,7 @@
 
 START_TEST(test_create_user_command)
     {
-        commandStruct cmdStruct;
-        parseCommand("CREATE_USER fatihTestUser testPassword", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("CREATE_USER fatihTestUser testPassword");
         int resultCreateUser = handleCreateUserCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_SUCCESS, resultCreateUser);
@@ -12,8 +11,7 @@ END_TEST
 
 START_TEST(test_login_command)
     {
-        commandStruct cmdStruct;
-        parseCommand("LOGIN fatihTestUser testPassword testNickname", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser testPassword testNickname");
         int resultLogin = handleLoginCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_LOGIN, resultLogin);
@@ -22,8 +20,7 @@ END_TEST
 
 START_TEST(test_login_command_wrong_password)
     {
-        commandStruct cmdStruct;
-        parseCommand("LOGIN fatihTestUser testPassword2 testNickname", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser testPassword2 testNickname");
         int resultLogin = handleLoginCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(ERR_NOLOGIN, resultLogin);
@@ -32,8 +29,7 @@ END_TEST
 
 START_TEST(test_join_channel)
     {
-        commandStruct cmdStruct;
-        parseCommand("JOIN batcaveTestChannel", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("JOIN batcaveTestChannel");
         int resultJoinChannel = handleJoinCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_TOPIC, resultJoinChannel);
@@ -49,8 +45,7 @@ END_TEST
 
 START_TEST(test_part_channel_command)
     {
-        commandStruct cmdStruct;
-        parseCommand("PART batcaveTestChannel", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("PART batcaveTestChannel");
         int resultPartChannel = handlePartCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_SUCCESS, resultPartChannel);
@@ -59,8 +54,7 @@ END_TEST
 
 START_TEST(test_update_nickname_command)
     {
-        commandStruct cmdStruct;
-        parseCommand("UPDATE_NICKNAME changedNick", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("UPDATE_NICKNAME changedNick");
         currentUser.username = "fatihTestUser";
         int resultPartChannel = handleUpdateNicknameCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
@@ -70,8 +64,7 @@ END_TEST
 
 START_TEST(test_update_password_command)
     {
-        commandStruct cmdStruct;
-        parseCommand("UPDATE_PASSWORD changedPass", &cmdStruct);
+        commandStruct cmdStruct = commandStruct_initialize("UPDATE_PASSWORD changedPass");
         currentUser.username = "fatihTestUser";
         int resultPartChannel = handleUpdatePasswordCommand(cmdStruct);
         commandStruct_free(&cmdStruct);

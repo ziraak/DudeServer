@@ -107,6 +107,7 @@ pollStruct pollStruct_initialize(char **channels, int timestamp)
         i++;
     }
 
+    gms.channels[i] = NULL;
     gms.channelCount = i;
 
     return gms;

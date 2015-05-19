@@ -258,7 +258,6 @@ void createNewChannel(char *channelName)
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, doc, "UTF-8", 1); // TODO: Magic number?
     xmlFreeDoc(doc);
-    xmlCleanupParser();
 
     addToListFile("channel", channelName);
 }

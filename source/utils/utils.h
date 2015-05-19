@@ -11,7 +11,8 @@
 #include "../main.h"
 
 int substringCharacter(char *str, char **result);
-int parseCommand(char *message, commandStruct *command);
+
+commandStruct commandStruct_initialize(char *message);
 void commandStruct_free(commandStruct *cmdStruct);
 
 #endif
