@@ -1,5 +1,15 @@
 #include "poll.h"
 
+char* copy(char* src)
+{
+    size_t l = strlen(src) + 1;
+    char* result = malloc(l);
+    bzero(result, l);
+    strncpy(result, src, l - 1);
+
+    return result;
+}
+
 int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
     if(msg.timestamp == NULL || msg.writer == NULL || msg.body == NULL || channelName == NULL)
@@ -7,8 +17,12 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
         return BOOL_FALSE;
     }
 
-    *str = malloc(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
-    sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
+    char *writer = copy(msg.writer),
+            *body = copy(msg.body),
+            *timestamp = copy(msg.timestamp);
+
+    *str = malloc(12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
+    sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
 
     return BOOL_TRUE;
 }
@@ -63,37 +77,37 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     return result;
 }
 
-int getPollMessages(pollStruct *gms)
+int getPollMessages(pollStruct *ps)
 {
-    if(gms->channelCount == 0)
+    if(ps->channelCount == 0)
     {
         return BOOL_FALSE;
     }
 
     int i;
     channelMessagesStruct *channelMessages = malloc(1);
-    for(i = 0; i < gms->channelCount; i++)
+    for(i = 0; i < ps->channelCount; i++)
     {
-        channelMessages[i] = getChannelMessages(gms->channels[i], gms->timestamp);
+        channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
     }
-    gms->channelMessages = channelMessages;
+    ps->channelMessages = channelMessages;
 
     return BOOL_TRUE;
 }
 
-int sendPollMessages(pollStruct *gms, int sockfd)
+int sendPollMessages(pollStruct *ps, int sockfd)
 {
     int i, j;
 
-    for(i = 0; i < gms->channelCount; i++)
+    for(i = 0; i < ps->channelCount; i++)
     {
-        for(j = 0; j < gms->channelMessages[i].messageCount; j++)
+        for(j = 0; j < ps->channelMessages[i].messageCount; j++)
         {
-            sendMessageToClient(sockfd, gms->channelMessages[i].messages[j]);
+            sendMessageToClient(sockfd, ps->channelMessages[i].messages[j]);
         }
     }
 
-    pollStruct_free(gms);
+    pollStruct_free(ps);
 
     return BOOL_TRUE;
 }
@@ -121,32 +135,32 @@ pollStruct pollStruct_initialize(char **channels, int timestamp)
     return ps;
 }
 
-void pollStruct_free(pollStruct *gms)
+void pollStruct_free(pollStruct *ps)
 {
-    if(gms == NULL)
+    if(ps == NULL)
     {
         return;
     }
 
-    if(gms->channels != NULL)
+    if(ps->channels != NULL)
     {
-        free(gms->channels);
+        free(ps->channels);
     }
 
-    if(gms->channelMessages != NULL)
+    if(ps->channelMessages != NULL)
     {
         int i;
-        for(i = 0; i < gms->channelCount; i++)
+        for(i = 0; i < ps->channelCount; i++)
         {
-            if(gms->channelMessages[i].channelName != NULL)
+            if(ps->channelMessages[i].channelName != NULL)
             {
-                free(gms->channelMessages[i].channelName);
+                free(ps->channelMessages[i].channelName);
             }
 
             int j = 0;
-            while(gms->channelMessages[i].messages[j] != NULL)
+            while(ps->channelMessages[i].messages[j] != NULL)
             {
-                free(gms->channelMessages[i].messages[j]);
+                free(ps->channelMessages[i].messages[j]);
                 j++;
             }
         }
