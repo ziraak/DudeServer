@@ -4,5 +4,6 @@
 #include "utils/check_utils.h"
 #include "server/test_suite_commands.h"
 #include "database/check_user.h"
+#include "database/check_channel.h"
 
 #endif //DUDESERVER_MAIN_H

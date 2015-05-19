@@ -91,6 +91,15 @@ START_TEST(userJoinChannel_test_wrongUser)
     }
 END_TEST
 
+//delete users test-----------------------------------------------------------------------------------
+START_TEST(test_deleteUser)
+    {
+        deleteUser();
+    }
+END_TEST
+
+
+
 //----------------___---------------------------------------_____--------------___----__----__----__----__---___---_-----_----
 Suite *user_suite(void)
 {

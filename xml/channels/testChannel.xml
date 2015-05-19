@@ -5,5 +5,13 @@
     <users>
     </users>
     <messages>
+        <message user="test">
+            <timestamp>0</timestamp>
+            <body>test123</body>
+        </message>
+        <message user="test">
+            <timestamp>1000</timestamp>
+            <body>test321</body>
+        </message>
     </messages>
 </channel>

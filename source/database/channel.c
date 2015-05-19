@@ -299,7 +299,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
             while (curChild != NULL)
             {
                 if ((!xmlStrcmp(curChild->name, (const xmlChar *) "message")) &&
-                    atoi(getValue(docPtr, curChild->xmlChildrenNode, "timestamp")) > timestamp)
+                    atoi(getValue(docPtr, curChild->xmlChildrenNode, "timestamp")) >= timestamp)
                 {
                     messages[index].writer = (char *) xmlGetProp(curChild, (xmlChar *) "user");
                     messages[index].timestamp = getValue(docPtr, curChild->xmlChildrenNode, "timestamp");

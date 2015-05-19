@@ -12,14 +12,16 @@ include_directories(${CHECK_INCLUDE_DIRS})
 
 set(TEST_HEADERS
      main.h utils/check_utils.h server/test_suite_commands.h database/check_user.h
+     database/check_channel.h
 )
 
 set(TEST_SOURCES
     main.c utils/check_utils.c server/test_suite_commands.c database/check_user.c
+    database/check_channel.c
 )
 
 # entire test executable
-add_executable(run_unit_tests ${TEST_SOURCES})
+add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS})
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
 # Server test client
