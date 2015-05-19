@@ -6,6 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "communication.h"
 #include "utils/commandStruct.h"
 #include "utils/utils.h"
 #include "commands/poll.h"
@@ -42,10 +43,6 @@ void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
 int setupServer();
 
 void flushStdout();
-
-void sendIntegerMessageToClient(int sockfd, int msg);
-
-void sendMessageToClient(int sockfd, char *buffer);
 
 int parseMessage(char *message, int sockfd);
 

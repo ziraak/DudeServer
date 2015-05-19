@@ -91,7 +91,6 @@ Suite* commands_suite()
     tcase_add_test(tc_util_core, test_delete_user);
     tcase_add_test(tc_util_core, test_part_channel_command);
 
-
     suite_add_tcase(suite, tc_util_core);
 
     return suite;

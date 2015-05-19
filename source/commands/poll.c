@@ -15,47 +15,52 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
 
 channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
 {
-    channelMessagesStruct cms;
-
     if(channelName == NULL)
     {
-        return cms;
+        channelMessagesStruct result;
+        return result;
     }
 
-    cms.channelName = malloc(strlen(channelName));
-    strncpy(cms.channelName, channelName, strlen(channelName));
+    char *innerChannelName = malloc(strlen(channelName));
+    strncpy(innerChannelName, channelName, strlen(channelName));
 
-    messageInfo* messages = getMessagesOnTime(channelName, timestamp);
+    messageInfo *messageInfos = getMessagesOnTime(channelName, timestamp);
 
-    if(messages == NULL)
+    if(messageInfos == NULL)
     {
-        return cms;
+        channelMessagesStruct result = { .channelName = innerChannelName };
+
+        return result;
     }
 
-    char** msgs = malloc(sizeof(char));
+    char **messages = malloc(sizeof(char));
     int messageCount = 0,
         resultCount = 0;
-    while(messages[messageCount].writer != NULL && messages[messageCount].body != NULL)
+    while(messageInfos[messageCount].writer != NULL && messageInfos[messageCount].body != NULL)
     {
-        char* msg;
+        char *message;
 
-        if(convertChannelMessageToString(messages[messageCount], channelName, &msg) == BOOL_TRUE)
+        if(convertChannelMessageToString(messageInfos[messageCount], channelName, &message) == BOOL_TRUE)
         {
-            msgs[resultCount] = malloc(sizeof(char) * strlen(msg));
-            strcpy(msgs[resultCount], msg);
-            free(msg);
+            messages[resultCount] = malloc(sizeof(char) * strlen(message));
+            strcpy(messages[resultCount], message);
+            free(message);
             resultCount++;
         }
 
-        messageInfo_free(&messages[messageCount]);
+        messageInfo_free(&messageInfos[messageCount]);
         messageCount++;
     }
 
-    cms.messages = msgs;
-    cms.messages[resultCount] = NULL;
-    cms.messageCount = resultCount;
+    messages[resultCount] = NULL;
 
-    return cms;
+    channelMessagesStruct result = {
+            .messages = messages,
+            .messageCount = resultCount,
+            .channelName = innerChannelName
+    };
+
+    return result;
 }
 
 int getPollMessages(pollStruct *gms)
@@ -95,22 +100,25 @@ int sendPollMessages(pollStruct *gms, int sockfd)
 
 pollStruct pollStruct_initialize(char **channels, int timestamp)
 {
-    pollStruct gms;
-    gms.timestamp = timestamp;
-    gms.channels = malloc(sizeof(char));
+    char **innerChannels = malloc(sizeof(char));
 
     int i = 0;
     while(channels[i] != NULL)
     {
-        gms.channels[i] = malloc(strlen(channels[i]) + 1);
-        sprintf(gms.channels[i], "%s", channels[i]);
+        innerChannels[i] = malloc(strlen(channels[i]) + 1);
+        sprintf(innerChannels[i], "%s", channels[i]);
         i++;
     }
 
-    gms.channels[i] = NULL;
-    gms.channelCount = i;
+    innerChannels[i] = NULL;
 
-    return gms;
+    pollStruct ps = {
+        .channels = innerChannels,
+        .channelCount = i,
+        .timestamp = timestamp
+    };
+
+    return ps;
 }
 
 void pollStruct_free(pollStruct *gms)
