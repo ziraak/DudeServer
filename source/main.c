@@ -66,16 +66,6 @@ void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
     exitIfError(childpid, "Error forking child");
 }
 
-void checkUnreadMessages(char* timestamp, int sockfd)
-{
-    getMessagesStruct gms = getMessagesStruct_initialize(currentUser.channels, atoi(timestamp));
-
-    if(getAllUnreadMessages(&gms) == BOOL_TRUE)
-    {
-        processMessages(&gms, sockfd);
-    }
-}
-
 void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 {
     ssize_t receive;
@@ -107,7 +97,10 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
 
                 if(authenticated == BOOL_TRUE)
                 {
-                    checkUnreadMessages("1431349400", sockfd); //1431349399
+                    commandStruct pollCmd;
+                    parseCommand("POLL 1400000000", &pollCmd);
+                    handlePollCommand(pollCmd, sockfd); //1431349399
+                    commandStruct_free(&pollCmd);
                 }
             }
         }
@@ -181,8 +174,7 @@ int parseMessage(char *message, int sockfd)
     }
     else if (commandEquals(cmd, "POLL") && cmd.parameterCount > 0)
     {
-        checkUnreadMessages(cmd.parameters[0], sockfd);
-        result = RPL_SUCCESS;
+        result = handlePollCommand(cmd, sockfd);
     }
 
     commandStruct_free(&cmd);

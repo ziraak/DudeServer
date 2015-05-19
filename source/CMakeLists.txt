@@ -5,14 +5,14 @@ set(MAIN_SOURCES main.c)
 set(LIB_SOURCES utils/utils.c
     commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c
     database/database.c database/channel.c database/user.c database/databaseStructs_free.c
-    messages/messages.c)
+    commands/poll.c)
 
 # all header files
 set(HEADER_SOURCES main.h
     utils/utils.h
     commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h
-    messages/messages.h)
+    commands/poll.h)
 
 # creating the library for the server
 add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})

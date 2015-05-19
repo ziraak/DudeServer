@@ -1,4 +1,4 @@
-#include "messages.h"
+#include "poll.h"
 
 int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
@@ -8,7 +8,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     }
 
     *str = malloc(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
-    sprintf(*str, "UNREAD %s %s %s :%s\0", channelName, msg.writer, msg.timestamp, msg.body);
+    sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
 
     return BOOL_TRUE;
 }
@@ -22,7 +22,8 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
         return cms;
     }
 
-    cms.channelName = channelName;
+    cms.channelName = malloc(strlen(channelName));
+    strncpy(cms.channelName, channelName, strlen(channelName));
 
     messageInfo* messages = getMessagesOnTime(channelName, timestamp);
 
@@ -57,7 +58,7 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     return cms;
 }
 
-int getAllUnreadMessages(getMessagesStruct *gms)
+int getPollMessages(pollStruct *gms)
 {
     if(gms->channelCount == 0)
     {
@@ -75,7 +76,7 @@ int getAllUnreadMessages(getMessagesStruct *gms)
     return BOOL_TRUE;
 }
 
-int processMessages(getMessagesStruct *gms, int sockfd)
+int sendPollMessages(pollStruct *gms, int sockfd)
 {
     int i, j;
 
@@ -87,14 +88,14 @@ int processMessages(getMessagesStruct *gms, int sockfd)
         }
     }
 
-    getMessagesStruct_free(gms);
+    pollStruct_free(gms);
 
     return BOOL_TRUE;
 }
 
-getMessagesStruct getMessagesStruct_initialize(char** channels, int timestamp)
+pollStruct pollStruct_initialize(char **channels, int timestamp)
 {
-    getMessagesStruct gms;
+    pollStruct gms;
     gms.timestamp = timestamp;
     gms.channels = malloc(sizeof(char));
 
@@ -111,7 +112,7 @@ getMessagesStruct getMessagesStruct_initialize(char** channels, int timestamp)
     return gms;
 }
 
-void getMessagesStruct_free(getMessagesStruct *gms)
+void pollStruct_free(pollStruct *gms)
 {
     if(gms == NULL)
     {
@@ -128,7 +129,10 @@ void getMessagesStruct_free(getMessagesStruct *gms)
         int i;
         for(i = 0; i < gms->channelCount; i++)
         {
-            free(gms->channelMessages[i].channelName);
+            if(gms->channelMessages[i].channelName != NULL)
+            {
+                free(gms->channelMessages[i].channelName);
+            }
 
             int j = 0;
             while(gms->channelMessages[i].messages[j] != NULL)
@@ -138,4 +142,22 @@ void getMessagesStruct_free(getMessagesStruct *gms)
             }
         }
     }
+}
+
+int handlePollCommand(commandStruct cmd, int sockfd)
+{
+    if(cmd.parameterCount == 0)
+    {
+        return ERR_NEEDMOREPARAMS;
+    }
+
+    //TODO: atoi afhandeling
+    pollStruct gms = pollStruct_initialize(currentUser.channels, atoi(cmd.parameters[0]));
+
+    if(getPollMessages(&gms) == BOOL_TRUE)
+    {
+        sendPollMessages(&gms, sockfd);
+    }
+
+    return RPL_SUCCESS;
 }

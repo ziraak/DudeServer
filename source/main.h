@@ -8,7 +8,7 @@
 #include <unistd.h>
 #include "utils/commandStruct.h"
 #include "utils/utils.h"
-#include "messages/messages.h"
+#include "commands/poll.h"
 #include "commands/login.h"
 #include "commands/join.h"
 #include "commands/privmsg.h"

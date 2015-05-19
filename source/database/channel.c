@@ -317,6 +317,8 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     messages[index].timestamp = NULL;
 
     xmlFreeDoc(docPtr);
+    xmlCleanupParser();
+
     free(docname);
     return messages;
 }
