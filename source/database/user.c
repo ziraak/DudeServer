@@ -145,14 +145,15 @@ void deleteChannelFromUser(char *username, char *channelName)
 }
 
 
-void deleteUser(char *username)
+int deleteUser(char *username)
 {
     userInfo user;
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    int userReturn = getUser(username, &user);
 
-    if (getUser(username, &user) < 0)
+    if (userReturn != DB_RETURN_SUCCES)
     {
-        return;
+        return userReturn;
     }
     int channelIndex;
     channelIndex = 0;
@@ -165,12 +166,12 @@ void deleteUser(char *username)
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
 
     remove(docname);
-
-    deleteUserFromList(username);
     free(docname);
+
+    return deleteUserFromList(username);
 }
 
-void deleteUserFromList(char *username)
+int deleteUserFromList(char *username)
 {
     xmlDocPtr docPtr;
     xmlNodePtr currentNodePtr;
@@ -179,18 +180,19 @@ void deleteUserFromList(char *username)
     if ((docPtr = openDoc(DB_USERLISTLOCATION)) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_FILENOTFOUND;
     }
 
     if ((currentNodePtr = checkDoc(docPtr, "users")) == NULL)
     {
         printf("error\n");
-        return;
+        return DB_RETURN_CORRUPTFILE;
     }
     deleteField(docPtr, currentNodePtr, username);
 
     xmlSaveFormatFile(DB_USERLISTLOCATION, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
+    return DB_RETURN_SUCCES;
 }
 
 void changeNickname(char *username, char *newNickname)

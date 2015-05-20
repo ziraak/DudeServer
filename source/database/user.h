@@ -13,9 +13,9 @@ int userJoinChannel(char *username, char *channelName);
 
 void deleteChannelFromUser(char *username, char *channelName);
 
-void deleteUserFromList(char *username);
+int deleteUserFromList(char *username);
 
-void deleteUser(char *username);
+int deleteUser(char *username);
 
 void changeNickname(char * username, char * newNickname);
 

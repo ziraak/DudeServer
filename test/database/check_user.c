@@ -92,9 +92,27 @@ START_TEST(userJoinChannel_test_wrongUser)
 END_TEST
 
 //delete users test-----------------------------------------------------------------------------------
-START_TEST(test_deleteUser)
+START_TEST(test_deleteUser_correct)
     {
-        deleteUser();
+
+        char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+        sprintf(docname, "%s%s.xml", DB_USERLOCATION, newUname);
+        deleteUser(newUname);
+        ck_assert_int_eq(checkUser(newUname),BOOL_FALSE);
+        ck_assert_int_eq(openDoc(docname),NULL);
+
+        free(docname);
+    }
+END_TEST
+
+START_TEST(test_deleteUser_banned)
+    {
+        char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+        sprintf(docname, "%s%s.xml", DB_USERLOCATION, bannedName);
+        deleteUser(bannedName);
+        ck_assert_int_eq(checkUser(bannedName),BOOL_FALSE);
+        ck_assert_int_eq(openDoc(docname),NULL);
+        free(docname);
     }
 END_TEST
 
@@ -124,6 +142,8 @@ Suite *user_suite(void)
     tcase_add_test(tc_user_core, userJoinChannel_test_wrongChannel);
     tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
 
+    tcase_add_test(tc_user_core, test_deleteUser_correct);
+    tcase_add_test(tc_user_core, test_deleteUser_banned);
 
     suite_add_tcase(s, tc_user_core);
 
