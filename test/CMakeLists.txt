@@ -20,13 +20,15 @@ set(TEST_SOURCES
     database/check_channel.c
 )
 
+
 # entire test executable
-add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS})
+add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS} )
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
 # Server test client
 add_executable(DudeTestClient client/test_client.c)
 target_link_libraries(DudeTestClient DudeServerLib)
+
 
 # remove all older database files
 add_custom_command(TARGET run_unit_tests PRE_BUILD

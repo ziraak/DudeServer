@@ -13,15 +13,15 @@ int userJoinChannel(char *username, char *channelName);
 
 void deleteChannelFromUser(char *username, char *channelName);
 
-void deleteUserFromList(char *username);
+int deleteUserFromList(char *username);
 
-void deleteUser(char *username);
+int deleteUser(char *username);
 
-void changeNickname(char * username, char * newNickname);
+int changeNickname(char *username, char *newNickname);
 
-void changePassword(char* username, char* newPassword);
+int changePassword(char *username, char *newPassword);
 
-void assignLoginToken(char* username, char* loginToken);
+int assignLoginToken(char *username, char *loginToken);
 
 int createNewUser(char *username, char *password);
 
