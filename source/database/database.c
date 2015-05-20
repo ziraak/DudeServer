@@ -158,11 +158,11 @@ int changeField(xmlNodePtr currentNodePtr, char *nodeName, char *newContent)
         if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) nodeName)))
         {
             xmlNodeSetContent(currentNodePtr,(xmlChar *) newContent);
-            return BOOL_TRUE;
+            return DB_RETURN_SUCCES;
         }
         currentNodePtr = currentNodePtr->next;
     }
-    return BOOL_FALSE;
+    return DB_RETURN_DOESNOTEXIST;
 }
 
 int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)

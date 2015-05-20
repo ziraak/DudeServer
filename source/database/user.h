@@ -17,11 +17,11 @@ int deleteUserFromList(char *username);
 
 int deleteUser(char *username);
 
-void changeNickname(char * username, char * newNickname);
+int changeNickname(char *username, char *newNickname);
 
-void changePassword(char* username, char* newPassword);
+int changePassword(char *username, char *newPassword);
 
-void assignLoginToken(char* username, char* loginToken);
+int assignLoginToken(char *username, char *loginToken);
 
 int createNewUser(char *username, char *password);
 

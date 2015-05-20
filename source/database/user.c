@@ -195,19 +195,19 @@ int deleteUserFromList(char *username)
     return DB_RETURN_SUCCES;
 }
 
-void changeNickname(char *username, char *newNickname)
+int changeNickname(char *username, char *newNickname)
 {
-    changeFieldInFile("user", username, "nickname", newNickname);
+    return changeFieldInFile("user", username, "nickname", newNickname);
 }
 
-void changePassword(char *username, char *newPassword)
+int changePassword(char *username, char *newPassword)
 {
-    changeFieldInFile("user", username, "password", newPassword);
+    return changeFieldInFile("user", username, "password", newPassword);
 }
 
-void assignLoginToken(char *username, char *loginToken)
+int assignLoginToken(char *username, char *loginToken)
 {
-    if (changeFieldInFile("user", username, "loginToken", loginToken) == BOOL_FALSE)
+    if (changeFieldInFile("user", username, "loginToken", loginToken) == DB_RETURN_DOESNOTEXIST)
     {
         printf("new login token\n");
         addFieldToFile("user", username, "loginToken", loginToken);
@@ -217,9 +217,7 @@ void assignLoginToken(char *username, char *loginToken)
 
 int createNewUser(char *username, char *password)
 {
-
     int userReturn = checkUser(username);
-
 
     if (userReturn == DB_RETURN_NULLPOINTER || password == NULL)
     {
