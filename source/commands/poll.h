@@ -24,6 +24,6 @@ typedef struct pollStruct
 pollStruct pollStruct_initialize(char **channels, int timestamp);
 void pollStruct_free(pollStruct *ps);
 
-int handlePollCommand(commandStruct cmd, int sockfd);
+int handlePollCommand(commandStruct cmd);
 
 #endif //DUDESERVER_MESSAGES_H

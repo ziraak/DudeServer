@@ -6,7 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
-#include "communication.h"
+#include "ssl/communication.h"
 #include "utils/commandStruct.h"
 #include "utils/utils.h"
 #include "commands/poll.h"
@@ -36,20 +36,12 @@ void runServer();
 
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
-void processConnectedClient(int sockfd, struct sockaddr_in adres_client);
-
-void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
-
-int setupServer();
-
 void flushStdout();
 
-int parseMessage(char *message, int sockfd);
+int parseMessage(char *message);
 
 void acknowledgeConnection(int sockfd);
 
 int commandEquals(commandStruct cmd, char *check);
-
-int authenticateClient(int sockfd, commandStruct cmd);
 
 #endif

@@ -2,21 +2,30 @@
 set(MAIN_SOURCES main.c)
 
 # all files contained inside the library
-set(LIB_SOURCES utils/utils.c communication.c
+set(LIB_SOURCES utils/utils.c ssl/communication.c
     commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c
     database/database.c database/channel.c database/user.c database/databaseStructs_free.c
     commands/poll.c)
 
 # all header files
 set(HEADER_SOURCES main.h
-    utils/utils.h communication.h
+    utils/utils.h ssl/communication.h ssl/communicationStructs.h
     commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h
     commands/poll.h)
 
+# find openssl
+set(OPENSSL_ROOT_DIR /usr/local/ssl)
+set(OPENSSL_LIBRARIES /usr/local/ssl/lib)
+
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 # creating the library for the server
 add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})
+target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
+target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 
 # create the executable and link the library
 add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES})
