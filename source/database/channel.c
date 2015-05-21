@@ -360,3 +360,37 @@ void createNewChannel(char *channelName, char *password, char *topic)
     free(docname);
     addToListFile("channel", channelName);
 }
+
+int checkIfChannelHasPassword(char* channelname)
+{
+    channelInfo channel;
+    getChannel(channelname,&channel);
+    if(channel.password == NULL)
+    {
+        return BOOL_FALSE;
+    }
+    return BOOL_TRUE;
+}
+int authenticateChannelPassword(char* channelname,char* password)
+{
+    if(checkIfChannelHasPassword(channelname)==BOOL_TRUE)
+    {
+        channelInfo channel;
+        getChannel(channelname, &channel);
+        if (!strcmp(channel.password, password))
+        {
+            return BOOL_TRUE;
+        }
+    }
+    return BOOL_FALSE;
+}
+
+void newChannelPassword(char* channelName, char* newPass)
+{
+    assignFieldInFile("channel",channelName,"password",newPass);
+}
+
+void newChannelTopic(char* channelName,char* newTopic)
+{
+    assignFieldInFile("channel",channelName,"topic",newTopic);
+}

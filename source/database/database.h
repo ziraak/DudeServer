@@ -34,6 +34,7 @@ int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *ne
 
 void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
 
+void assignFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
 
 void addToListFile(char* itemType,char* newItem);
 

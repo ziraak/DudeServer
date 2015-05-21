@@ -61,4 +61,12 @@ messageInfo* getMessagesOnTime(char *channelName, int timestamp);
 
 void createNewChannel(char *channelName, char *password, char *topic);
 
+int checkIfChannelHasPassword(char* channelname);
+
+int authenticateChannelPassword(char* channelname,char* password);
+
+void newChannelPassword(char* channelname, char* newPass);
+
+void newChannelTopic(char* channelname,char* newTopic);
+
 #endif 

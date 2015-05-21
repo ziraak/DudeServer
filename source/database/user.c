@@ -207,12 +207,7 @@ int changePassword(char *username, char *newPassword)
 
 int assignLoginToken(char *username, char *loginToken)
 {
-    if (changeFieldInFile("user", username, "loginToken", loginToken) == DB_RETURN_DOESNOTEXIST)
-    {
-        printf("new login token\n");
-        addFieldToFile("user", username, "loginToken", loginToken);
-    }
-
+    assignFieldInFile("user", username, "loginToken", loginToken);
 }
 
 int createNewUser(char *username, char *password)

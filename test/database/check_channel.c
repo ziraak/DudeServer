@@ -4,6 +4,8 @@
 
 #include "check_channel.h"
 
+
+//get channel tests
 START_TEST(test_getChannel)
     {
         channelInfo channelInfo1;
@@ -44,7 +46,16 @@ START_TEST(test_getMessagesOnTime)
     }
 END_TEST
 
+//authenticate password
 
+START_TEST(test_authenticatePassword)
+    {
+        ck_assert_int_eq(checkIfChannelHasPassword("batcave"),BOOL_TRUE);
+        ck_assert_int_eq(authenticateChannelPassword("batcave","open sesame"),BOOL_TRUE);
+        ck_assert_int_eq(checkIfChannelHasPassword("eigendunk"),BOOL_FALSE);
+        ck_assert_int_eq(authenticateChannelPassword("eigendunk","open sesame"),BOOL_FALSE);
+    }
+END_TEST
 
 //----------------___---------------------------------------_____--------------___----__----__----__----__---___---_-----_----
 Suite *channel_suite(void)
@@ -59,6 +70,8 @@ Suite *channel_suite(void)
 
     tcase_add_test(tc_channel_core,test_getChannel);
     tcase_add_test(tc_channel_core,test_getChannel_noPass);
+
+    tcase_add_test(tc_channel_core,test_authenticatePassword);
 
     suite_add_tcase(s, tc_channel_core);
     return s;

@@ -215,3 +215,11 @@ void addToListFile(char* itemType,char* newItem)
     free(docname);
     free(doctype);
 }
+
+void assignFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
+{
+    if (changeFieldInFile(fileType, filename, fieldname, newContent) == DB_RETURN_DOESNOTEXIST)
+    {
+        addFieldToFile(fileType, filename, fieldname, newContent);
+    }
+}
