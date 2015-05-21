@@ -8,11 +8,12 @@
 #include <netinet/in.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include <ssl/communicationStructs.h>
 #include "../../source/utils/utils.h"
 
 #define CMD_SIZE 256
 
-void clientBusinessSend(int sock);
+void clientBusinessSend();
 void clientBusinessReceive();
 
 int getServerSocket(int port, char *ip);
@@ -22,12 +23,12 @@ int prompt(size_t s, char **result, char *message);
 
 int main(int argc, char **argv)
 {
-    int sock = getServerSocket(SERVER_PORT, SERVER_IP);
+    int success = getServerSocket(SERVER_PORT, SERVER_IP);
 
-    if(sock != SSL_OK)
+    if(success != SSL_OK)
     {
         perror("No connection!\n");
-        return sock;
+        return success;
     }
 
     printf("VERBONDEN MET %s:%i\n", SERVER_IP, SERVER_PORT);
@@ -35,7 +36,7 @@ int main(int argc, char **argv)
     int childpid = fork();
     if (childpid == 0)
     {
-        clientBusinessSend(sock);
+        clientBusinessSend();
     }
     else
     {
@@ -45,7 +46,7 @@ int main(int argc, char **argv)
     return EXIT_SUCCESS;
 }
 
-void clientBusinessSend(int sock)
+void clientBusinessSend()
 {
     char *snd = NULL;
 
@@ -56,25 +57,21 @@ void clientBusinessSend(int sock)
         if (strcmp(snd, "QUIT\n") == 0)
         {
             printf("CLOSING CONNECTION, BYE BYE\n");
-            close(sock);
             return;
         }
         else if (strcmp(snd, "") != 0)
         {
             if (strcmp(snd, "LOGIN\n") == 0)
             {
-                char *lgn = "LOGIN fatih nub";
-                send(sock, lgn, strlen(lgn), 0);
+                SSL_write(connection.ssl_handle, "LOGIN fatih nub", 15);
             }
             else if (strcmp(snd, "JOIN\n") == 0)
             {
-                char *lgn = "JOIN batcave";
-                send(sock, lgn, strlen(lgn), 0);
+                SSL_write(connection.ssl_handle, "JOIN batcave", 12);
             }
-            else if (send(sock, snd, (size_t)len, 0) < 0)
+            else if (SSL_write(connection.ssl_handle, snd, len) < 0)
             {
                 perror("SEND ERROR, CLOSING CLIENT");
-                close(sock);
                 exit(EXIT_FAILURE);
             }
         }
