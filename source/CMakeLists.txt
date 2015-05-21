@@ -14,10 +14,6 @@ set(HEADER_SOURCES main.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h
     commands/poll.h)
 
-# find openssl
-set(OPENSSL_ROOT_DIR /usr/local/ssl)
-set(OPENSSL_LIBRARIES /usr/local/ssl/lib)
-
 # creating the library for the server
 add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
@@ -35,3 +31,11 @@ $<TARGET_FILE_DIR:DudeServer>/xml)
 add_custom_command(TARGET DudeServer POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory
 ${CMAKE_SOURCE_DIR}/xml $<TARGET_FILE_DIR:DudeServer>/xml)
+
+# copy over certificates
+add_custom_command(TARGET DudeServer PRE_BUILD
+COMMAND ${CMAKE_COMMAND} -E remove_directory
+$<TARGET_FILE_DIR:DudeServer>/certificates)
+add_custom_command(TARGET DudeServer POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_directory
+${CMAKE_SOURCE_DIR}/certificates $<TARGET_FILE_DIR:DudeServer>/certificates)

@@ -7,8 +7,8 @@
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 9090
-#define SSL_CERTIFICATE_LOCATION "ssl/certificates/certificate.pem"
-#define SSL_PRIVATE_KEY_LOCATION "ssl/certificates/private/certificate_key.pem"
+#define SSL_CERTIFICATE_LOCATION "certificates/certificate.pem"
+#define SSL_PRIVATE_KEY_LOCATION "certificates/private/private_key.pem"
 
 #define SSL_ERROR_RETURN(val) connection = NULL; ERR_print_errors_fp(stderr); return val
 
