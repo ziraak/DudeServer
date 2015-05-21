@@ -2,6 +2,7 @@
 
 <channel>
     <name>batcave</name>
+    <password>open sesame</password>
     <users>
         <user>desmond</user>
         <user>fatih</user>
@@ -23,4 +24,5 @@
             <body>"shut up"</body>
         </message>
     </messages>
+    <topic>everything is batman</topic>
 </channel>

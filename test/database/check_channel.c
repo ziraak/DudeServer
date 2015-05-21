@@ -4,6 +4,24 @@
 
 #include "check_channel.h"
 
+START_TEST(test_getChannel)
+    {
+        channelInfo channelInfo1;
+        getChannel("batcave",&channelInfo1);
+        ck_assert_str_eq(channelInfo1.topic,"everything is batman");
+        ck_assert_str_eq(channelInfo1.password,"open sesame");
+    }
+END_TEST
+
+START_TEST(test_getChannel_noPass)
+    {
+        channelInfo channelInfo1;
+        getChannel("eigendunk",&channelInfo1);
+        ck_assert(channelInfo1.password == NULL);
+    }
+END_TEST
+
+
 //getMessages tests
 
 START_TEST(test_getMessages)
@@ -39,6 +57,8 @@ Suite *channel_suite(void)
     tcase_add_test(tc_channel_core, test_getMessages);
     tcase_add_test(tc_channel_core, test_getMessagesOnTime);
 
+    tcase_add_test(tc_channel_core,test_getChannel);
+    tcase_add_test(tc_channel_core,test_getChannel_noPass);
 
     suite_add_tcase(s, tc_channel_core);
     return s;

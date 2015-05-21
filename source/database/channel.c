@@ -113,6 +113,8 @@ int getChannel(char *channelName, channelInfo *channel)
     }
 
     channel->name = getValue(docPtr, currentNodePtr, "name");
+    channel->password = getValue(docPtr, currentNodePtr, "password");
+    channel->topic = getValue(docPtr,currentNodePtr,"topic");
     channel->users = getListOfValues(docPtr, currentNodePtr, "users", "user");
     channel->messages = getMessages(channelName);
 

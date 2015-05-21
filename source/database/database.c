@@ -33,7 +33,7 @@ xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)
 
 char *getValue(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *fieldname)
 {
-    xmlChar *key;
+    xmlChar *key = NULL;
     while (currentNodePtr != NULL)
     {
         if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) fieldname)))

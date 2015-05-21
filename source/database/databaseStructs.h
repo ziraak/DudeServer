@@ -20,6 +20,8 @@ typedef struct messageInfo
 typedef struct channelInfo
 {
     char *name;
+    char *topic;
+    char *password;
     char **users;
     messageInfo *messages;
 } channelInfo;
