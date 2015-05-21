@@ -1,10 +1,18 @@
 #include "channel.h"
 
 int writeChannel(channelInfo channel)
-{
+{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
     xmlTextWriterPtr file = openChannelFile(channel.name);
     xmlTextWriterStartElement(file, channelTagName);
     xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
+    if(channel.password != NULL)
+    {
+        xmlTextWriterWriteElement(file,BAD_CAST "password",BAD_CAST channel.password);
+    }
+    if(channel.topic != NULL)
+    {
+        xmlTextWriterWriteElement(file,BAD_CAST "topic",BAD_CAST channel.topic);
+    }
     writeUsersToChannel(file, channel.users);
     writeMessagesToChannel(file, channel.messages);
     xmlTextWriterEndElement(file);
@@ -14,6 +22,7 @@ int writeChannel(channelInfo channel)
 }
 
 xmlTextWriterPtr openChannelFile(char *channelName)
+//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
 {
     char filename[maxFilenameSize];
     sprintf(filename, FILEFORMATSTRING, channelName);
@@ -21,6 +30,7 @@ xmlTextWriterPtr openChannelFile(char *channelName)
 }
 
 void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
+//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
 {
     xmlTextWriterStartElement(xmlptr, usersTagName);
     while (users != NULL)
@@ -36,7 +46,7 @@ void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
 }
 
 void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
-{
+{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
     xmlTextWriterStartElement(xmlptr, messagesTagName);
     int i = 0;
     while (messages[i].writer != NULL)
@@ -48,7 +58,7 @@ void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
 }
 
 void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
-{
+{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
     xmlTextWriterStartElement(xmlptr, messageTagName);
     xmlTextWriterWriteAttribute(xmlptr, userTagName, (xmlChar const *) message.writer);
     xmlTextWriterWriteElement(xmlptr, timestampTagName, (xmlChar const *) message.timestamp);
@@ -57,7 +67,7 @@ void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
 }
 
 int countMessages(messageInfo *message)
-{
+{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
     int total = 0;
     while (message[total].writer != NULL)
     {
@@ -67,7 +77,7 @@ int countMessages(messageInfo *message)
 }
 
 int writeMessageToChannel(char *channelName, messageInfo message)
-{
+{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
     channelInfo ci;
     if (getChannel(channelName, &ci) < 0)
     {
@@ -322,7 +332,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     return messages;
 }
 
-void createNewChannel(char *channelName)
+void createNewChannel(char *channelName, char *password, char *topic)
 {
     xmlDocPtr docPtr = NULL;
     xmlNodePtr root_node = NULL;
@@ -331,9 +341,17 @@ void createNewChannel(char *channelName)
     docPtr = xmlNewDoc(BAD_CAST "1.0");
     root_node = xmlNewNode(NULL, BAD_CAST "channel");
     xmlDocSetRootElement(docPtr, root_node);
-    xmlNewChild(root_node, NULL, BAD_CAST "name",(xmlChar* )channelName);
+    xmlNewChild(root_node, NULL, BAD_CAST "name",BAD_CAST channelName);
     xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
     xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
+    if(topic != NULL)
+    {
+        xmlNewChild(root_node, NULL, BAD_CAST "topic", BAD_CAST topic);
+    }
+    if(password != NULL)
+    {
+        xmlNewChild(root_node,NULL,BAD_CAST "password",BAD_CAST password);
+    }
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);

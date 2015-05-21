@@ -59,6 +59,6 @@ messageInfo* getMessages(char *channelName);
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp);
 
-void createNewChannel(char *channelName);
+void createNewChannel(char *channelName, char *password, char *topic);
 
 #endif 
