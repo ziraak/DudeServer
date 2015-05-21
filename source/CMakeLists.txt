@@ -18,13 +18,10 @@ set(HEADER_SOURCES main.h
 set(OPENSSL_ROOT_DIR /usr/local/ssl)
 set(OPENSSL_LIBRARIES /usr/local/ssl/lib)
 
-find_package(OpenSSL REQUIRED)
-include_directories(${OPENSSL_INCLUDE_DIR})
-
 # creating the library for the server
 add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})
-target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
+target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 
 # create the executable and link the library

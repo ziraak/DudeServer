@@ -62,6 +62,9 @@ endif(NOT HAVE_PID_T)
 find_package(LibXml2)
 include_directories(${LIBXML2_INCLUDE_DIR})
 
+find_package(OpenSSL REQUIRED)
+include_directories(${OPENSSL_INCLUDE_DIR})
+
 ###############################################################################
 # Generate "config.h" from "cmake/config.h.cmake"
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in
