@@ -3,7 +3,6 @@
 //
 
 #include "communication.h"
-#include "communicationStructs.h"
 
 void sslInitialize()
 {
@@ -20,14 +19,14 @@ void sslDestroy()
 
 void sslClose()
 {
-    if(connection == NULL || connection->ssl_handle == NULL)
+    if(connection.ssl_handle == NULL)
     {
         return;
     }
 
-    SSL_shutdown(connection->ssl_handle);
-    SSL_free(connection->ssl_handle);
-    close(connection->socket);
+    SSL_shutdown(connection.ssl_handle);
+    SSL_free(connection.ssl_handle);
+    close(connection.socket);
 }
 
 struct sockaddr_in getSocketAddress(char* ip, uint16_t port)
@@ -102,26 +101,26 @@ int sslAcceptConnection(int listenSocket)
         return SSL_NO_TCP_ACCEPT;
     }
 
-    SSL_CTX *sslContet = SSL_CTX_new(SSLv23_server_method());
+    SSL_CTX *sslContext = SSL_CTX_new(SSLv3_server_method());
 
-    if(sslContet == NULL)
+    if(sslContext == NULL)
     {
         SSL_ERROR_RETURN(SSL_NO_SSL_CONTEXT);
     }
 
-    int sslCertificateLoad = sslLoadCertificate(sslContet, SSL_CERTIFICATE_LOCATION);
+    int sslCertificateLoad = sslLoadCertificate(sslContext, SSL_CERTIFICATE_LOCATION);
     if(sslCertificateLoad != SSL_OK)
     {
         SSL_ERROR_RETURN(sslCertificateLoad);
     }
 
-    int sslPrivateKeyLoad = sslLoadPrivateKey(sslContet, SSL_PRIVATE_KEY_LOCATION);
+    int sslPrivateKeyLoad = sslLoadPrivateKey(sslContext, SSL_PRIVATE_KEY_LOCATION);
     if(sslPrivateKeyLoad != SSL_OK)
     {
         SSL_ERROR_RETURN(sslPrivateKeyLoad);
     }
 
-    SSL *sslHandle = SSL_new(sslContet);
+    SSL *sslHandle = SSL_new(sslContext);
     if(sslHandle == NULL)
     {
         SSL_ERROR_RETURN(SSL_NO_SSL_HANDLE);
@@ -137,24 +136,23 @@ int sslAcceptConnection(int listenSocket)
         SSL_ERROR_RETURN(SSL_NO_SSL_ACCEPT);
     }
 
-    ssl_connection conn = {
+    sslConnection conn = {
             .socket = clientSocket,
             .ssl_handle = sslHandle,
-            .ssl_context = sslContet,
+            .ssl_context = sslContext,
             .address = clientAddress
     };
-
-    connection = &conn;
+    connection = conn;
 
     return SSL_OK;
 }
 
 int sslSendInteger(int message)
 {
-    char *dest = malloc(3);
-    sprintf(dest, "%i", message);
-    int result = sslSend(dest);
-    free(dest);
+    char *snd = malloc(3);
+    sprintf(snd, "%i", message);
+    int result = sslSend(snd);
+    free(snd);
 
     return result;
 }
@@ -162,15 +160,14 @@ int sslSendInteger(int message)
 int sslSend(char* snd)
 {
     size_t bufferLength;
-    if(connection == NULL || connection->ssl_handle == NULL || snd == NULL || (bufferLength = strlen(snd)) == 0)
+    if(connection.ssl_handle == NULL || snd == NULL || (bufferLength = strlen(snd)) == 0)
     {
         return SSL_NO_CONNECTION;
     }
 
     char* buffer = malloc(sizeof(char) * bufferLength + 2);
     sprintf(buffer, "%s\r\n", snd);
-    int written = SSL_write(connection->ssl_handle, buffer, (int)bufferLength + 2);
-
+    int written = SSL_write(connection.ssl_handle, buffer, (int)(bufferLength + 2));
     if(written > 0)
     {
         return SSL_OK;
@@ -186,12 +183,12 @@ int sslSend(char* snd)
 
 int sslRead(char* buffer, int bufferLength)
 {
-    if(connection == NULL || connection->ssl_handle == NULL)
+    if(connection.ssl_handle == NULL)
     {
         return SSL_NO_CONNECTION;
     }
 
-    int read = SSL_read(connection->ssl_handle, buffer, bufferLength);
+    int read = SSL_read(connection.ssl_handle, buffer, bufferLength);
 
     if(read > 0)
     {
@@ -204,29 +201,3 @@ int sslRead(char* buffer, int bufferLength)
 
     SSL_ERROR_RETURN(SSL_CONNECTION_ERROR);
 }
-
-//void sendMessage(int sockfd, char *buffer)
-//{
-//    size_t bufferLength;
-//    if(connection == NULL || connection->ssl_handle == NULL || sockfd < 0 || buffer == NULL || (bufferLength = strlen(buffer)) == 0)
-//    {
-//        return;
-//    }
-//
-//    char* snd = malloc(sizeof(char) * bufferLength + 2);
-//    sprintf(snd, "%s\r\n", buffer);
-//    ssize_t sendResult = send(sockfd, snd, bufferLength + 2, 0);
-//
-//    struct timespec remaining;
-//    remaining.tv_nsec = sendWait.tv_nsec = 500;
-//    remaining.tv_sec = sendWait.tv_sec;
-//
-//    nanosleep(&sendWait, &remaining);
-//    free(snd);
-//
-//    if (sendResult < 0)
-//    {
-//        perror("Error while sending a message to the client.");
-//        exit(EXIT_FAILURE);
-//    }
-//}

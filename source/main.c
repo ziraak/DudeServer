@@ -33,12 +33,7 @@ int authenticateClient(commandStruct cmd)
 
 void processConnectedClient()
 {
-    if(connection == NULL)
-    {
-        return;
-    }
-
-    printf("Connection opened with client (IP: %s)\n", inet_ntoa(connection->address.sin_addr));
+    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     sslSendInteger(RPL_CONNECTED); // acknownledge connection
 
     int bufferLength = 256, result;
@@ -76,7 +71,7 @@ void processConnectedClient()
         bzero(buffer, sizeof(buffer));
     }
 
-    printf("Connection closed with client (IP: %s)\n", inet_ntoa(connection->address.sin_addr));
+    printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     sslClose();
 }
 

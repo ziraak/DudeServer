@@ -10,7 +10,7 @@
 #define SSL_CERTIFICATE_LOCATION "certificates/certificate.pem"
 #define SSL_PRIVATE_KEY_LOCATION "certificates/private/private_key.pem"
 
-#define SSL_ERROR_RETURN(val) connection = NULL; ERR_print_errors_fp(stderr); return val
+#define SSL_ERROR_RETURN(val) ERR_print_errors_fp(stderr); return val
 
 #define SSL_OK 0
 #define SSL_NO_SOCKET_CREATED -1
@@ -36,7 +36,7 @@
 #include <openssl/ssl.h>
 #include <openssl/err.h>
 
-ssl_connection *connection;
+sslConnection connection;
 
 void sslInitialize();
 void sslDestroy();

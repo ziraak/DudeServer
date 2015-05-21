@@ -12,6 +12,6 @@ typedef struct {
     struct sockaddr_in address;
     SSL_CTX *ssl_context;
     SSL *ssl_handle;
-} ssl_connection;
+} sslConnection;
 
 #endif //DUDESERVER_COMMUNICATIONSTRUCTS_H

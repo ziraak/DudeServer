@@ -13,70 +13,24 @@
 #define CMD_SIZE 256
 
 void clientBusinessSend(int sock);
-void clientBusinessReceive(int sock);
+void clientBusinessReceive();
 
 int getServerSocket(int port, char *ip);
 
 int input(size_t s, char **result);
-
 int prompt(size_t s, char **result, char *message);
 
 int main(int argc, char **argv)
 {
-    char *cmd;
-    char *port;
-    char *ip;
+    int sock = getServerSocket(SERVER_PORT, SERVER_IP);
 
-    int sock;
-
-    if (argv[1] == NULL)
+    if(sock != SSL_OK)
     {
-        for (; ;)
-        {
-            int cmdSize = prompt(CMD_SIZE, &cmd, "CONNECT NAAR '<IP> <POORT>': ");
-
-            while (*cmd == ' ')
-            {
-                cmd++;
-            }
-
-            int i = substringCharacter(cmd, &ip);
-
-            if (i == 1)
-            {
-                printf("NEED IP AND PORT\n");
-                continue;
-            }
-
-            if ((i - 1) == cmdSize)
-            {
-                printf("NEED PORT\n");
-                continue;
-            }
-
-            int j = substringCharacter(cmd + i, &port);
-
-            if (j < 2)
-            {
-                printf("NEED PORT\n");
-                continue;
-            }
-
-            sock = getServerSocket(atoi(port), ip);
-            if (sock < 0)
-            {
-                printf("INVALID CONFIGURATION (%s:%s)\n", ip, port);
-                continue;
-            }
-
-            printf("CONNECTED TO %s:%s (ID: %i)\n", ip, port, sock);
-            break;
-        }
+        perror("No connection!\n");
+        return sock;
     }
-    else
-    {
-        sock = getServerSocket(atoi(argv[2]), argv[1]);
-    }
+
+    printf("VERBONDEN MET %s:%i\n", SERVER_IP, SERVER_PORT);
 
     int childpid = fork();
     if (childpid == 0)
@@ -85,7 +39,7 @@ int main(int argc, char **argv)
     }
     else
     {
-        clientBusinessReceive(sock);
+        clientBusinessReceive();
     }
 
     return EXIT_SUCCESS;
@@ -129,7 +83,7 @@ void clientBusinessSend(int sock)
     }
 }
 
-void clientBusinessReceive(int sock)
+void clientBusinessReceive()
 {
     char *rcv = NULL;
 
@@ -138,23 +92,14 @@ void clientBusinessReceive(int sock)
 
     for (; ;)
     {
-        ssize_t received = recv(sock, rcv, CMD_SIZE, 0);
-        if (received < 0)
+        int read = sslRead(rcv, CMD_SIZE);
+        if(read != SSL_OK)
         {
-            perror("RECEIVE ERROR, CLOSING CLIENT");
-            close(sock);
-            exit(2);
-        }
-        else if (received == 0)
-        {
-            printf("CONNECTION CLOSED BY SERVER, BYE BYE\n");
-            close(sock);
+            perror("ERROR RECEIVING.");
             return;
         }
-        else
-        {
-            printf("RECEIVED: '%s'\n", rcv);
-        }
+
+        printf("RECEIVED: '%s'\n", rcv);
 
         bzero(rcv, CMD_SIZE + 1);
     }
@@ -162,28 +107,67 @@ void clientBusinessReceive(int sock)
 
 int getServerSocket(int port, char *ip)
 {
-    struct sockaddr_in addr;
-    int sock;
+    struct sockaddr_in serverAddress;
+    int serverSocket;
 
-    bzero(&addr, sizeof(addr));
+    bzero(&serverAddress, sizeof(serverAddress));
 
-    addr.sin_family = AF_INET;
-    addr.sin_port = htons((uint16_t)port);
-    addr.sin_addr.s_addr = inet_addr(ip);
+    serverAddress.sin_family = AF_INET;
+    serverAddress.sin_port = htons((uint16_t)port);
+    serverAddress.sin_addr.s_addr = inet_addr(ip);
 
-    if ((sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
+    if ((serverSocket = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0)
     {
         printf("KON GEEN SOCKET AANMAKEN\n");
         return -1;
     }
 
-    if (connect(sock, (struct sockaddr *) &addr, sizeof(addr)) < 0)
+    if (connect(serverSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) < 0)
     {
         printf("KON SOCKET NIET VERBINDEN\n");
         return -1;
     }
 
-    return sock;
+    SSL_load_error_strings();
+    SSL_library_init();
+
+    SSL_CTX *sslContext = SSL_CTX_new(SSLv23_client_method());
+    if(sslContext == NULL)
+    {
+        SSL_ERROR_RETURN(SSL_NO_SSL_CONTEXT);
+    }
+
+    int sslCertificateLoad = sslLoadCertificate(sslContext, SSL_CERTIFICATE_LOCATION);
+    if(sslCertificateLoad != SSL_OK)
+    {
+        return sslCertificateLoad;
+    }
+
+    SSL *sslHandle = SSL_new(sslContext);
+    if(sslHandle == NULL)
+    {
+        SSL_ERROR_RETURN(SSL_NO_SSL_HANDLE);
+    }
+
+    if(SSL_set_fd(sslHandle, serverSocket) == 0)
+    {
+        SSL_ERROR_RETURN(SSL_NO_SSL_HANDLE_SOCKET_LINK);
+    }
+
+    if(SSL_connect(sslHandle) != 1)
+    {
+        SSL_ERROR_RETURN(1);
+    }
+
+    sslConnection conn = {
+            .socket = serverSocket,
+            .ssl_context = sslContext,
+            .ssl_handle = sslHandle,
+            .address = serverAddress
+    };
+    connection = conn;
+
+    return SSL_OK;
 }
 
 int input(size_t s, char **result)

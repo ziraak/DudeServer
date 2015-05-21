@@ -2,6 +2,7 @@
 #define DUDESERVER_MESSAGES_H
 
 #include "../main.h"
+#include "../ssl/communicationStructs.h"
 #include "../database/databaseStructs.h"
 #include "../database/databaseStructs_free.h"
 
