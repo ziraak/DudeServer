@@ -10,7 +10,7 @@ END_TEST
 
 START_TEST(test_connect_clients)
     {
-        getServerSocket(SERVER_PORT, "127.0.0.1");
+        //getServerSocket(SERVER_PORT, "127.0.0.1");
     }
 END_TEST
 
@@ -28,7 +28,7 @@ Suite* performance_server_suite(int amountOfCommandLoops)
     {
         // Specifieke volgorde voor deze scenario.
         tcase_add_test(tc_util_core, test_opzetten_server);
-        tcase_add_test(tc_util_core, test_connect_clients);
+        //tcase_add_test(tc_util_core, test_connect_clients);
     }
 
     suite_add_tcase(suite, tc_util_core);

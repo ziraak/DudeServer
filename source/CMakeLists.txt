@@ -2,14 +2,14 @@
 set(MAIN_SOURCES main.c)
 
 # all files contained inside the library
-set(LIB_SOURCES utils/utils.c communication.c
+set(LIB_SOURCES utils/utils.c communication.c server.c
     commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c
     database/database.c database/channel.c database/user.c database/databaseStructs_free.c
     commands/poll.c)
 
 # all header files
-set(HEADER_SOURCES main.h
-    utils/utils.h communication.h
+set(HEADERS main.h
+    utils/utils.h communication.h server.h
     commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h
     commands/poll.h)
@@ -19,7 +19,7 @@ add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
 
 # create the executable and link the library
-add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES} server.h server.c)
+add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES})
 target_link_libraries(DudeServer DudeServerLib)
 
 # remove all older database files
