@@ -3,12 +3,13 @@
 
 #define DB_MAXMESSAGES 100
 #define DB_DOCNAMEMEMORYSPACE 500
-#define DB_XML_FORMAT 1
+#define DB_XML_FORMAT 0
 //1 is indent, 0 is no indent
 #define DB_XML_ENCODING "UTF-8"
 
 
-
+#define DB_VISIBLE_TRUE "y"
+#define DB_VISIBLE_FALSE "n"
 
 //returns:
 #define DB_RETURN_FILENOTFOUND -2

@@ -57,6 +57,26 @@ START_TEST(test_authenticatePassword)
     }
 END_TEST
 
+
+START_TEST(test_addToList)
+    {
+//        addChannelToList("eigendunk",BOOL_TRUE);
+//        addChannelToList("batcave",BOOL_FALSE);
+//        addChannelToList("fatihs head",BOOL_TRUE);
+//        addChannelToList("rovers",BOOL_FALSE);
+//        addChannelToList("testChannel",BOOL_TRUE);
+        char **list = getVisibleChannels();
+        int i = 0;
+        while(list[i]!= NULL)
+        {
+            printf("channel: %s\n",list[i]);
+            i++;
+        }
+        ck_assert_int_eq(checkIfChannelVisible("eigendunk"),BOOL_TRUE);
+        ck_assert_int_eq(checkIfChannelVisible("batcave"),BOOL_FALSE);
+    }
+END_TEST
+
 //----------------___---------------------------------------_____--------------___----__----__----__----__---___---_-----_----
 Suite *channel_suite(void)
 {
@@ -73,6 +93,7 @@ Suite *channel_suite(void)
 
     tcase_add_test(tc_channel_core,test_authenticatePassword);
 
+    tcase_add_test(tc_channel_core,test_addToList);
     suite_add_tcase(s, tc_channel_core);
     return s;
 }

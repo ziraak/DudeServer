@@ -5,13 +5,13 @@ int writeChannel(channelInfo channel)
     xmlTextWriterPtr file = openChannelFile(channel.name);
     xmlTextWriterStartElement(file, channelTagName);
     xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
-    if(channel.password != NULL)
+    if (channel.password != NULL)
     {
-        xmlTextWriterWriteElement(file,BAD_CAST "password",BAD_CAST channel.password);
+        xmlTextWriterWriteElement(file, BAD_CAST "password", BAD_CAST channel.password);
     }
-    if(channel.topic != NULL)
+    if (channel.topic != NULL)
     {
-        xmlTextWriterWriteElement(file,BAD_CAST "topic",BAD_CAST channel.topic);
+        xmlTextWriterWriteElement(file, BAD_CAST "topic", BAD_CAST channel.topic);
     }
     writeUsersToChannel(file, channel.users);
     writeMessagesToChannel(file, channel.messages);
@@ -124,7 +124,7 @@ int getChannel(char *channelName, channelInfo *channel)
 
     channel->name = getValue(docPtr, currentNodePtr, "name");
     channel->password = getValue(docPtr, currentNodePtr, "password");
-    channel->topic = getValue(docPtr,currentNodePtr,"topic");
+    channel->topic = getValue(docPtr, currentNodePtr, "topic");
     channel->users = getListOfValues(docPtr, currentNodePtr, "users", "user");
     channel->messages = getMessages(channelName);
 
@@ -145,7 +145,56 @@ char **getChannellist()
     currentNodePtr = currentNodePtr->parent;
 
     list = getListOfValues(docPtr, currentNodePtr, "channels", "channel");
+    xmlFreeDoc(docPtr);
     return list;
+}
+
+char **getVisibleChannels()
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+
+    docPtr = openDoc(DB_CHANNELLISTLOCATION);
+    currentNodePtr = checkDoc(docPtr, "channels");
+    char **key;
+    key = calloc(50, 500);
+    //TODO: malloc
+    int i;
+    i = 0;
+    while (currentNodePtr != NULL)
+    {
+        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) BAD_CAST "channel")) &&
+                !xmlStrcmp(xmlGetProp(currentNodePtr, (xmlChar *) "visible"),BAD_CAST DB_VISIBLE_TRUE ))
+        {
+            key[i] = (char *) xmlNodeListGetString(docPtr, currentNodePtr->xmlChildrenNode, 1);
+            i++;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+    return key;
+}
+int checkIfChannelVisible(char* channelName)
+{
+    if (channelName == NULL)
+    {
+        fprintf(stderr, "channel can not be NULL ");
+        return DB_RETURN_NULLPOINTER;
+    }
+
+    char **channellist;
+    channellist = getVisibleChannels();
+    int listIndex;
+    listIndex = 0;
+
+    while (channellist[listIndex] != NULL)
+    {
+        if (!strcmp(channellist[listIndex], channelName))
+        {
+            return BOOL_TRUE;
+        }
+        listIndex++;
+    }
+    return BOOL_FALSE;
 }
 
 
@@ -332,25 +381,25 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     return messages;
 }
 
-void createNewChannel(char *channelName, char *password, char *topic)
+void createNewChannel(char *channelName, char *password, char *topic, int visible)
 {
     xmlDocPtr docPtr = NULL;
     xmlNodePtr root_node = NULL;
-    char* docname = malloc(DB_DOCNAMEMEMORYSPACE);
+    char *docname = malloc(DB_DOCNAMEMEMORYSPACE);
 
     docPtr = xmlNewDoc(BAD_CAST "1.0");
     root_node = xmlNewNode(NULL, BAD_CAST "channel");
     xmlDocSetRootElement(docPtr, root_node);
-    xmlNewChild(root_node, NULL, BAD_CAST "name",BAD_CAST channelName);
-    xmlNewChild(root_node, NULL, BAD_CAST "users",NULL);
-    xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
-    if(topic != NULL)
+    xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST channelName);
+    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
+    if (topic != NULL)
     {
         xmlNewChild(root_node, NULL, BAD_CAST "topic", BAD_CAST topic);
     }
-    if(password != NULL)
+    if (password != NULL)
     {
-        xmlNewChild(root_node,NULL,BAD_CAST "password",BAD_CAST password);
+        xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
     }
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
@@ -359,21 +408,57 @@ void createNewChannel(char *channelName, char *password, char *topic)
     xmlCleanupParser();
     free(docname);
     addToListFile("channel", channelName);
+    addChannelToList(channelName, visible);
 }
 
-int checkIfChannelHasPassword(char* channelname)
+void addChannelToList(char *channelName, int visible)
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    char *docname = DB_CHANNELLISTLOCATION;
+    char *doctype = "channels";
+    char *visibility;
+    if (visible == BOOL_TRUE)
+    {
+        visibility = DB_VISIBLE_TRUE;
+    }
+    else
+    {
+        visibility = DB_VISIBLE_FALSE;
+    }
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return;
+    }
+
+    if ((currentNodePtr = checkDoc(docPtr, doctype)) == NULL)
+    {
+        return;
+    }
+
+    currentNodePtr = currentNodePtr->parent;
+    currentNodePtr = xmlNewTextChild(currentNodePtr, NULL, BAD_CAST "channel", BAD_CAST channelName);
+    xmlNewProp(currentNodePtr, BAD_CAST "visible", BAD_CAST visibility);
+    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
+    xmlFreeDoc(docPtr);
+}
+
+
+int checkIfChannelHasPassword(char *channelname)
 {
     channelInfo channel;
-    getChannel(channelname,&channel);
-    if(channel.password == NULL)
+    getChannel(channelname, &channel);
+    if (channel.password == NULL)
     {
         return BOOL_FALSE;
     }
     return BOOL_TRUE;
 }
-int authenticateChannelPassword(char* channelname,char* password)
+
+int authenticateChannelPassword(char *channelname, char *password)
 {
-    if(checkIfChannelHasPassword(channelname)==BOOL_TRUE)
+    if (checkIfChannelHasPassword(channelname) == BOOL_TRUE)
     {
         channelInfo channel;
         getChannel(channelname, &channel);
@@ -385,12 +470,13 @@ int authenticateChannelPassword(char* channelname,char* password)
     return BOOL_FALSE;
 }
 
-void newChannelPassword(char* channelName, char* newPass)
+void newChannelPassword(char *channelName, char *newPass)
 {
-    assignFieldInFile("channel",channelName,"password",newPass);
+    assignFieldInFile("channel", channelName, "password", newPass);
 }
 
-void newChannelTopic(char* channelName,char* newTopic)
+void newChannelTopic(char *channelName, char *newTopic)
 {
-    assignFieldInFile("channel",channelName,"topic",newTopic);
+    assignFieldInFile("channel", channelName, "topic", newTopic);
 }
+

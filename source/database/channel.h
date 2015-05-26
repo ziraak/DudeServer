@@ -59,7 +59,7 @@ messageInfo* getMessages(char *channelName);
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp);
 
-void createNewChannel(char *channelName, char *password, char *topic);
+void createNewChannel(char *channelName, char *password, char *topic, int visible);
 
 int checkIfChannelHasPassword(char* channelname);
 
@@ -68,5 +68,11 @@ int authenticateChannelPassword(char* channelname,char* password);
 void newChannelPassword(char* channelname, char* newPass);
 
 void newChannelTopic(char* channelname,char* newTopic);
+
+void addChannelToList(char* channelName,int visible);
+
+char **getVisibleChannels();
+
+int checkIfChannelVisible(char* channelName);
 
 #endif 
