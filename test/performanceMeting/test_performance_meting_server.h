@@ -5,6 +5,7 @@
 #include "../../source/main.h"
 #include <sys/timeb.h>
 #include "../main.h"
+#include "../client/"
 
 int testServerPerformanceMeting(int amountOfCommandLoops);
 

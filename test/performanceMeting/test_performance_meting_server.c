@@ -2,10 +2,7 @@
 
 START_TEST(test_opzetten_server)
     {
-        commandStruct cmdStruct = commandStruct_initialize("CREATE_USER fatihTestUser testPassword");
-        int resultCreateUser = handleCreateUserCommand(cmdStruct);
-        commandStruct_free(&cmdStruct);
-        ck_assert_int_eq(RPL_SUCCESS, resultCreateUser);
+        runServer(BOOL_TRUE, 9000);
     }
 END_TEST
 
