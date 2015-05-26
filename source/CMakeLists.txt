@@ -19,7 +19,7 @@ add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADERS})
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
 
 # create the executable and link the library
-add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES})
+add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES} server.h server.c)
 target_link_libraries(DudeServer DudeServerLib)
 
 # remove all older database files
