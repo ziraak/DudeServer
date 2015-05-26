@@ -67,6 +67,19 @@ int getUser(char *username, userInfo *result)
     return DB_RETURN_SUCCES;
 }
 
+char* getUserNickname(char* username)
+{
+    userInfo info;
+    if(getUser(username,&info) == DB_RETURN_SUCCES)
+    {
+        return info.nickname;
+    }
+    return NULL;
+}
+
+
+
+
 int checkUser(char *userName)
 {
     if (userName == NULL)
@@ -91,7 +104,7 @@ int checkUser(char *userName)
     return BOOL_FALSE;
 }
 
-int userJoinChannel(char *username, char *channelName)
+int userJoinChannel(char *username, char *channelName, char *userRole)
 {
     if (checkUser(username) != BOOL_TRUE)
     {
@@ -103,9 +116,13 @@ int userJoinChannel(char *username, char *channelName)
         fprintf(stderr, " channel %s does not exist\n", channelName);
         return DB_RETURN_DOESNOTEXIST;
     }
+    if(userRole == NULL)
+    {
+        return DB_RETURN_NULLPOINTER;
+    }
 
-    addFieldToFileInList("user", username, "channels", "channel", channelName);
-    addFieldToFileInList("channel", channelName, "users", "user", username);
+    addFieldToFileInList("user", username, "channels", "channel", channelName, NULL, NULL);
+    addFieldToFileInList("channel", channelName, "users", "user", username, "role", userRole);
 
     return DB_RETURN_SUCCES;
 }
@@ -226,7 +243,7 @@ int createNewUser(char *username, char *password)
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
 
-    if (openDoc(docname) != NULL)
+    if (xmlParseFile(docname) != NULL)
     {
         free(docname);
         return DB_RETURN_ALREADYEXISTS;

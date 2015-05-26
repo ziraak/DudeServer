@@ -4,6 +4,24 @@
 
 #include "check_channel.h"
 
+//getUserlist tests
+START_TEST(test_getUserlistFromChannel)
+    {
+        channelUser *users;
+        users = getUsersFromChannel("fatihs head");
+        ck_assert_str_eq(users[0].username,"fatih");
+        ck_assert_str_eq(users[0].nickname,"ik moet jou in mijn team");
+        ck_assert_str_eq(users[0].role,USER_ROLE_OPERATOR);
+    }
+END_TEST
+
+START_TEST(test_getUserRole)
+    {
+        ck_assert_str_eq(getUserRole("fatihs head","fatih"),USER_ROLE_OPERATOR);
+    }
+END_TEST
+
+
 
 //get channel tests
 START_TEST(test_getChannel)
@@ -85,8 +103,8 @@ Suite *channel_suite(void)
     s = suite_create("channel");
     tc_channel_core = tcase_create("core");
 
-    tcase_add_test(tc_channel_core, test_getMessages);
-    tcase_add_test(tc_channel_core, test_getMessagesOnTime);
+//    tcase_add_test(tc_channel_core, test_getMessages);
+//    tcase_add_test(tc_channel_core, test_getMessagesOnTime);
 
     tcase_add_test(tc_channel_core,test_getChannel);
     tcase_add_test(tc_channel_core,test_getChannel_noPass);
@@ -94,6 +112,10 @@ Suite *channel_suite(void)
     tcase_add_test(tc_channel_core,test_authenticatePassword);
 
     tcase_add_test(tc_channel_core,test_addToList);
+
+    tcase_add_test(tc_channel_core,test_getUserlistFromChannel);
+    tcase_add_test(tc_channel_core,test_getUserRole);
+
     suite_add_tcase(s, tc_channel_core);
     return s;
 }

@@ -7,9 +7,12 @@
 //1 is indent, 0 is no indent
 #define DB_XML_ENCODING "UTF-8"
 
-
+//database propertie values
 #define DB_VISIBLE_TRUE "y"
 #define DB_VISIBLE_FALSE "n"
+
+#define USER_ROLE_OPERATOR "-o"
+#define USER_ROLE_USER "-u"
 
 //returns:
 #define DB_RETURN_FILENOTFOUND -2

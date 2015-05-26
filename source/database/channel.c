@@ -13,7 +13,7 @@ int writeChannel(channelInfo channel)
     {
         xmlTextWriterWriteElement(file, BAD_CAST "topic", BAD_CAST channel.topic);
     }
-    writeUsersToChannel(file, channel.users);
+    writeUsersToChannel(file, getUsersFromChannel(channel.name));
     writeMessagesToChannel(file, channel.messages);
     xmlTextWriterEndElement(file);
     int suc = xmlTextWriterEndDocument(file);
@@ -29,18 +29,22 @@ xmlTextWriterPtr openChannelFile(char *channelName)
     return xmlNewTextWriterFilename(filename, compression);
 }
 
-void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users)
+void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users)
 //TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
 {
     xmlTextWriterStartElement(xmlptr, usersTagName);
-    while (users != NULL)
+    int index = 0;
+    while (users[index].username != NULL)
     {
-        if (*users == NULL)
+
+        xmlTextWriterWriteElement(xmlptr, userTagName, BAD_CAST users[index].username);
+        if(users[index].role == NULL)
         {
-            break;
+            xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST USER_ROLE_USER);
+        } else {
+            xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST users[index].role);
         }
-        xmlTextWriterWriteElement(xmlptr, userTagName, (xmlChar const *) *users);
-        users++;
+        index++;
     }
     xmlTextWriterEndElement(xmlptr);
 }
@@ -133,6 +137,72 @@ int getChannel(char *channelName, channelInfo *channel)
     return DB_RETURN_SUCCES;
 }
 
+channelUser *getUsersFromChannel(char *channelName)
+{
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
+    channelUser* users = malloc(50);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return users;
+    }
+
+    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return users;
+    }
+
+    int i = 0;
+
+    while(nodePtr != NULL)
+    {
+        if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
+        {
+            xmlNodePtr currentNodePtrChild;
+            currentNodePtrChild = nodePtr->xmlChildrenNode;
+            while (currentNodePtrChild != NULL)
+            {
+                if ((!xmlStrcmp(currentNodePtrChild->name, BAD_CAST "user")))
+                {
+                    users[i].username = (char *) xmlNodeListGetString(docPtr, currentNodePtrChild->xmlChildrenNode, 1);
+                    users[i].role = (char *) xmlGetProp(currentNodePtrChild,BAD_CAST "role");
+                    users[i].nickname = getUserNickname(users[i].username);
+                    i++;
+                }
+                currentNodePtrChild = currentNodePtrChild->next;
+            }
+        }
+        nodePtr = nodePtr->next;
+    }
+
+    users[i].username = NULL;
+    users[i].role = NULL;
+    xmlFreeDoc(docPtr);
+
+//    free(docname);
+    return users;
+}
+
+char* getUserRole(char* channelName, char* username)
+{
+    channelUser *users = getUsersFromChannel(channelName);
+    int index = 0;
+    while(users[index].username != NULL)
+    {
+        if(!strcmp(users[index].username,username))
+        {
+            return users[index].role;
+        }
+        index++;
+    }
+    return NULL;
+}
+
+
 
 char **getChannellist()
 {
@@ -173,6 +243,8 @@ char **getVisibleChannels()
     }
     return key;
 }
+
+
 int checkIfChannelVisible(char* channelName)
 {
     if (channelName == NULL)

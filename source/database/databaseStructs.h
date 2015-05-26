@@ -10,6 +10,14 @@ typedef struct userInfo
     char *loginToken;
 } userInfo;
 
+
+typedef struct channelUser
+{
+    char* username;
+    char* role;
+    char* nickname;
+}channelUser;
+
 typedef struct messageInfo
 {
     char *writer;
@@ -22,8 +30,10 @@ typedef struct channelInfo
     char *name;
     char *topic;
     char *password;
-    char **users;
+    char** users;
     messageInfo *messages;
 } channelInfo;
+
+
 
 #endif //DUDESERVER_DATABASESTRUCTS_H

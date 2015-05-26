@@ -24,9 +24,11 @@ char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fie
 
 void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
 
-void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent);
+void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent, char *optPropertyName,
+              char *optPropertyValue);
 
-void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content);
+void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content,
+                          char *optPropertyName, char *optPropertyValue);
 
 int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
 

@@ -33,7 +33,7 @@ int writeMessageToChannel(char *channelName, messageInfo message);
 
 xmlTextWriterPtr openChannelFile(char *channelName);
 
-void writeUsersToChannel(xmlTextWriterPtr xmlptr, char **users);
+void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users);
 
 void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[]);
 
@@ -75,4 +75,7 @@ char **getVisibleChannels();
 
 int checkIfChannelVisible(char* channelName);
 
+channelUser* getUsersFromChannel(char *channelName);
+
+char* getUserRole(char* channelName, char* username);
 #endif 

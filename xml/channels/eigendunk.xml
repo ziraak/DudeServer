@@ -3,7 +3,7 @@
 <channel>
     <name>eigendunk</name>
     <users>
-        <user>alibaba</user>
+        <user role="-o">alibaba</user>
     </users>
     <messages>
         <message user="alibaba">
