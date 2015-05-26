@@ -1,25 +1,4 @@
-//
-// Created by Sjuul Wijnia on 20/04/15.
-//
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <unistd.h>
-#include "../../source/utils/utils.h"
-
-#define CMD_SIZE 256
-
-void clientBusinessSend(int sock);
-void clientBusinessReceive(int sock);
-
-int getServerSocket(int port, char *ip);
-
-int input(size_t s, char **result);
-
-int prompt(size_t s, char **result, char *message);
+#include "test_client.h"
 
 int main(int argc, char **argv)
 {
