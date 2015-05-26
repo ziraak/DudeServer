@@ -128,7 +128,7 @@ int getServerSocket(int port, char *ip)
     SSL_load_error_strings();
     SSL_library_init();
 
-    SSL_CTX *sslContext = SSL_CTX_new(SSLv23_client_method());
+    SSL_CTX *sslContext = SSL_CTX_new(TLSv1_2_client_method());
     if(sslContext == NULL)
     {
         SSL_ERROR_RETURN(SSL_NO_SSL_CONTEXT);
@@ -153,7 +153,7 @@ int getServerSocket(int port, char *ip)
 
     if(SSL_connect(sslHandle) != 1)
     {
-        SSL_ERROR_RETURN(1);
+        SSL_ERROR_RETURN(1); // magic number, oh no!
     }
 
     sslConnection conn = {
