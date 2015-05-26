@@ -32,15 +32,13 @@
 userInfo currentUser;
 struct timespec sendWait;
 
-void runServer();
+void runServer(int fork);
 
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
 void flushStdout();
 
 int parseMessage(char *message);
-
-void acknowledgeConnection(int sockfd);
 
 int commandEquals(commandStruct cmd, char *check);
 

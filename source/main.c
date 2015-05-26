@@ -4,7 +4,16 @@ int authenticated = BOOL_FALSE;
 
 int main(int argc, char **argv)
 {
-    runServer();
+    int fork = BOOL_FALSE;
+    if(argc > 1)
+    {
+        if(strcmp(argv[1], "FORK") == 0 || strcmp(argv[1], "fork") == 0 || strcmp(argv[1], "-f") == 0)
+        {
+            fork = BOOL_TRUE;
+        }
+    }
+
+    runServer(fork);
 
     return EXIT_SUCCESS;
 }
@@ -75,7 +84,17 @@ void processConnectedClient()
     sslClose();
 }
 
-void runServer()
+void processConnectedClientWithFork()
+{
+    int childpid = fork();
+    if (childpid == 0)
+    {
+        processConnectedClient();
+    }
+    exitIfError(childpid, "Error forking child");
+}
+
+void runServer(int fork)
 {
     flushStdout();
     int sock = getListeningSocket(SERVER_IP, SERVER_PORT);
@@ -89,22 +108,19 @@ void runServer()
     {
         if(sslAcceptConnection(sock) == SSL_OK)
         {
-            processConnectedClient();
+            if(fork == BOOL_TRUE)
+            {
+                processConnectedClientWithFork();
+            }
+            else
+            {
+                processConnectedClient();
+            }
         }
     }
 #pragma clang diagnostic pop
 
     sslDestroy();
-}
-
-void processConnectedClientWithFork()
-{
-    int childpid = fork();
-    if (childpid == 0)
-    {
-        processConnectedClient();
-    }
-    exitIfError(childpid, "Error forking child");
 }
 
 int parseMessage(char *message)

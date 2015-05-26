@@ -34,7 +34,7 @@ struct sockaddr_in getSocketAddress(char* ip, uint16_t port)
     struct sockaddr_in address;
     bzero((char *)&address, sizeof(address));
     address.sin_family = AF_INET;
-    address.sin_addr.s_addr = inet_addr(ip);
+    address.sin_addr.s_addr = INADDR_ANY; //inet_addr(ip);
     address.sin_port = htons(port);
 
     return address;
