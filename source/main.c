@@ -4,119 +4,21 @@ int authenticated = BOOL_FALSE;
 
 int main(int argc, char **argv)
 {
-    runServer();
+    int fork = BOOL_FALSE;
+    if(argc > 1)
+    {
+        if(strcmp(argv[1], "FORK") == 0 || strcmp(argv[1], "fork") == 0 || strcmp(argv[1], "-f") == 0)
+        {
+            fork = BOOL_TRUE;
+        }
+    }
+
+    runServer(fork);
 
     return EXIT_SUCCESS;
 }
 
-void runServer()
-{
-    flushStdout();
-    struct sockaddr_in adres_client;
-    int sockfd;
-    unsigned int clientlen;
-    int sock = setupServer();
-
-    listen(sock, 200);
-
-// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-    for (; ;)
-    {
-        clientlen = sizeof(adres_client);
-        sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen);
-        if (sockfd > -1)
-        {
-            processConnectedClient(sockfd, adres_client); // Gebruik geen fork als je wilt debuggen!! Debugger kan je niet attachen aan andere processen behalve de parent.
-        }
-        else
-        {
-            perror("Server can' t accept connection with a client.\n");
-        }
-    }
-#pragma clang diagnostic pop
-}
-
-int setupServer()
-{
-    char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9091;
-    struct sockaddr_in adres_server;
-    int sock, bindResult;
-    adres_server.sin_family = AF_INET; // ip protocol
-    adres_server.sin_port = htons(listenPort); // change to network byte order
-    adres_server.sin_addr.s_addr = inet_addr(server_ip);
-    sock = socket(PF_INET, SOCK_STREAM, IPPROTO_TCP);
-
-    exitIfError(sock, "Socket failed while trying to start the server.");
-    bindResult = bind(sock, (struct sockaddr *) &adres_server, sizeof(adres_server));
-    exitIfError(bindResult, "Binding to the socket failed while starting the server.");
-
-    return sock;
-}
-
-void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client)
-{
-    int childpid = fork();
-    if (childpid == 0)
-    {
-        processConnectedClient(sockfd, adres_client);
-    }
-    exitIfError(childpid, "Error forking child");
-}
-
-void processConnectedClient(int sockfd, struct sockaddr_in adres_client)
-{
-    ssize_t receive;
-    char buffer[200];
-    bzero(buffer, sizeof(buffer));
-    int result;
-
-    printf("Connection accepted with client: IP %s client port %i\n", inet_ntoa(adres_client.sin_addr),
-           ntohs(adres_client.sin_port));
-    acknowledgeConnection(sockfd);
-
-    while ((receive = recv(sockfd, buffer, sizeof(buffer), 0)) != EOF && buffer[0] != '\0')
-    {
-        exitIfError(receive, "Error receiving message from client.");
-
-        if (authenticated == BOOL_FALSE)
-        {
-            commandStruct cmd = commandStruct_initialize(buffer);
-
-            if (commandEquals(cmd, "CREATE_USER"))
-            {
-                result = handleCreateUserCommand(cmd);
-                sendIntegerMessageToClient(sockfd, result);
-            }
-            else
-            {
-                authenticated = authenticateClient(sockfd, cmd);
-
-                if(authenticated == BOOL_TRUE)
-                {
-                    commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
-                    handlePollCommand(pollCmd, sockfd); //1431349399
-                    commandStruct_free(&pollCmd);
-                }
-            }
-        }
-        else
-        {
-            result = parseMessage(buffer, sockfd);
-            sendIntegerMessageToClient(sockfd, result);
-        }
-
-        bzero(buffer, sizeof(buffer));
-    }
-
-    close(sockfd);
-    printf("Connection closed with client: IP %s\n", inet_ntoa(adres_client.sin_addr));
-    exit(EXIT_SUCCESS);
-}
-
-int authenticateClient(int sockfd, commandStruct cmd)
+int authenticateClient(commandStruct cmd)
 {
     authenticated = BOOL_FALSE;
 
@@ -128,16 +30,100 @@ int authenticateClient(int sockfd, commandStruct cmd)
         {
             authenticated = BOOL_TRUE;
         }
-        sendIntegerMessageToClient(sockfd, result);
+
+        sslSendInteger(result);
     }
     else
     {
-        sendIntegerMessageToClient(sockfd, ERR_NOLOGIN);
+        sslSendInteger(ERR_NOLOGIN);
     }
     return authenticated;
 }
 
-int parseMessage(char *message, int sockfd)
+void processConnectedClient()
+{
+    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
+    sslSendInteger(RPL_CONNECTED); // acknownledge connection
+
+    int bufferLength = 256, result;
+    char buffer[bufferLength];
+    bzero(buffer, (size_t)bufferLength);
+
+    while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
+    {
+        if (authenticated == BOOL_FALSE)
+        {
+            commandStruct cmd = commandStruct_initialize(buffer);
+
+            if (commandEquals(cmd, "CREATE_USER"))
+            {
+                result = handleCreateUserCommand(cmd);
+                sslSendInteger(result);
+            }
+            else
+            {
+                authenticated = authenticateClient(cmd);
+
+                if(authenticated == BOOL_TRUE)
+                {
+                    commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
+                    handlePollCommand(pollCmd); // TODO: socket reference weghalen //1431349399
+                    commandStruct_free(&pollCmd);
+                }
+            }
+        }
+        else
+        {
+            sslSendInteger(parseMessage(buffer)); // TODO: socket reference weghalen
+        }
+
+        bzero(buffer, sizeof(buffer));
+    }
+
+    printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
+    sslClose();
+}
+
+void processConnectedClientWithFork()
+{
+    int childpid = fork();
+    if (childpid == 0)
+    {
+        processConnectedClient();
+    }
+    exitIfError(childpid, "Error forking child");
+}
+
+void runServer(int fork)
+{
+    flushStdout();
+    int sock = getListeningSocket(SERVER_IP, SERVER_PORT);
+
+    exitIfError(sock, "Couldn't create a socket to listen to.");
+
+// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
+#pragma clang diagnostic push
+#pragma clang diagnostic ignored "-Wmissing-noreturn"
+    for (; ;)
+    {
+        if(sslAcceptConnection(sock) == SSL_OK)
+        {
+            if(fork == BOOL_TRUE)
+            {
+                processConnectedClientWithFork();
+            }
+            else
+            {
+                processConnectedClient();
+            }
+        }
+    }
+#pragma clang diagnostic pop
+
+    sslDestroy();
+}
+
+int parseMessage(char *message)
 {
     // TODO: sockfd moet hier weg?? moest even voor POLL
     commandStruct cmd = commandStruct_initialize(message);
@@ -171,7 +157,7 @@ int parseMessage(char *message, int sockfd)
     }
     else if (commandEquals(cmd, "POLL"))
     {
-        result = handlePollCommand(cmd, sockfd);
+        result = handlePollCommand(cmd);
     }
 
     commandStruct_free(&cmd);
@@ -184,20 +170,9 @@ void flushStdout()
     setvbuf(stdout, NULL, _IONBF, 0);
 }
 
-void acknowledgeConnection(int sockfd)
-{
-    int buffer = RPL_CONNECTED;
-    sendIntegerMessageToClient(sockfd, buffer);
-}
-
 int commandEquals(commandStruct cmd, char *check)
 {
     return strcmp(cmd.command, check) == 0;
-}
-
-int generateToken()
-{
-    return rand();
 }
 
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage)

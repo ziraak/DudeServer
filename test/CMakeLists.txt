@@ -20,9 +20,8 @@ set(TEST_SOURCES
     database/check_channel.c
 )
 
-
 # entire test executable
-add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS} )
+add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS})
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
 # Server test client
@@ -37,3 +36,11 @@ $<TARGET_FILE_DIR:run_unit_tests>/xml)
 add_custom_command(TARGET run_unit_tests POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory
 ${CMAKE_SOURCE_DIR}/xml $<TARGET_FILE_DIR:run_unit_tests>/xml)
+
+# add certificate for testclient
+add_custom_command(TARGET DudeTestClient PRE_BUILD
+COMMAND ${CMAKE_COMMAND} -E remove_directory
+$<TARGET_FILE_DIR:DudeTestClient>/certificates)
+add_custom_command(TARGET DudeTestClient POST_BUILD
+COMMAND ${CMAKE_COMMAND} -E copy_directory
+${CMAKE_SOURCE_DIR}/certificates $<TARGET_FILE_DIR:DudeTestClient>/certificates)

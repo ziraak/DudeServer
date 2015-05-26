@@ -95,7 +95,7 @@ int getPollMessages(pollStruct *ps)
     return BOOL_TRUE;
 }
 
-int sendPollMessages(pollStruct *ps, int sockfd)
+int sendPollMessages(pollStruct *ps)
 {
     int i, j;
 
@@ -103,7 +103,7 @@ int sendPollMessages(pollStruct *ps, int sockfd)
     {
         for(j = 0; j < ps->channelMessages[i].messageCount; j++)
         {
-            sendMessageToClient(sockfd, ps->channelMessages[i].messages[j]);
+            sslSend(ps->channelMessages[i].messages[j]);
         }
     }
 
@@ -167,7 +167,7 @@ void pollStruct_free(pollStruct *ps)
     }
 }
 
-int handlePollCommand(commandStruct cmd, int sockfd)
+int handlePollCommand(commandStruct cmd)
 {
     if(cmd.parameterCount == 0)
     {
@@ -179,7 +179,7 @@ int handlePollCommand(commandStruct cmd, int sockfd)
 
     if(getPollMessages(&gms) == BOOL_TRUE)
     {
-        sendPollMessages(&gms, sockfd);
+        sendPollMessages(&gms);
     }
 
     return RPL_SUCCESS;
