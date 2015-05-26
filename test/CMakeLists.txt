@@ -12,12 +12,12 @@ include_directories(${CHECK_INCLUDE_DIRS})
 
 set(TEST_HEADERS
      main.h utils/check_utils.h server/test_suite_commands.h database/check_user.h
-     database/check_channel.h performanceMeting/test_performance_meting.h
+     database/check_channel.h performanceMeting/test_performance_meting.h performanceMeting/test_performance_meting_server.h
 )
 
 set(TEST_SOURCES
     main.c utils/check_utils.c server/test_suite_commands.c database/check_user.c
-    database/check_channel.c performanceMeting/test_performance_meting.c
+    database/check_channel.c performanceMeting/test_performance_meting.c performanceMeting/test_performance_meting_server.c
 )
 
 

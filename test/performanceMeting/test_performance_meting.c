@@ -120,10 +120,3 @@ int testCommandsPerformanceMeting(int amountOfCommandLoops)
 
     return durationTest;
 }
-
-int getDurationTest(struct timeb start_time)
-{
-    struct timeb end_time;
-    ftime(&end_time);
-    return (int) ((end_time.time - start_time.time) * 1000) + (end_time.millitm - start_time.millitm);
-}
