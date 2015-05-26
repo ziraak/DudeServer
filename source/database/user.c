@@ -225,8 +225,8 @@ int createNewUser(char *username, char *password)
 
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
-
-    if (openDoc(docname) != NULL)
+    
+    if (xmlParseFile(docname) != NULL)
     {
         free(docname);
         return DB_RETURN_ALREADYEXISTS;
