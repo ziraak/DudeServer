@@ -8,6 +8,6 @@
 #include "performanceMeting/test_performance_meting.h"
 
 int unitTests();
-int performanceMeting();
+int performanceMetingCommandsTests();
 
 #endif //DUDESERVER_MAIN_H

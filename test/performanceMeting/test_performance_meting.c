@@ -72,7 +72,7 @@ START_TEST(test_update_password_command)
 }
 END_TEST
 
-Suite* performance_commands_suite(int amountOfCommandTestRuns)
+Suite* performance_commands_suite(int amountOfCommandLoops)
 {
     Suite *suite;
     TCase *tc_util_core;
@@ -82,7 +82,7 @@ Suite* performance_commands_suite(int amountOfCommandTestRuns)
     tc_util_core = tcase_create("performance");
 
     int i = 0;
-    for (i = 0; i < amountOfCommandTestRuns; i++)
+    for (i = 0; i < amountOfCommandLoops; i++)
     {
         // Specifieke volgorde voor deze scenario.
         tcase_add_test(tc_util_core, test_create_user_command);
@@ -100,7 +100,7 @@ Suite* performance_commands_suite(int amountOfCommandTestRuns)
     return suite;
 }
 
-int testCommandsPerformanceMeting(int amountOfCommandTestRuns)
+int testCommandsPerformanceMeting(int amountOfCommandLoops)
 {
     struct timeb start_time;
     int durationTest;
@@ -108,11 +108,11 @@ int testCommandsPerformanceMeting(int amountOfCommandTestRuns)
     SRunner *sRunner;
 
     ftime(&start_time);
-    suite = performance_commands_suite(amountOfCommandTestRuns);
+    suite = performance_commands_suite(amountOfCommandLoops);
     sRunner = srunner_create(suite);
 
     srunner_set_fork_status(sRunner, CK_NOFORK);
-    srunner_run_all(sRunner, CK_NORMAL);
+    srunner_run_all(sRunner, CK_SILENT);
     srunner_free(sRunner);
 
     durationTest = getDurationTest(start_time);

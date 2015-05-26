@@ -32,7 +32,7 @@
 userInfo currentUser;
 struct timespec sendWait;
 
-void runServer();
+void runServer(int USE_FORK, int port);
 
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
@@ -40,7 +40,7 @@ void processConnectedClient(int sockfd, struct sockaddr_in adres_client);
 
 void processConnectedClientWithFork(int sockfd, struct sockaddr_in adres_client);
 
-int setupServer();
+int setupServer(int port);
 
 void flushStdout();
 

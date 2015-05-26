@@ -4,18 +4,18 @@ int authenticated = BOOL_FALSE;
 
 int main(int argc, char **argv)
 {
-    runServer();
+    runServer(BOOL_FALSE, 9091);
 
     return EXIT_SUCCESS;
 }
 
-void runServer()
+void runServer(int USE_FORK, int port)
 {
     flushStdout();
     struct sockaddr_in adres_client;
     int sockfd;
     unsigned int clientlen;
-    int sock = setupServer();
+    int sock = setupServer(port);
 
     listen(sock, 200);
 
@@ -28,7 +28,14 @@ void runServer()
         sockfd = accept(sock, (struct sockaddr *) &adres_client, &clientlen);
         if (sockfd > -1)
         {
-            processConnectedClient(sockfd, adres_client); // Gebruik geen fork als je wilt debuggen!! Debugger kan je niet attachen aan andere processen behalve de parent.
+            if (USE_FORK == BOOL_TRUE)
+            {
+                processConnectedClientWithFork(sockfd, adres_client);
+            }
+            else
+            {
+                processConnectedClient(sockfd, adres_client); // Gebruik geen fork als je wilt debuggen!! Debugger kan je niet attachen aan andere processen behalve de parent.
+            }
         }
         else
         {
@@ -38,10 +45,10 @@ void runServer()
 #pragma clang diagnostic pop
 }
 
-int setupServer()
+int setupServer(int port)
 {
     char *server_ip = "127.0.0.1";
-    uint16_t listenPort = 9091;
+    uint16_t listenPort = port;
     struct sockaddr_in adres_server;
     int sock, bindResult;
     adres_server.sin_family = AF_INET; // ip protocol
