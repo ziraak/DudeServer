@@ -6,7 +6,7 @@
 #define DUDESERVER_COMMUNICATION_H
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 9092
+#define SERVER_PORT 9090
 #define SSL_CERTIFICATE_LOCATION "certificates/certificate.pem"
 #define SSL_PRIVATE_KEY_LOCATION "certificates/private/private_key.pem"
 
