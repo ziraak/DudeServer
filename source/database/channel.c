@@ -591,3 +591,48 @@ void setChannelVisibility(char* channelname,int visible)
     xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
 }
+
+void setChannelUserRole(char* channelname, char* username, char* newRole)
+{
+    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    xmlDocPtr docPtr;
+    xmlNodePtr nodePtr;
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelname);
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return;
+    }
+
+    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return;
+    }
+
+
+    while(nodePtr != NULL)
+    {
+        if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
+        {
+            nodePtr = nodePtr->xmlChildrenNode;
+            while (nodePtr != NULL)
+            {
+                if (!xmlStrcmp(xmlNodeListGetString(docPtr,nodePtr->xmlChildrenNode,1),BAD_CAST username))
+                {
+                    xmlSetProp(nodePtr,BAD_CAST "role",BAD_CAST newRole);
+                    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
+                    xmlFreeDoc(docPtr);
+                    free(docname);
+                    return;
+                }
+                nodePtr = nodePtr->next;
+            }
+        }
+        nodePtr = nodePtr->next;
+    }
+    xmlFreeDoc(docPtr);
+
+    free(docname);
+
+}
