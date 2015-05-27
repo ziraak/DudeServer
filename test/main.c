@@ -48,7 +48,7 @@ int performanceMetingServer()
     int i;
     int averageDurationTestsInMsec = 0;
     int amountOfTestLoops = 10;
-    int numberOfTestSuiteRun = 10;
+    int numberOfTestSuiteRun = 1;
     for (i = 0; i < numberOfTestSuiteRun; i++)
     {
         durationTestsInMsec += testServerPerformanceMeting(amountOfTestLoops);

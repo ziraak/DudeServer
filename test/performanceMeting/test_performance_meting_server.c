@@ -1,10 +1,18 @@
 #include "test_performance_meting_server.h"
 
+int AMOUNT_OF_CLIENTS_RECEIVED_DATA = 0;
+
 int SERVER_PORT = 9000;
 
 START_TEST(test_connecting_multiple_clients)
     {
-        getServerSocket(SERVER_PORT, "127.0.0.1");
+        int sock = getServerSocket(SERVER_PORT, "127.0.0.1");
+        send(sock, "Test\0", 4, 0);
+        char messageFromServer[255];
+        bzero(messageFromServer, 255);
+        read(sock, &messageFromServer, sizeof(messageFromServer));
+        printf("Message from server: %s", messageFromServer);
+        AMOUNT_OF_CLIENTS_RECEIVED_DATA++;
     }
 END_TEST
 
@@ -45,6 +53,8 @@ int testServerPerformanceMeting(int amountOfCommandLoops)
     srunner_free(sRunner);
 
     durationTest = getDurationTest(start_time);
+
+    printf("AMOUNT_OF_CLIENTS_RECEIVED_DATA: %i\n", AMOUNT_OF_CLIENTS_RECEIVED_DATA);
 
     return durationTest;
 }
