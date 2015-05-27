@@ -1,6 +1,6 @@
 #include "test_performance_meting_server.h"
 
-int AMOUNT_OF_CLIENTS_RECEIVED_DATA = 0;
+performanceInfo performanceInfoServer;
 
 int SERVER_PORT = 9000;
 
@@ -12,7 +12,13 @@ START_TEST(test_connecting_multiple_clients)
         bzero(messageFromServer, 255);
         read(sock, &messageFromServer, sizeof(messageFromServer));
         printf("Message from server: %s", messageFromServer);
-        AMOUNT_OF_CLIENTS_RECEIVED_DATA++;
+        messageFromServer[strlen(messageFromServer) - 2] = '\0'; // remove carriage return
+        if (strcmp(messageFromServer, "100") == 0)
+        {
+            printf("Received correct accept message! \n");
+            performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA++;
+        }
+        performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA++;
     }
 END_TEST
 
@@ -37,10 +43,9 @@ Suite* performance_server_suite(int amountOfCommandLoops)
     return suite;
 }
 
-int testServerPerformanceMeting(int amountOfCommandLoops)
+performanceInfo testServerPerformanceMeting(int amountOfCommandLoops)
 {
     struct timeb start_time;
-    int durationTest;
     Suite *suite;
     SRunner *sRunner;
 
@@ -52,9 +57,9 @@ int testServerPerformanceMeting(int amountOfCommandLoops)
     srunner_run_all(sRunner, CK_SILENT);
     srunner_free(sRunner);
 
-    durationTest = getDurationTest(start_time);
+    printf("AMOUNT_OF_CLIENTS_RECEIVED_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA);
+    printf("AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA);
 
-    printf("AMOUNT_OF_CLIENTS_RECEIVED_DATA: %i\n", AMOUNT_OF_CLIENTS_RECEIVED_DATA);
-
-    return durationTest;
+    performanceInfoServer.durationTest = getDurationTest(start_time);
+    return performanceInfoServer;
 }

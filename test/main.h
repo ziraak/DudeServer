@@ -7,6 +7,7 @@
 #include "database/check_channel.h"
 #include "performanceMeting/test_performance_meting.h"
 #include "performanceMeting/test_performance_meting_server.h"
+#include "testStructs.h"
 
 int unitTests();
 int performanceMetingCommandsTests();

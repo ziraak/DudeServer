@@ -44,14 +44,16 @@ int performanceMetingCommandsTests()
 
 int performanceMetingServer()
 {
+    performanceInfo performanceInfoServer;
     int durationTestsInMsec = 0;
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfTestLoops = 10;
+    int amountOfTestLoops = 1000;
     int numberOfTestSuiteRun = 1;
     for (i = 0; i < numberOfTestSuiteRun; i++)
     {
-        durationTestsInMsec += testServerPerformanceMeting(amountOfTestLoops);
+        performanceInfoServer = testServerPerformanceMeting(amountOfTestLoops);
+        durationTestsInMsec += performanceInfoServer.durationTest;
     }
     averageDurationTestsInMsec = durationTestsInMsec / (numberOfTestSuiteRun * amountOfTestLoops);
 
