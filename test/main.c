@@ -27,8 +27,8 @@ int performanceMetingCommandsTests()
     int durationTestsInMsec = 0;
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfCommandLoops = 10;
-    int numberOfCommandTestSuiteRun = 10;
+    int amountOfCommandLoops = PERFORMANCE_METING_AMOUNT_OF_COMMAND_LOOPS;
+    int numberOfCommandTestSuiteRun = PERFORMANCE_METING_AMOUNT_OF_TEST_SUITES;
     for (i = 0; i < numberOfCommandTestSuiteRun; i++)
     {
         durationTestsInMsec += testCommandsPerformanceMeting(amountOfCommandLoops);
@@ -48,8 +48,8 @@ int performanceMetingServer()
     performanceInfo performanceInfoServer = { 0, 0, 0};
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfTestLoops = 100;
-    int numberOfTestSuiteRun = 20;
+    int amountOfTestLoops = 10;
+    int numberOfTestSuiteRun = 10;
     for (i = 0; i < numberOfTestSuiteRun; i++)
     {
         performanceInfo performanceInfoPerformanceMeting;
