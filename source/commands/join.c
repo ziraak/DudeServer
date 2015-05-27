@@ -7,12 +7,7 @@ int handleJoinCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    char *channelName = cmd.parameters[0], *optionalChannelKey = NULL;
-
-    if(cmd.parameterCount > 1)
-    {
-        optionalChannelKey = cmd.parameters[1];
-    }
+    char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing; //;
 
     channelInfo channel;
     int resultGetChannel = getChannel(channelName, &channel);
@@ -38,14 +33,24 @@ int handleJoinCommand(commandStruct cmd)
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey)
 {
-    if(optionalChannelKey != NULL && strlen(optionalChannelKey) > 0)
-    {
-        //TODO: optionalChannelKey support toevoegen
-        return ERR_BADCHANNELKEY;
-    }
-
     if(strcmp(channel.name, channelName) == 0)
     {
+        if(channel.password != NULL && strlen(channel.password) > 0)
+        {
+            if(optionalChannelKey != NULL && strlen(optionalChannelKey) > 0)
+            {
+                if(strcmp(channel.password, optionalChannelKey) != 0)
+                {
+                    //TODO: optionalChannelKey support toevoegen
+                    return ERR_BADCHANNELKEY;
+                }
+            }
+            else
+            {
+                return ERR_NEEDMOREPARAMS;
+            }
+        }
+
         return BOOL_TRUE;
     }
 
