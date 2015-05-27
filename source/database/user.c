@@ -66,50 +66,6 @@ int getUser(char *username, userInfo *result)
     //TODO: frees
     return DB_RETURN_SUCCES;
 }
-int isUserInChannel(char* channelname, char* username)
-{
-    channelUser *users = getUsersFromChannel(channelname);
-    int index = 0;
-    while(users[index].username != NULL)
-    {
-        if(!strcmp(users[index].username,username))
-        {
-            return BOOL_TRUE;
-        }
-        index++;
-    }
-
-    userInfo user;
-    getUser(username,&user);
-
-    int channelIndex;
-    channelIndex = 0;
-    while (user.channels[channelIndex] != NULL)
-    {
-        if(!strcmp(user.channels[channelIndex],channelname))
-        {
-            return BOOL_TRUE;
-        }
-        channelIndex++;
-    }
-
-
-    return BOOL_FALSE;
-}
-
-
-char* getUserNickname(char* username)
-{
-    userInfo info;
-    if(getUser(username,&info) == DB_RETURN_SUCCES)
-    {
-        return info.nickname;
-    }
-    return NULL;
-}
-
-
-
 
 int checkUser(char *userName)
 {
@@ -135,7 +91,7 @@ int checkUser(char *userName)
     return BOOL_FALSE;
 }
 
-int userJoinChannel(char *username, char *channelName, char *userRole)
+int userJoinChannel(char *username, char *channelName)
 {
     if (checkUser(username) != BOOL_TRUE)
     {
@@ -147,17 +103,9 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
         fprintf(stderr, " channel %s does not exist\n", channelName);
         return DB_RETURN_DOESNOTEXIST;
     }
-    if(userRole == NULL)
-    {
-        return DB_RETURN_NULLPOINTER;
-    }
-    if(isUserInChannel(channelName,username) == BOOL_TRUE)
-    {
-        return DB_RETURN_ALREADYEXISTS;
-    }
 
-    addFieldToFileInList("user", username, "channels", "channel", channelName, NULL, NULL);
-    addFieldToFileInList("channel", channelName, "users", "user", username, "role", userRole);
+    addFieldToFileInList("user", username, "channels", "channel", channelName);
+    addFieldToFileInList("channel", channelName, "users", "user", username);
 
     return DB_RETURN_SUCCES;
 }
@@ -277,7 +225,7 @@ int createNewUser(char *username, char *password)
 
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
-
+    
     if (xmlParseFile(docname) != NULL)
     {
         free(docname);

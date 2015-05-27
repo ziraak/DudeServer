@@ -1,6 +1,4 @@
-//
-// Created by Sjuul Wijnia on 20/04/15.
-//
+#include "test_client.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -72,6 +70,7 @@ void clientBusinessSend()
             else if (SSL_write(connection.ssl_handle, snd, len) < 0)
             {
                 perror("SEND ERROR, CLOSING CLIENT");
+                close(sock);
                 exit(EXIT_FAILURE);
             }
         }

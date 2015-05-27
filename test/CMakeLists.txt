@@ -12,20 +12,20 @@ include_directories(${CHECK_INCLUDE_DIRS})
 
 set(TEST_HEADERS
      main.h utils/check_utils.h server/test_suite_commands.h database/check_user.h
-     database/check_channel.h
+     database/check_channel.h performanceMeting/test_performance_meting.h performanceMeting/test_performance_meting_server.h
 )
 
 set(TEST_SOURCES
     main.c utils/check_utils.c server/test_suite_commands.c database/check_user.c
-    database/check_channel.c
+    database/check_channel.c performanceMeting/test_performance_meting.c performanceMeting/test_performance_meting_server.c
 )
 
 # entire test executable
-add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS})
+add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS}  client/test_client.c client/test_client.h client/test_client_main.h testStructs.h )
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
 # Server test client
-add_executable(DudeTestClient client/test_client.c)
+add_executable(DudeTestClient client/test_client.c client/test_client.h client/test_client_main.h client/test_client_main.c)
 target_link_libraries(DudeTestClient DudeServerLib)
 
 
