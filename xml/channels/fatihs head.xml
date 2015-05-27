@@ -3,6 +3,7 @@
 <channel>
     <name>fatihs head</name>
     <users>
+        <user role="-o">fatih</user>
     </users>
     <messages>
     </messages>

@@ -4,7 +4,7 @@ int main()
 {
     int numberOfFailedTests = 0;
 //    numberOfFailedTests += utils_tests();
-//    numberOfFailedTests += user_tests();
+    numberOfFailedTests += user_tests();
     numberOfFailedTests += channel_tests();
 
 //    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet

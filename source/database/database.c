@@ -73,7 +73,8 @@ char** getListOfValues(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *listna
     return key;
 }
 
-void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content)
+void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content,
+                          char *optPropertyName, char *optPropertyValue)
 {
     xmlDocPtr docPtr;
     xmlNodePtr currentNodePtr;
@@ -91,7 +92,8 @@ void addFieldToFileInList(char *fileType, char *filename, char *listname, char *
         return;
     }
 
-    addChild(currentNodePtr, listname, fieldname, content);
+    addChild(currentNodePtr, listname, fieldname, content, optPropertyName, optPropertyValue);
+
     xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
     free(docname);
@@ -117,20 +119,25 @@ void addFieldToFile(char *fileType, char *filename , char *fieldname, char *cont
         return;
     }
     currentNodePtr = currentNodePtr->parent;
-    addChild(currentNodePtr, fileType, fieldname, content);
+    addChild(currentNodePtr, fileType, fieldname, content, NULL, NULL);
     xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
     free(docname);
 }
 
 
-void addChild(xmlNodePtr currentNodePtr, char *parent, char *child, char *childContent)
+void addChild(xmlNodePtr currentNodePtr, char *parent, char *child, char *childContent, char *optPropertyName,
+              char *optPropertyValue)
 {
     while (currentNodePtr != NULL)
     {
         if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) parent)))
         {
-            xmlNewTextChild(currentNodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
+            currentNodePtr = xmlNewTextChild(currentNodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
+            if(optPropertyName != NULL && optPropertyValue != NULL)
+            {
+                xmlNewProp(currentNodePtr,BAD_CAST optPropertyName,BAD_CAST optPropertyValue);
+            }
             break;
         }
         currentNodePtr = currentNodePtr->next;
@@ -209,7 +216,7 @@ void addToListFile(char* itemType,char* newItem)
     }
 
     currentNodePtr = currentNodePtr->parent;
-    addChild(currentNodePtr, doctype, itemType, newItem);
+    addChild(currentNodePtr, doctype, itemType, newItem, NULL, NULL);
     xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
     free(docname);
