@@ -159,6 +159,10 @@ int parseMessage(char *message)
     {
         result = handleTopicCommand(cmd);
     }
+    else if(commandEquals(cmd, "MODE"))
+    {
+        result = handleModeCommand(cmd);
+    }
     else if (commandEquals(cmd, "POLL"))
     {
         result = handlePollCommand(cmd);

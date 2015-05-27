@@ -22,15 +22,12 @@ void handleSFlag(char *channelName, char *flags)
 {
     if(hasFlag('s', flags) == BOOL_TRUE)
     {
-        int set = (flags[0] == '+') ? BOOL_TRUE : BOOL_FALSE;
-
-        //TODO: set visibility
+        setChannelVisibility(channelName, (flags[0] == '+') ? BOOL_TRUE : BOOL_FALSE);
     }
 }
 
 int handleModeCommand(commandStruct cmd)
 {
-    //TODO: operator support e.d.
     if(cmd.parameterCount < 2)
     {
         return ERR_NEEDMOREPARAMS;
@@ -51,6 +48,12 @@ int handleModeCommand(commandStruct cmd)
     if(userHasChannel(channelName) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
+    }
+
+    char* role = getUserRole(channelName, currentUser.username);
+    if(strcmp(role, USER_ROLE_OPERATOR) != 0)
+    {
+        return ERR_CHANOPPRIVSNEEDED;
     }
 
     handleSFlag(channelName, flags);

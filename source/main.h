@@ -19,6 +19,7 @@
 #include "commands/update_nickname.h"
 #include "commands/part.h"
 #include "commands/topic.h"
+#include "commands/mode.h"
 #include "database/database.h"
 #include "protocolDefines.h"
 #include "time.h"
