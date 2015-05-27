@@ -10,7 +10,7 @@ void runServer(int USE_FORK, int port)
     unsigned int clientlen;
     int sock = setupServer(port);
 
-    listen(sock, 20000);
+    listen(sock, 1000);
 
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push

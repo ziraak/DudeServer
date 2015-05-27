@@ -36,7 +36,7 @@ int performanceMetingCommandsTests()
 
     printf("Number of command loops in a test suite: %i\n", amountOfCommandLoops);
     printf("Number of test suites run: %i\n", numberOfCommandTestSuiteRun);
-    printf("Every suite ran all commands %i times. Average duration each set of commands of %i commands suite(s) in msec: %i\n" , amountOfCommandLoops, numberOfCommandTestSuiteRun,
+    printf("Every suite ran all commands %i times. Average duration each set of commands of %i commands suite(s) (in msec): %i\n" , amountOfCommandLoops, numberOfCommandTestSuiteRun,
            averageDurationTestsInMsec);
 
     return averageDurationTestsInMsec;
@@ -44,22 +44,25 @@ int performanceMetingCommandsTests()
 
 int performanceMetingServer()
 {
-    performanceInfo performanceInfoServer;
-    int durationTestsInMsec = 0;
+    performanceInfo performanceInfoServer = { 0, 0, 0};
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfTestLoops = 1000;
-    int numberOfTestSuiteRun = 1;
+    int amountOfTestLoops = 100;
+    int numberOfTestSuiteRun = 20;
     for (i = 0; i < numberOfTestSuiteRun; i++)
     {
-        performanceInfoServer = testServerPerformanceMeting(amountOfTestLoops);
-        durationTestsInMsec += performanceInfoServer.durationTest;
+        performanceInfo performanceInfoPerformanceMeting;
+        performanceInfoPerformanceMeting = testServerPerformanceMeting(amountOfTestLoops);
+        performanceInfoServer.durationTest += performanceInfoPerformanceMeting.durationTest;
+        performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA += performanceInfoPerformanceMeting.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA;
+        performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA += performanceInfoPerformanceMeting.AMOUNT_OF_CLIENTS_RECEIVED_DATA;
     }
-    averageDurationTestsInMsec = durationTestsInMsec / (numberOfTestSuiteRun * amountOfTestLoops);
+    averageDurationTestsInMsec = performanceInfoServer.durationTest / (numberOfTestSuiteRun * amountOfTestLoops);
 
     printf("Number of test loops in a test suite: %i\n", amountOfTestLoops);
     printf("Number of server test suites run: %i\n", numberOfTestSuiteRun);
-    printf("Every suite ran all commands %i times. Average duration each set of tests of %i server suite(s) in msec: %i\n" ,
+    printf("Average of CORRECT data received: (%i/%i)\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA / numberOfTestSuiteRun, performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA / numberOfTestSuiteRun);
+    printf("Every suite ran all tests %i times. Average duration each set of tests of %i server suite(s) (in msec): %i\n" ,
            amountOfTestLoops,
            numberOfTestSuiteRun,
            averageDurationTestsInMsec);

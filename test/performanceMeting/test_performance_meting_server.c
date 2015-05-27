@@ -1,8 +1,8 @@
 #include "test_performance_meting_server.h"
 
-performanceInfo performanceInfoServer;
+performanceInfo performanceInfoServer = {0, 0, 0};
 
-int SERVER_PORT = 9000;
+int SERVER_PORT = 9091;
 
 START_TEST(test_connecting_multiple_clients)
     {
@@ -45,6 +45,9 @@ Suite* performance_server_suite(int amountOfCommandLoops)
 
 performanceInfo testServerPerformanceMeting(int amountOfCommandLoops)
 {
+    performanceInfoServer.durationTest = 0;
+    performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA = 0;
+    performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA = 0;
     struct timeb start_time;
     Suite *suite;
     SRunner *sRunner;
