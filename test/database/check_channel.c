@@ -17,7 +17,9 @@ END_TEST
 
 START_TEST(test_getUserRole)
     {
-        ck_assert_str_eq(getUserRole("fatihs head","fatih"),USER_ROLE_OPERATOR);
+        setChannelUserRole("fatihs head","fatih",USER_ROLE_USER);
+        ck_assert_str_eq(getUserRole("fatihs head","fatih"),USER_ROLE_USER);
+        setChannelUserRole("fatihs head","fatih",USER_ROLE_OPERATOR);
     }
 END_TEST
 
