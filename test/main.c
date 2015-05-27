@@ -50,6 +50,9 @@ int performanceMetingServer()
     int averageDurationTestsInMsec = 0;
     int amountOfTestLoops = 10;
     int numberOfTestSuiteRun = 10;
+
+    getServerSocket(SERVER_PORT, SERVER_IP);
+
     for (i = 0; i < numberOfTestSuiteRun; i++)
     {
         performanceInfo performanceInfoPerformanceMeting;
