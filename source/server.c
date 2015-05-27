@@ -82,6 +82,7 @@ void processConnectedClient()
     }
     printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     sslClose();
+    authenticated = BOOL_FALSE;
 }
 void processConnectedClientWithFork()
 {
@@ -89,13 +90,13 @@ void processConnectedClientWithFork()
     if (childpid == 0)
     {
         processConnectedClient();
+        exit(0);
     }
     exitIfError(childpid, "Error forking child");
 }
 
 int parseMessage(char *message)
 {
-// TODO: sockfd moet hier weg?? moest even voor POLL
     commandStruct cmd = commandStruct_initialize(message);
     int result = ERR_UNKNOWNCOMMAND;
     if (commandEquals(cmd, "JOIN"))
