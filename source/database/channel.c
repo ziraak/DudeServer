@@ -2,6 +2,7 @@
 
 int writeChannel(channelInfo channel)
 {//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
+    channelUser *users = getUsersFromChannel(channel.name);
     xmlTextWriterPtr file = openChannelFile(channel.name);
     xmlTextWriterStartElement(file, channelTagName);
     xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
@@ -13,7 +14,7 @@ int writeChannel(channelInfo channel)
     {
         xmlTextWriterWriteElement(file, BAD_CAST "topic", BAD_CAST channel.topic);
     }
-    writeUsersToChannel(file, getUsersFromChannel(channel.name));
+    writeUsersToChannel(file, users);
     writeMessagesToChannel(file, channel.messages);
     xmlTextWriterEndElement(file);
     int suc = xmlTextWriterEndDocument(file);
@@ -36,14 +37,10 @@ void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users)
     int index = 0;
     while (users[index].username != NULL)
     {
-
-        xmlTextWriterWriteElement(xmlptr, userTagName, BAD_CAST users[index].username);
-        if(users[index].role == NULL)
-        {
-            xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST USER_ROLE_USER);
-        } else {
-            xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST users[index].role);
-        }
+        xmlTextWriterStartElement(xmlptr,userTagName);
+        xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST users[index].role);
+        xmlTextWriterWriteString(xmlptr,BAD_CAST users[index].username);
+        xmlTextWriterEndElement(xmlptr);
         index++;
     }
     xmlTextWriterEndElement(xmlptr);
@@ -142,7 +139,7 @@ channelUser *getUsersFromChannel(char *channelName)
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
-    channelUser* users = malloc(50);
+    channelUser* users = NULL;
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
@@ -158,6 +155,7 @@ channelUser *getUsersFromChannel(char *channelName)
 
     int i = 0;
 
+    users= malloc(5000);//TODO:malloc needs to be done better(memleak)
     while(nodePtr != NULL)
     {
         if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))

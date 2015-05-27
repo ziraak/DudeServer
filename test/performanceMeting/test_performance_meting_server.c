@@ -1,14 +1,16 @@
 #include "test_performance_meting_server.h"
 
 performanceInfo performanceInfoServer = {0, 0, 0};
+sslConnection connection;
 
 START_TEST(test_connecting_multiple_clients)
     {
-        int sock = getServerSocket(SERVER_PORT, "127.0.0.1");
-        send(sock, "Test\0", 4, 0);
+        getServerSocket(SERVER_PORT, SERVER_IP);
+
+        SSL_write(connection.ssl_handle, "Test\0", 4);
         char messageFromServer[255];
         bzero(messageFromServer, 255);
-        read(sock, &messageFromServer, sizeof(messageFromServer));
+        sslRead(messageFromServer, sizeof(messageFromServer));
         printf("Message from server: %s", messageFromServer);
         messageFromServer[strlen(messageFromServer) - 2] = '\0'; // remove carriage return
         if (strcmp(messageFromServer, "100") == 0)

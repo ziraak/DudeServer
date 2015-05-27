@@ -9,6 +9,9 @@
 #include "performanceMeting/test_performance_meting_server.h"
 #include "testStructs.h"
 
+#define PERFORMANCE_METING_AMOUNT_OF_COMMAND_LOOPS 10
+#define PERFORMANCE_METING_AMOUNT_OF_TEST_SUITES 10
+
 int unitTests();
 int performanceMetingCommandsTests();
 int performanceMetingServer();
