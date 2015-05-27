@@ -76,6 +76,8 @@ START_TEST(userJoinChannel_test_correct)
         ck_assert_str_eq(user.channels[0], cName);
         ck_assert_int_eq(getChannel(cName, &channel), DB_RETURN_SUCCES);
         ck_assert_str_eq(channel.users[0], uName);
+        deleteUserFromChannel(cName,uName);
+        deleteChannelFromUser(uName,cName);
     }
 END_TEST
 

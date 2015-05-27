@@ -447,7 +447,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     messages[index].body = NULL;
     messages[index].timestamp = NULL;
 
-//    xmlFreeDoc(docPtr); // TODO: free oplossen
+    xmlFreeDoc(docPtr);
 
     free(docname);
     return messages;
@@ -552,3 +552,42 @@ void newChannelTopic(char *channelName, char *newTopic)
     assignFieldInFile("channel", channelName, "topic", newTopic);
 }
 
+
+void setChannelVisibility(char* channelname,int visible)
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    char *docname = DB_CHANNELLISTLOCATION;
+    char *doctype = "channels";
+    char *visibility;
+    if (visible == BOOL_TRUE)
+    {
+        visibility = DB_VISIBLE_TRUE;
+    }
+    else
+    {
+        visibility = DB_VISIBLE_FALSE;
+    }
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return;
+    }
+
+    if ((currentNodePtr = checkDoc(docPtr, doctype)) == NULL)
+    {
+        return;
+    }
+    while(currentNodePtr != NULL)
+    {
+        if(!xmlStrcmp(xmlNodeListGetString(docPtr,currentNodePtr->xmlChildrenNode,1),BAD_CAST channelname))
+        {
+            xmlSetProp(currentNodePtr,BAD_CAST "visible", BAD_CAST visibility);
+            break;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+
+    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
+    xmlFreeDoc(docPtr);
+}

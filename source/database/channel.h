@@ -78,4 +78,7 @@ int checkIfChannelVisible(char* channelName);
 channelUser* getUsersFromChannel(char *channelName);
 
 char* getUserRole(char* channelName, char* username);
+
+void setChannelVisibility(char* channelname,int visible);
+
 #endif 

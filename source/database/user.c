@@ -66,6 +66,37 @@ int getUser(char *username, userInfo *result)
     //TODO: frees
     return DB_RETURN_SUCCES;
 }
+int isUserInChannel(char* channelname, char* username)
+{
+    channelUser *users = getUsersFromChannel(channelname);
+    int index = 0;
+    while(users[index].username != NULL)
+    {
+        if(!strcmp(users[index].username,username))
+        {
+            return BOOL_TRUE;
+        }
+        index++;
+    }
+
+    userInfo user;
+    getUser(username,&user);
+
+    int channelIndex;
+    channelIndex = 0;
+    while (user.channels[channelIndex] != NULL)
+    {
+        if(!strcmp(user.channels[channelIndex],channelname))
+        {
+            return BOOL_TRUE;
+        }
+        channelIndex++;
+    }
+
+
+    return BOOL_FALSE;
+}
+
 
 char* getUserNickname(char* username)
 {
@@ -119,6 +150,10 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
     if(userRole == NULL)
     {
         return DB_RETURN_NULLPOINTER;
+    }
+    if(isUserInChannel(channelName,username) == BOOL_TRUE)
+    {
+        return DB_RETURN_ALREADYEXISTS;
     }
 
     addFieldToFileInList("user", username, "channels", "channel", channelName, NULL, NULL);

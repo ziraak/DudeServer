@@ -133,7 +133,7 @@ void addChild(xmlNodePtr currentNodePtr, char *parent, char *child, char *childC
     {
         if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) parent)))
         {
-            xmlNewTextChild(currentNodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
+            currentNodePtr = xmlNewTextChild(currentNodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
             if(optPropertyName != NULL && optPropertyValue != NULL)
             {
                 xmlNewProp(currentNodePtr,BAD_CAST optPropertyName,BAD_CAST optPropertyValue);
