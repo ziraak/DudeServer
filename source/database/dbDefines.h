@@ -3,7 +3,7 @@
 
 #define DB_MAXMESSAGES 100
 #define DB_DOCNAMEMEMORYSPACE 500
-#define DB_XML_FORMAT 0
+#define DB_XML_FORMAT 1
 //1 is indent, 0 is no indent
 #define DB_XML_ENCODING "UTF-8"
 
