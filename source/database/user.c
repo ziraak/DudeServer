@@ -125,6 +125,10 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
         fprintf(stderr, " channel %s does not exist\n", channelName);
         return DB_RETURN_DOESNOTEXIST;
     }
+    if(isUserInChannel(channelName,username) == BOOL_TRUE)
+    {
+        return DB_RETURN_ISALREADYINCHANNEL;
+    }
     if(userRole == NULL)
     {
         return DB_RETURN_NULLPOINTER;
