@@ -289,6 +289,7 @@ int checkChannel(char *channelName)
         }
         listIndex++;
     }
+
     return DB_RETURN_DOESNOTEXIST;
 }
 
@@ -475,7 +476,7 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
-    xmlCleanupParser();
+//    xmlCleanupParser();
     free(docname);
     addToListFile("channel", channelName);
     addChannelToList(channelName, visible);

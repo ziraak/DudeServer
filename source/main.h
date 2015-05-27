@@ -17,8 +17,10 @@
 #include "commands/delete_user.h"
 #include "commands/update_password.h"
 #include "commands/update_nickname.h"
-#include "database/database.h"
 #include "commands/part.h"
+#include "commands/topic.h"
+#include "commands/mode.h"
+#include "database/database.h"
 #include "protocolDefines.h"
 #include "time.h"
 #include "server.h"
@@ -29,12 +31,5 @@
 #define MINIMUM_PASSWORD_LENGTH 6
 
 #define MAXIMUM_MESSAGE_LENGTH 1024
-
-
-void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
-
-void flushStdout();
-
-int commandEquals(commandStruct cmd, char *check);
 
 #endif

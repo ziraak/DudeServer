@@ -1,8 +1,47 @@
 #include "database.h"
 
+char* readFileToMemory(char* filename)
+{
+    FILE *f;
+    f = fopen(filename, "r");
+    long length;
+    char* result = NULL;
+
+    if(f == NULL)
+    {
+        return result;
+    }
+
+    fseek(f, 0L, SEEK_END);
+    length = ftell(f);
+    fseek(f, 0L, SEEK_SET);
+    result = (char*) calloc(length + 1, sizeof(char));
+    bzero(result, length + 1);
+
+    if(result == NULL)
+    {
+        return result;
+    }
+
+    fread(result, sizeof(char), length, f);
+    fclose(f);
+
+    return result;
+}
+
 xmlDocPtr openDoc(char *docname)
 {
-    xmlDocPtr docPtr = xmlParseFile(docname);
+    //TODO: opschonen van docPtr zodra hij gebruikt is bij alle commands
+
+    char* memoryFile = readFileToMemory(docname);
+    if(memoryFile == NULL)
+    {
+        return NULL;
+    }
+    xmlDocPtr docPtr = xmlReadFile(docname, NULL, XML_PARSE_RECOVER | XML_PARSE_COMPACT);
+//    xmlDocPtr docPtr = xmlParseMemory(memoryFile, strlen(memoryFile));
+    free(memoryFile);
+
     if (docPtr == NULL)
     {
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);

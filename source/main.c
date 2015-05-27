@@ -2,6 +2,8 @@
 
 int main(int argc, char **argv)
 {
+    mallopt(M_CHECK_ACTION, 1);
+
     int fork = BOOL_FALSE;
     if(argc > 1)
     {
