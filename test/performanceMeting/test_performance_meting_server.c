@@ -2,8 +2,6 @@
 
 performanceInfo performanceInfoServer = {0, 0, 0};
 
-int SERVER_PORT = 9091;
-
 START_TEST(test_connecting_multiple_clients)
     {
         int sock = getServerSocket(SERVER_PORT, "127.0.0.1");

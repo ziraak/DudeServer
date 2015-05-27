@@ -11,7 +11,7 @@ int main(int argc, char **argv)
         }
     }
 
-    runServer(fork, 9091);
+    runServer(fork, SERVER_PORT);
 
     return EXIT_SUCCESS;
 }

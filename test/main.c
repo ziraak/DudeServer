@@ -3,11 +3,11 @@
 int main()
 {
     int numberOfFailedTests = 0;
-    //numberOfFailedTests += unitTests();
-    performanceMetingCommandsTests();
+    numberOfFailedTests += unitTests();
+    //performanceMetingCommandsTests();
     //performanceMetingServer();
 
-//    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
+    //numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
 
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
@@ -27,8 +27,8 @@ int performanceMetingCommandsTests()
     int durationTestsInMsec = 0;
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfCommandLoops = 100;
-    int numberOfCommandTestSuiteRun = 20;
+    int amountOfCommandLoops = 10;
+    int numberOfCommandTestSuiteRun = 10;
     for (i = 0; i < numberOfCommandTestSuiteRun; i++)
     {
         durationTestsInMsec += testCommandsPerformanceMeting(amountOfCommandLoops);

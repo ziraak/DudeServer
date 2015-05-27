@@ -3,9 +3,9 @@
 
 #include "test_client_main.h"
 
-void clientBusinessSend(int sock);
+void clientBusinessSend();
 
-void clientBusinessReceive(int sock);
+void clientBusinessReceive();
 
 int getServerSocket(int port, char *ip);
 

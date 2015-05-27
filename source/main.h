@@ -31,13 +31,9 @@
 #define MAXIMUM_MESSAGE_LENGTH 1024
 
 
-void runServer(int fork);
-
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
 void flushStdout();
-
-int parseMessage(char *message);
 
 int commandEquals(commandStruct cmd, char *check);
 
