@@ -107,6 +107,10 @@ int checkUser(char *userName)
 }
 int userJoinChannel(char *username, char *channelName, char *userRole)
 {
+    if(isUserInChannel(channelName,username) == BOOL_TRUE)
+    {
+        return DB_RETURN_ISALREADYINCHANNEL;
+    }
     if (checkUser(username) != BOOL_TRUE)
     {
         fprintf(stderr, "user: %s does not exist\n", username);
@@ -121,10 +125,7 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
     {
         return DB_RETURN_NULLPOINTER;
     }
-    if(isUserInChannel(channelName,username) == BOOL_TRUE)
-    {
-        return DB_RETURN_ALREADYEXISTS;
-    }
+
     addFieldToFileInList("user", username, "channels", "channel", channelName, NULL, NULL);
     addFieldToFileInList("channel", channelName, "users", "user", username, "role", userRole);
     return DB_RETURN_SUCCES;
