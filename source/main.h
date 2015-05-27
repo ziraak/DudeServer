@@ -32,11 +32,4 @@
 
 #define MAXIMUM_MESSAGE_LENGTH 1024
 
-
-void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
-
-void flushStdout();
-
-int commandEquals(commandStruct cmd, char *check);
-
 #endif

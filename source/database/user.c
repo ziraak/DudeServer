@@ -12,10 +12,6 @@ char **getUserList()
 }
 int getUser(char *username, userInfo *result)
 {
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-
     int userReturn = checkUser(username);
     if (userReturn == DB_RETURN_NULLPOINTER)
     {
