@@ -15,7 +15,8 @@ char* readFileToMemory(char* filename)
     fseek(f, 0L, SEEK_END);
     length = ftell(f);
     fseek(f, 0L, SEEK_SET);
-    result = (char*) calloc(length, sizeof(char));
+    result = (char*) calloc(length + 1, sizeof(char));
+    bzero(result, length + 1);
 
     if(result == NULL)
     {
@@ -37,7 +38,8 @@ xmlDocPtr openDoc(char *docname)
     {
         return NULL;
     }
-    xmlDocPtr docPtr = xmlParseMemory(memoryFile, strlen(memoryFile));
+    xmlDocPtr docPtr = xmlReadFile(docname, NULL, XML_PARSE_RECOVER | XML_PARSE_COMPACT);
+//    xmlDocPtr docPtr = xmlParseMemory(memoryFile, strlen(memoryFile));
     free(memoryFile);
 
     if (docPtr == NULL)

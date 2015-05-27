@@ -22,9 +22,6 @@ char **getUserList()
 
 int getUser(char *username, userInfo *result)
 {
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
 
     int userReturn = checkUser(username);
 
@@ -37,7 +34,9 @@ int getUser(char *username, userInfo *result)
         return DB_RETURN_DOESNOTEXIST;
     }
 
-
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    char *docname = (char *) malloc(strlen(DB_USERLOCATION) + strlen(username) + 4);
     sprintf(docname, "%s%s.xml", DB_USERLOCATION, username);
 
     if ((docPtr = openDoc(docname)) == NULL)
@@ -300,7 +299,7 @@ int createNewUser(char *username, char *password)
     xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
 
-    xmlCleanupParser();
+//    xmlCleanupParser();
     addToListFile("user", username);
     free(docname);
     return DB_RETURN_SUCCES;

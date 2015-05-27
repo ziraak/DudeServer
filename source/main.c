@@ -2,8 +2,11 @@
 
 int authenticated = BOOL_FALSE;
 
+
 int main(int argc, char **argv)
 {
+    mallopt(M_CHECK_ACTION, 1);
+
     int fork = BOOL_FALSE;
     if(argc > 1)
     {
@@ -67,7 +70,7 @@ void processConnectedClient()
                 if(authenticated == BOOL_TRUE)
                 {
                     commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
-                    handlePollCommand(pollCmd); // TODO: socket reference weghalen //1431349399
+//                    handlePollCommand(pollCmd); // TODO: socket reference weghalen //1431349399
                     commandStruct_free(&pollCmd);
                 }
             }

@@ -51,7 +51,7 @@ int handleModeCommand(commandStruct cmd)
     }
 
     char* role = getUserRole(channelName, currentUser.username);
-    if(strcmp(role, USER_ROLE_OPERATOR) != 0)
+    if(role == NULL || strcmp(role, USER_ROLE_OPERATOR) != 0)
     {
         return ERR_CHANOPPRIVSNEEDED;
     }
