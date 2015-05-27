@@ -167,6 +167,7 @@ int sslSend(char* snd)
     char* buffer = malloc(sizeof(char) * bufferLength + 2);
     sprintf(buffer, "%s\r\n", snd);
     int written = SSL_write(connection.ssl_handle, buffer, (int)(bufferLength + 2));
+    free(buffer);
     if(written > 0)
     {
         return SSL_OK;
