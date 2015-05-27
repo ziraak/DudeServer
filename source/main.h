@@ -21,6 +21,7 @@
 #include "commands/part.h"
 #include "protocolDefines.h"
 #include "time.h"
+#include "server.h"
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
@@ -29,8 +30,6 @@
 
 #define MAXIMUM_MESSAGE_LENGTH 1024
 
-userInfo currentUser;
-struct timespec sendWait;
 
 void runServer(int fork);
 
