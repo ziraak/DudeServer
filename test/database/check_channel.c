@@ -111,6 +111,18 @@ START_TEST(test_addToList)
     }
 END_TEST
 
+
+START_TEST(test_WriteMsg)
+    {
+        messageInfo message;
+        message.body = "gast";
+        message.writer = "fatih";
+        message.timestamp = _i;
+
+        writeMessageToChannel("batcave", message);
+    }
+END_TEST
+
 //----------------___---------------------------------------_____--------------___----__----__----__----__---___---_-----_----
 Suite *channel_suite(void)
 {
@@ -119,21 +131,22 @@ Suite *channel_suite(void)
     s = suite_create("channel");
     tc_channel_core = tcase_create("core");
 
-    tcase_add_loop_test(tc_channel_core, test_getMessages,0,100);
+//    tcase_add_loop_test(tc_channel_core, test_getMessages,0,100);
 //    tcase_add_test(tc_channel_core, test_getMessagesOnTime);
-    tcase_add_loop_test(tc_channel_core,test_getMessagesOnTime,0,100);
-
-    tcase_add_loop_test(tc_channel_core,test_getChannel,0,100);
-    tcase_add_test(tc_channel_core,test_getChannel_noPass);
-
-    tcase_add_loop_test(tc_channel_core,test_authenticatePassword,0,100);
-
-    tcase_add_test(tc_channel_core,test_addToList);
-
-    tcase_add_test(tc_channel_core,test_getUserlistFromChannel);
-    tcase_add_loop_test(tc_channel_core,test_getUserRole,0,100);
-
-    tcase_add_test(tc_channel_core,test_channelTopics);
+//    tcase_add_loop_test(tc_channel_core,test_getMessagesOnTime,0,100);
+//
+//    tcase_add_loop_test(tc_channel_core,test_getChannel,0,100);
+//    tcase_add_test(tc_channel_core,test_getChannel_noPass);
+//
+//    tcase_add_loop_test(tc_channel_core,test_authenticatePassword,0,100);
+//
+//    tcase_add_test(tc_channel_core,test_addToList);
+//
+//    tcase_add_test(tc_channel_core,test_getUserlistFromChannel);
+//    tcase_add_loop_test(tc_channel_core,test_getUserRole,0,100);
+//
+//    tcase_add_test(tc_channel_core,test_channelTopics);
+    tcase_add_loop_test(tc_channel_core,test_WriteMsg,0,1);
 
     suite_add_tcase(s, tc_channel_core);
     return s;

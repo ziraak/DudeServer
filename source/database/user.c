@@ -107,10 +107,6 @@ int checkUser(char *userName)
 }
 int userJoinChannel(char *username, char *channelName, char *userRole)
 {
-    if(isUserInChannel(channelName,username) == BOOL_TRUE)
-    {
-        return DB_RETURN_ISALREADYINCHANNEL;
-    }
     if (checkUser(username) != BOOL_TRUE)
     {
         fprintf(stderr, "user: %s does not exist\n", username);
@@ -120,6 +116,10 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
     {
         fprintf(stderr, " channel %s does not exist\n", channelName);
         return DB_RETURN_DOESNOTEXIST;
+    }
+    if(isUserInChannel(channelName,username) == BOOL_TRUE)
+    {
+        return DB_RETURN_ISALREADYINCHANNEL;
     }
     if(userRole == NULL)
     {
