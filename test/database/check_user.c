@@ -69,25 +69,27 @@ END_TEST
 
 START_TEST(userJoinChannel_test_correct)
     {
-        ck_assert_int_eq(userJoinChannel(uName, cName), DB_RETURN_SUCCES);
+        ck_assert_int_eq(userJoinChannel(uName, cName, USER_ROLE_USER), DB_RETURN_SUCCES);
         userInfo user;
         channelInfo channel;
         ck_assert_int_eq(getUser(uName, &user), DB_RETURN_SUCCES);
         ck_assert_str_eq(user.channels[0], cName);
         ck_assert_int_eq(getChannel(cName, &channel), DB_RETURN_SUCCES);
         ck_assert_str_eq(channel.users[0], uName);
+        deleteUserFromChannel(cName,uName);
+        deleteChannelFromUser(uName,cName);
     }
 END_TEST
 
 START_TEST(userJoinChannel_test_wrongChannel)
     {
-        ck_assert_int_eq(userJoinChannel(uName, "a"), DB_RETURN_DOESNOTEXIST);
+        ck_assert_int_eq(userJoinChannel(uName, "a", NULL), DB_RETURN_DOESNOTEXIST);
     }
 END_TEST
 
 START_TEST(userJoinChannel_test_wrongUser)
     {
-        ck_assert_int_eq(userJoinChannel("a", cName), DB_RETURN_DOESNOTEXIST);
+        ck_assert_int_eq(userJoinChannel("a", cName, NULL), DB_RETURN_DOESNOTEXIST);
     }
 END_TEST
 
@@ -112,6 +114,12 @@ START_TEST(test_deleteUser_banned)//TODO: doesn't support banned users
         ck_assert_int_eq(checkUser(bannedName),BOOL_FALSE);
         ck_assert_int_eq(openDoc(docname),!NULL);
         free(docname);
+    }
+END_TEST
+
+START_TEST(test_getUsrNickname)
+    {
+        ck_assert_str_eq(getUserNickname("alibaba"),"ali-b");
     }
 END_TEST
 
@@ -141,7 +149,9 @@ Suite *user_suite(void)
     tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
 
     tcase_add_test(tc_user_core, test_deleteUser_correct);
-    //tcase_add_test(tc_user_core, test_deleteUser_banned); currently can't delete banned users
+
+
+    tcase_add_test(tc_user_core, test_getUsrNickname);
 
     suite_add_tcase(s, tc_user_core);
 

@@ -64,7 +64,7 @@ int joinChannel(char* channelName)
         return RPL_TOPIC;
     }
 
-    if(userJoinChannel(currentUser.username, channelName) == DB_RETURN_DOESNOTEXIST)
+    if(userJoinChannel(currentUser.username, channelName, NULL) == DB_RETURN_DOESNOTEXIST)
     {
         return ERR_BADCHANMASK;
     }

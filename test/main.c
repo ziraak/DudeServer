@@ -7,7 +7,7 @@ int main()
     numberOfFailedTests += user_tests();
     numberOfFailedTests += channel_tests();
 
-    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
+//    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
 
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
