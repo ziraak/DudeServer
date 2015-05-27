@@ -6,6 +6,7 @@
 
 int handleTopicCommand(commandStruct cmd)
 {
+    //TODO: operator rechten checken (channel +t flag)
     if(cmd.parameterCount < 1)
     {
         return ERR_NEEDMOREPARAMS;
