@@ -155,6 +155,10 @@ int parseMessage(char *message)
     {
         result = handleUpdatePasswordCommand(cmd);
     }
+    else if(commandEquals(cmd, "TOPIC"))
+    {
+        result = handleTopicCommand(cmd);
+    }
     else if (commandEquals(cmd, "POLL"))
     {
         result = handlePollCommand(cmd);

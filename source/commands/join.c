@@ -76,16 +76,13 @@ int joinChannel(char* channelName)
 
 int userHasChannel(char* channelName)
 {
-    char** channels = currentUser.channels;
-
-    while(*channels != NULL)
+    int j;
+    for(j = 0; currentUser.channels[j] != NULL; j++)
     {
-        if(strcmp(channelName, *channels) == 0)
+        if(strcmp(channelName, currentUser.channels[j]) == 0)
         {
             return BOOL_TRUE;
         }
-
-        channels++;
     }
 
     return BOOL_FALSE;

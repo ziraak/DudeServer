@@ -219,6 +219,7 @@ int checkChannel(char *channelName)
         }
         listIndex++;
     }
+
     return DB_RETURN_DOESNOTEXIST;
 }
 

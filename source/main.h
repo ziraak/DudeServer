@@ -17,8 +17,9 @@
 #include "commands/delete_user.h"
 #include "commands/update_password.h"
 #include "commands/update_nickname.h"
-#include "database/database.h"
 #include "commands/part.h"
+#include "commands/topic.h"
+#include "database/database.h"
 #include "protocolDefines.h"
 #include "time.h"
 
