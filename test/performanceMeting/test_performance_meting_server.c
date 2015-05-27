@@ -5,6 +5,8 @@ sslConnection connection;
 
 START_TEST(test_connecting_multiple_clients)
     {
+        getServerSocket(SERVER_PORT, SERVER_IP);
+
         SSL_write(connection.ssl_handle, "Test\0", 4);
         char messageFromServer[255];
         bzero(messageFromServer, 255);
