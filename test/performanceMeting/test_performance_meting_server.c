@@ -60,8 +60,8 @@ performanceInfo testServerPerformanceMeting(int amountOfCommandLoops)
     srunner_run_all(sRunner, CK_SILENT);
     srunner_free(sRunner);
 
-    printf("AMOUNT_OF_CLIENTS_RECEIVED_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA);
-    printf("AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA);
+    //printf("AMOUNT_OF_CLIENTS_RECEIVED_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_DATA);
+    //printf("AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA: %i\n", performanceInfoServer.AMOUNT_OF_CLIENTS_RECEIVED_CORRECT_DATA);
 
     performanceInfoServer.durationTest = getDurationTest(start_time);
     return performanceInfoServer;

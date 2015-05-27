@@ -4,8 +4,8 @@ int main()
 {
     int numberOfFailedTests = 0;
     //numberOfFailedTests += unitTests();
-    //performanceMetingCommandsTests();
-    performanceMetingServer();
+    performanceMetingCommandsTests();
+    //performanceMetingServer();
 
 
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
@@ -26,8 +26,8 @@ int performanceMetingCommandsTests()
     int durationTestsInMsec = 0;
     int i;
     int averageDurationTestsInMsec = 0;
-    int amountOfCommandLoops = 10;
-    int numberOfCommandTestSuiteRun = 10;
+    int amountOfCommandLoops = 100;
+    int numberOfCommandTestSuiteRun = 20;
     for (i = 0; i < numberOfCommandTestSuiteRun; i++)
     {
         durationTestsInMsec += testCommandsPerformanceMeting(amountOfCommandLoops);
