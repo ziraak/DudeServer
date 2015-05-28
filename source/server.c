@@ -68,15 +68,15 @@ void processConnectedClient()
                 authenticated = authenticateClient(cmd);
                 if(authenticated == BOOL_TRUE)
                 {
-                    commandStruct pollCmd = commandStruct_initialize("POLL 1431349400");
-                    handlePollCommand(pollCmd); // TODO: socket reference weghalen //1431349399
+                    commandStruct pollCmd = commandStruct_initialize("POLL 0");
+                    handlePollCommand(pollCmd);
                     commandStruct_free(&pollCmd);
                 }
             }
         }
         else
         {
-            sslSendInteger(parseMessage(buffer)); // TODO: socket reference weghalen
+            sslSendInteger(parseMessage(buffer));
         }
         bzero(buffer, sizeof(buffer));
     }
