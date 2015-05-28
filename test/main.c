@@ -3,12 +3,13 @@
 int main()
 {
     int numberOfFailedTests = 0;
-    //numberOfFailedTests += unitTests();
-    //performanceMetingCommandsTests();
-    //performanceMetingServer();
+    numberOfFailedTests += unitTests();
+    performanceMetingCommandsTests();
+    performanceMetingServer();
+
     numberOfFailedTests += knownBugsSuiteCommand();
 
-    //numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
+    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
 
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }

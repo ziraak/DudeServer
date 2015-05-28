@@ -1,29 +1,168 @@
-//
-// Created by osboxes on 27/05/15.
-//
-
+/*
+ * Command: MODE
+ * MODE <channel> {[+|-]}|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]
+ *
+ * o: verander channel operator rechter (geef/haal weg)
+ * p: privé channel flag
+ * s: geheim channel flag (invisibility)
+ * i: invite-only channel flag
+ * t: onderwerp kan alleen door channel operator veranderd worden
+ * n: geen messages aan channel van clients buiten de channel
+ * m: gemodereerde channel
+ * l: set een limiet op het aan users in de channel
+ * b: set een ban mask om users buiten te houden
+ * v: verander of users in een moderated channel mogen praten (geef/ haal weg)
+ * k: set een channel key (password)
+ */
 #include "mode.h"
 
-int hasFlag(char flag, char* flags)
+modeStruct getFlags(commandStruct cmd)
+{
+    char* flags = cmd.parameters[1], flag, *parameter = NULL;
+    int set = (flags[0] == '+') ? BOOL_TRUE : BOOL_FALSE,
+        getParameter, getParameterCount = 1,
+        error = BOOL_FALSE;
+
+    flagStruct *fs = malloc(sizeof(flagStruct));
+
+    int i;
+    for(i = 0; (flag = flags[i + 1]) != '\0'; i++)
+    {
+        getParameter = (flag == 'o' || flag == 'b' || flag == 'l') ? BOOL_TRUE : BOOL_FALSE;
+
+        if(getParameter == BOOL_TRUE)
+        {
+            getParameterCount++;
+
+            if(getParameterCount >= cmd.parameterCount)
+            {
+                error = ERR_NEEDMOREPARAMS;
+                break;
+            }
+
+            parameter = cmd.parameters[getParameterCount];
+        }
+        else if(flag == 'k')
+        {
+            if(cmd.trailing == NULL)
+            {
+                error = ERR_NEEDMOREPARAMS;
+                break;
+            }
+
+            parameter = cmd.trailing;
+        }
+        else
+        {
+            parameter = NULL;
+        }
+
+        flagStruct f = {
+                .parameter = parameter,
+                .set = set,
+                .flag = flag
+        };
+
+        fs[i] = f;
+    }
+
+    modeStruct ms = {
+            .channelName = cmd.parameters[0],
+            .error = error,
+            .flagCount = i,
+            .flags = fs
+    };
+
+    return ms;
+}
+
+void handleSFlag(char *channelName, flagStruct flag)
+{
+    if(flag.flag == 's')
+    {
+        setChannelVisibility(channelName, flag.set);
+    }
+}
+
+void handleOFlag(char *channelName, flagStruct flag)
+{
+    if(flag.flag != 'o')
+    {
+        return;
+    }
+
+    setChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+}
+
+void handleFlags(modeStruct ms)
 {
     int i;
-    for(i = 0; flags[i] != '\0'; i++)
+    for(i = 0; i < ms.flagCount; i++)
     {
-        if(flags[i] == flag)
+        switch(ms.flags[i].flag)
         {
-            return BOOL_TRUE;
+            case 's':
+                handleSFlag(ms.channelName, ms.flags[i]);
+                break;
+
+            case 'o':
+                handleOFlag(ms.channelName, ms.flags[i]);
+                break;
+
+            default:
+                break;
+        }
+    }
+}
+
+int checkFlags(modeStruct ms)
+{
+    channelInfo ci;
+    if(getChannel(ms.channelName, &ci) != DB_RETURN_SUCCES)
+    {
+        return ERR_NOSUCHCHANNEL;
+    }
+
+    int i, j, error;
+    for(i = 0; i < ms.flagCount; i++)
+    {
+        switch(ms.flags[i].flag)
+        {
+            case 'o':
+                error = BOOL_TRUE;
+                for(j = 0; ci.users[j] != NULL; j++)
+                {
+                    if(strcmp(ci.users[j], ms.flags[i].parameter) == 0)
+                    {
+                        error = BOOL_FALSE;
+                        break;
+                    }
+                }
+
+                if(error == BOOL_TRUE)
+                {
+                    return ERR_NOTONCHANNEL;
+                }
+                break;
+
+            case 'p':
+            case 's':
+            case 'i':
+            case 't':
+            case 'n':
+            case 'm':
+            case 'l':
+            case 'b':
+            case 'v':
+            case 'k':
+                break;
+
+            default:
+                return ERR_UMODEUNKNOWNFLAG;
         }
     }
 
-    return BOOL_FALSE;
-}
-
-void handleSFlag(char *channelName, char *flags)
-{
-    if(hasFlag('s', flags) == BOOL_TRUE)
-    {
-        setChannelVisibility(channelName, (flags[0] == '+') ? BOOL_TRUE : BOOL_FALSE);
-    }
+    return RPL_SUCCESS;
 }
 
 int handleModeCommand(commandStruct cmd)
@@ -33,9 +172,9 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    char* channelName = cmd.parameters[0], *flags = cmd.parameters[1];
+    char* channelName = cmd.parameters[0];
 
-    if(strlen(flags) < 2 || (flags[0] != '-' && flags[0] != '+'))
+    if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
         return ERR_NEEDMOREPARAMS;
     }
@@ -56,7 +195,35 @@ int handleModeCommand(commandStruct cmd)
         return ERR_CHANOPPRIVSNEEDED;
     }
 
-    handleSFlag(channelName, flags);
+    int result;
+    modeStruct ms = getFlags(cmd);
+    if(ms.error != BOOL_FALSE)
+    {
+        result = ms.error;
+    }
+    else
+    {
+        result = checkFlags(ms);
 
-    return RPL_SUCCESS;
+        if(result == RPL_SUCCESS)
+        {
+            handleFlags(ms);
+        }
+    }
+
+    modeStruct_free(&ms);
+
+    return result;
+}
+
+void modeStruct_free(modeStruct *ms)
+{
+    int i;
+    for(i = 0; i < ms->flagCount; i++)
+    {
+        free(ms->flags[i].parameter);
+    }
+
+    free(ms->flags);
+    free(ms->channelName);
 }
