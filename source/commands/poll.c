@@ -171,7 +171,6 @@ int handlePollCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    //TODO: atoi afhandeling
     pollStruct ps = pollStruct_initialize(currentUser.channels, atoi(cmd.parameters[0]));
 
     if(getPollMessages(&ps) == BOOL_TRUE)
