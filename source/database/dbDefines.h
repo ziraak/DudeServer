@@ -1,7 +1,7 @@
 #ifndef DUDESERVER_DBDEFINES_H
 #define DUDESERVER_DBDEFINES_H
 
-#define DB_MAXMESSAGES 100
+#define DB_MAXMESSAGES 101
 #define DB_DOCNAMEMEMORYSPACE 500
 #define DB_XML_FORMAT 1
 //1 is indent, 0 is no indent
