@@ -1,74 +1,7 @@
 #include "channel.h"
 
-int writeChannel(channelInfo channel)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    channelUser *users = getUsersFromChannel(channel.name);
-    xmlTextWriterPtr file = openChannelFile(channel.name);
-    xmlTextWriterStartElement(file, channelTagName);
-    xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
-    if (channel.password != NULL)
-    {
-        xmlTextWriterWriteElement(file, BAD_CAST "password", BAD_CAST channel.password);
-    }
-    if (channel.topic != NULL)
-    {
-        xmlTextWriterWriteElement(file, BAD_CAST "topic", BAD_CAST channel.topic);
-    }
-    writeUsersToChannel(file, users);
-    writeMessagesToChannel(file, channel.messages);
-    xmlTextWriterEndElement(file);
-    int suc = xmlTextWriterEndDocument(file);
-    xmlFreeTextWriter(file);
-    return suc;
-}
-
-xmlTextWriterPtr openChannelFile(char *channelName)
-//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-{
-    char filename[maxFilenameSize];
-    sprintf(filename, FILEFORMATSTRING, channelName);
-    return xmlNewTextWriterFilename(filename, compression);
-}
-
-void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users)
-//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-{
-    xmlTextWriterStartElement(xmlptr, usersTagName);
-    int index = 0;
-    while (users[index].username != NULL)
-    {
-        xmlTextWriterStartElement(xmlptr,userTagName);
-        xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST users[index].role);
-        xmlTextWriterWriteString(xmlptr,BAD_CAST users[index].username);
-        xmlTextWriterEndElement(xmlptr);
-        index++;
-    }
-    xmlTextWriterEndElement(xmlptr);
-}
-
-void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    xmlTextWriterStartElement(xmlptr, messagesTagName);
-    int i = 0;
-    while (messages[i].writer != NULL)
-    {
-        writeMessageToXml(xmlptr, messages[i]);
-        i++;
-    }
-    xmlTextWriterEndElement(xmlptr);
-}
-
-void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    xmlTextWriterStartElement(xmlptr, messageTagName);
-    xmlTextWriterWriteAttribute(xmlptr, userTagName, (xmlChar const *) message.writer);
-    xmlTextWriterWriteElement(xmlptr, timestampTagName, (xmlChar const *) message.timestamp);
-    xmlTextWriterWriteElement(xmlptr, bodyTagName, (xmlChar const *) message.body);
-    xmlTextWriterEndElement(xmlptr);
-}
-
 int countMessages(messageInfo *message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
+{
     int total = 0;
     while (message[total].writer != NULL)
     {
@@ -77,8 +10,66 @@ int countMessages(messageInfo *message)
     return total;
 }
 
+void writeMessage(xmlNodePtr messageNode,messageInfo message)
+{
+    xmlNodePtr newMsgPtr = xmlNewChild(messageNode,NULL,BAD_CAST "message",NULL);
+    xmlNewProp(newMsgPtr,BAD_CAST  "writer",BAD_CAST message.writer);
+    xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
+    xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
+//    xmlFreeNode(newMsgPtr);
+}
+
+
+
+int messageWriter(char* channelName, messageInfo messages[])
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    xmlNodePtr root_node;
+    char *docname;
+    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return DB_RETURN_FILENOTFOUND;
+    }
+
+    if ((root_node = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return DB_RETURN_CORRUPTFILE;
+    }
+    currentNodePtr = root_node;
+    root_node = root_node->parent;
+
+    while (currentNodePtr != NULL)
+    {
+        if (!xmlStrcmp(currentNodePtr->name,BAD_CAST "messages"))
+        {
+            xmlUnlinkNode(currentNodePtr);
+            break;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+
+    currentNodePtr = xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
+    int i = 0;
+    while(messages[i].writer!=NULL)
+    {
+        writeMessage(currentNodePtr,messages[i]);
+        i++;
+    }
+
+    xmlSaveFormatFileEnc(docname, docPtr,DB_XML_ENCODING, DB_XML_FORMAT);
+
+    xmlFreeDoc(docPtr);
+    free(docname);
+    return DB_RETURN_SUCCES;
+}
+
 int writeMessageToChannel(char *channelName, messageInfo message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
+{
     channelInfo ci;
     if (getChannel(channelName, &ci) < 0)
     {
@@ -93,8 +84,12 @@ int writeMessageToChannel(char *channelName, messageInfo message)
     {
         ci.messages = &ci.messages[1];
     }
-    return writeChannel(ci);
+    messageWriter(channelName,ci.messages);
+    return DB_RETURN_SUCCES;
 }
+
+
+
 
 
 int getChannel(char *channelName, channelInfo *channel)
@@ -462,8 +457,6 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
     root_node = xmlNewNode(NULL, BAD_CAST "channel");
     xmlDocSetRootElement(docPtr, root_node);
     xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST channelName);
-    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
-    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
     if (topic != NULL)
     {
         xmlNewChild(root_node, NULL, BAD_CAST "topic", BAD_CAST topic);
@@ -472,6 +465,9 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
     {
         xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
     }
+
+    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
