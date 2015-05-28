@@ -88,11 +88,16 @@ void processConnectedClient()
 
 void freeCurrentUser()
 {
-    free(currentUser.channels);
     free(currentUser.username);
     free(currentUser.loginToken);
     free(currentUser.nickname);
     free(currentUser.password);
+
+    int i;
+    for(i = 0; currentUser.channels[i] != NULL; i++)
+    {
+        free(currentUser.channels[i]);
+    }
 }
 
 void processConnectedClientWithFork()
