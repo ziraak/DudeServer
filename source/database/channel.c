@@ -16,12 +16,11 @@ void writeMessage(xmlNodePtr messageNode,messageInfo message)
     xmlNewProp(newMsgPtr,BAD_CAST  "writer",BAD_CAST message.writer);
     xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
     xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
-//    xmlFreeNode(newMsgPtr);
 }
 
 
 
-int messageWriter(char* channelName, messageInfo messages[])
+int writeListOfMessagesToChannel(char *channelName, messageInfo messages[])
 {
     xmlDocPtr docPtr;
     xmlNodePtr currentNodePtr;
@@ -84,7 +83,7 @@ int writeMessageToChannel(char *channelName, messageInfo message)
     {
         ci.messages = &ci.messages[1];
     }
-    messageWriter(channelName,ci.messages);
+    writeListOfMessagesToChannel(channelName, ci.messages);
     return DB_RETURN_SUCCES;
 }
 
