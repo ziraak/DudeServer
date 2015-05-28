@@ -106,9 +106,6 @@ int sendPollMessages(pollStruct *ps)
             sslSend(ps->channelMessages[i].messages[j]);
         }
     }
-
-    pollStruct_free(ps);
-
     return BOOL_TRUE;
 }
 
@@ -175,12 +172,13 @@ int handlePollCommand(commandStruct cmd)
     }
 
     //TODO: atoi afhandeling
-    pollStruct gms = pollStruct_initialize(currentUser.channels, atoi(cmd.parameters[0]));
+    pollStruct ps = pollStruct_initialize(currentUser.channels, atoi(cmd.parameters[0]));
 
-    if(getPollMessages(&gms) == BOOL_TRUE)
+    if(getPollMessages(&ps) == BOOL_TRUE)
     {
-        sendPollMessages(&gms);
+        sendPollMessages(&ps);
     }
 
+    pollStruct_free(&ps);
     return RPL_SUCCESS;
 }
