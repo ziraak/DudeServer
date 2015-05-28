@@ -70,16 +70,15 @@ int writeMessageToChannel(char *channelName, messageInfo message)
 {
     messageInfo *ci;
     ci = getMessages(channelName);
-
     int messageCount = countMessages(ci);
-    ci = realloc(ci, (messageCount + 2) * sizeof(messageInfo));
+    printf("count: %i\n",messageCount);
     ci[messageCount] = message;
-    memset(&ci[messageCount + 1], 0, sizeof(messageInfo));
     if (messageCount >= maxMessages)
     {
         ci = &ci[1];
     }
     writeListOfMessagesToChannel(channelName, ci);
+    free(ci);
     return DB_RETURN_SUCCES;
 }
 
@@ -395,7 +394,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
     char *documentName = malloc(DB_DOCNAMEMEMORYSPACE);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
-    messageInfo *messages = malloc(DB_MAXMESSAGES);
+    messageInfo *messages = malloc(DB_MAXMESSAGES * sizeof(messageInfo));
 
     sprintf(documentName, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 

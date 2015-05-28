@@ -19,6 +19,9 @@ int main(int argc, char **argv)
     info.body = "doei";
     info.timestamp = "23186";
     writeMessageToChannel("batcave",info);
+//    writeMessageToChannel("batcave",info);
+//    writeMessageToChannel("batcave",info);
+//    writeMessageToChannel("batcave",info);
 
     return EXIT_SUCCESS;
 }

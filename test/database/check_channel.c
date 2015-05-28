@@ -115,17 +115,11 @@ END_TEST
 START_TEST(test_WriteMsg)
     {
         messageInfo message;
-        message.body = "gast";
+        message.body = "ik weaat niet wat ik moet schrijven maar nu hebben we tenminste tekst";
         message.writer = "fatih";
         message.timestamp = "5000000";
 
-        writeMessageToChannel("batcave", message);
-        writeMessageToChannel("batcave", message);
-        writeMessageToChannel("batcave", message);
-        writeMessageToChannel("batcave", message);
-        writeMessageToChannel("batcave", message);
-
-
+        writeMessageToChannel("fatihs head", message);
     }
 END_TEST
 
@@ -137,22 +131,22 @@ Suite *channel_suite(void)
     s = suite_create("channel");
     tc_channel_core = tcase_create("core");
 
-    tcase_add_loop_test(tc_channel_core, test_getMessages,0,100);
-    tcase_add_test(tc_channel_core, test_getMessagesOnTime);
-    tcase_add_loop_test(tc_channel_core,test_getMessagesOnTime,0,100);
-
-    tcase_add_loop_test(tc_channel_core,test_getChannel,0,100);
-    tcase_add_test(tc_channel_core,test_getChannel_noPass);
-
-    tcase_add_loop_test(tc_channel_core,test_authenticatePassword,0,100);
-
-    tcase_add_test(tc_channel_core,test_addToList);
-
-    tcase_add_test(tc_channel_core,test_getUserlistFromChannel);
-    tcase_add_loop_test(tc_channel_core,test_getUserRole,0,100);
-
-    tcase_add_test(tc_channel_core,test_channelTopics);
-    tcase_add_loop_test(tc_channel_core,test_WriteMsg,0,1);
+//    tcase_add_loop_test(tc_channel_core, test_getMessages,0,100);
+//    tcase_add_test(tc_channel_core, test_getMessagesOnTime);
+//    tcase_add_loop_test(tc_channel_core,test_getMessagesOnTime,0,100);
+//
+//    tcase_add_loop_test(tc_channel_core,test_getChannel,0,100);
+//    tcase_add_test(tc_channel_core,test_getChannel_noPass);
+//
+//    tcase_add_loop_test(tc_channel_core,test_authenticatePassword,0,100);
+//
+//    tcase_add_test(tc_channel_core,test_addToList);
+//
+//    tcase_add_test(tc_channel_core,test_getUserlistFromChannel);
+//    tcase_add_loop_test(tc_channel_core,test_getUserRole,0,100);
+//
+//    tcase_add_test(tc_channel_core,test_channelTopics);
+    tcase_add_loop_test(tc_channel_core,test_WriteMsg,0,105);
 
     suite_add_tcase(s, tc_channel_core);
     return s;
