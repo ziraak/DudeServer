@@ -47,6 +47,7 @@ xmlDocPtr openDoc(char *docname)
         fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
     }
     return docPtr;
+
 }
 
 xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)

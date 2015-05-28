@@ -13,7 +13,7 @@ int countMessages(messageInfo *message)
 void writeMessage(xmlNodePtr messageNode,messageInfo message)
 {
     xmlNodePtr newMsgPtr = xmlNewChild(messageNode,NULL,BAD_CAST "message",NULL);
-    xmlNewProp(newMsgPtr,BAD_CAST  "writer",BAD_CAST message.writer);
+    xmlNewProp(newMsgPtr,BAD_CAST  "user",BAD_CAST message.writer);
     xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
     xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
 }
@@ -61,7 +61,6 @@ int writeListOfMessagesToChannel(char *channelName, messageInfo messages[])
     }
 
     xmlSaveFormatFileEnc(docname, docPtr,DB_XML_ENCODING, DB_XML_FORMAT);
-
     xmlFreeDoc(docPtr);
     free(docname);
     return DB_RETURN_SUCCES;
@@ -69,21 +68,18 @@ int writeListOfMessagesToChannel(char *channelName, messageInfo messages[])
 
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
-    channelInfo ci;
-    if (getChannel(channelName, &ci) < 0)
-    {
-        return EXIT_FAILURE;
-    }
+    messageInfo *ci;
+    ci = getMessages(channelName);
 
-    int messageCount = countMessages(ci.messages);
-    ci.messages = realloc(ci.messages, (messageCount + 2) * sizeof(messageInfo));
-    ci.messages[messageCount] = message;
-    memset(&ci.messages[messageCount + 1], 0, sizeof(messageInfo));
+    int messageCount = countMessages(ci);
+    ci = realloc(ci, (messageCount + 2) * sizeof(messageInfo));
+    ci[messageCount] = message;
+    memset(&ci[messageCount + 1], 0, sizeof(messageInfo));
     if (messageCount >= maxMessages)
     {
-        ci.messages = &ci.messages[1];
+        ci = &ci[1];
     }
-    writeListOfMessagesToChannel(channelName, ci.messages);
+    writeListOfMessagesToChannel(channelName, ci);
     return DB_RETURN_SUCCES;
 }
 
@@ -396,17 +392,19 @@ messageInfo *getMessages(char *channelName)
 
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    char *documentName = malloc(DB_DOCNAMEMEMORYSPACE);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
     messageInfo *messages = malloc(DB_MAXMESSAGES);
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+    sprintf(documentName, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
-    if ((docPtr = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(documentName)) == NULL)
     {
         return messages;
     }
+
+    free(documentName);
 
     if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
@@ -435,14 +433,12 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
         }
         nodePtr = nodePtr->next;
     }
+    xmlFreeDoc(docPtr);
 
     messages[index].writer = NULL;
     messages[index].body = NULL;
     messages[index].timestamp = NULL;
 
-    xmlFreeDoc(docPtr);
-
-    free(docname);
     return messages;
 }
 

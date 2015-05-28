@@ -12,6 +12,7 @@
 #include <libxml/xmlreader.h>
 #include <libxml/xmlmemory.h>
 #include <stdio.h>
+#include <stdlib.h>
 
 
 static char *const FILEFORMATSTRING = "xml/channels/%s.xml";
