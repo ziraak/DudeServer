@@ -84,6 +84,5 @@ void setChannelVisibility(char* channelname,int visible);
 
 void setChannelUserRole(char* channelname, char* username, char* newRole);
 
-int writeListOfMessagesToChannel(char *channelName, messageInfo messages[]);
 
 #endif 

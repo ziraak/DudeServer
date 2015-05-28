@@ -117,9 +117,9 @@ START_TEST(test_WriteMsg)
         messageInfo message;
         message.body = "ik weaat niet wat ik moet schrijven maar nu hebben we tenminste tekst";
         message.writer = "fatih";
-        message.timestamp = "5000000";
+        message.timestamp = "50000";
 
-        writeMessageToChannel("fatihs head", message);
+        writeMessageToChannel("eigendunk", message);
     }
 END_TEST
 

@@ -10,17 +10,7 @@ int countMessages(messageInfo *message)
     return total;
 }
 
-void writeMessage(xmlNodePtr messageNode,messageInfo message)
-{
-    xmlNodePtr newMsgPtr = xmlNewChild(messageNode,NULL,BAD_CAST "message",NULL);
-    xmlNewProp(newMsgPtr,BAD_CAST  "user",BAD_CAST message.writer);
-    xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
-    xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
-}
-
-
-
-int writeListOfMessagesToChannel(char *channelName, messageInfo messages[])
+void writeMessage(messageInfo message, char* channelName)
 {
     xmlDocPtr docPtr;
     xmlNodePtr currentNodePtr;
@@ -32,53 +22,88 @@ int writeListOfMessagesToChannel(char *channelName, messageInfo messages[])
 
     if ((docPtr = openDoc(docname)) == NULL)
     {
-        return DB_RETURN_FILENOTFOUND;
+        return;
     }
 
-    if ((root_node = checkDoc(docPtr, "channel")) == NULL)
+    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
-        return DB_RETURN_CORRUPTFILE;
+        return;
     }
-    currentNodePtr = root_node;
-    root_node = root_node->parent;
 
     while (currentNodePtr != NULL)
     {
         if (!xmlStrcmp(currentNodePtr->name,BAD_CAST "messages"))
         {
-            xmlUnlinkNode(currentNodePtr);
+            xmlNodePtr newMsgPtr = xmlNewChild(currentNodePtr,NULL,BAD_CAST "message",NULL);
+            xmlNewProp(newMsgPtr,BAD_CAST  "user",BAD_CAST message.writer);
+            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
+            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
             break;
         }
         currentNodePtr = currentNodePtr->next;
     }
 
-    currentNodePtr = xmlNewChild(root_node, NULL, BAD_CAST "messages",NULL);
-    int i = 0;
-    while(messages[i].writer!=NULL)
-    {
-        writeMessage(currentNodePtr,messages[i]);
-        i++;
-    }
-
     xmlSaveFormatFileEnc(docname, docPtr,DB_XML_ENCODING, DB_XML_FORMAT);
     xmlFreeDoc(docPtr);
     free(docname);
-    return DB_RETURN_SUCCES;
 }
+void deleteMessage(char* channelname)
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    char *docname;
+    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelname);
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return;
+    }
+
+    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return;
+    }
+
+    while (currentNodePtr != NULL)
+    {
+        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "messages")))
+        {
+            currentNodePtr = currentNodePtr->children;
+            while (currentNodePtr != NULL)
+            {
+                if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "message")))
+                {
+                    xmlUnlinkNode(currentNodePtr);
+                    break;
+                }
+                currentNodePtr = currentNodePtr->next;
+            }
+            break;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
+    xmlFreeDoc(docPtr);
+    free(docname);
+}
+
+
 
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
     messageInfo *ci;
     ci = getMessages(channelName);
     int messageCount = countMessages(ci);
+    free(ci);
     printf("count: %i\n",messageCount);
-    ci[messageCount] = message;
     if (messageCount >= maxMessages)
     {
-        ci = &ci[1];
+        deleteMessage(channelName);
     }
-    writeListOfMessagesToChannel(channelName, ci);
-    free(ci);
+    writeMessage(message,channelName);
+
     return DB_RETURN_SUCCES;
 }
 
