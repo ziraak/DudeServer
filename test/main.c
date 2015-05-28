@@ -5,7 +5,8 @@ int main()
     int numberOfFailedTests = 0;
     //numberOfFailedTests += unitTests();
     //performanceMetingCommandsTests();
-    performanceMetingServer();
+    //performanceMetingServer();
+    numberOfFailedTests += knownBugsSuiteCommand();
 
     //numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
 
