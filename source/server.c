@@ -99,7 +99,11 @@ int parseMessage(char *message)
 {
     commandStruct cmd = commandStruct_initialize(message);
     int result = ERR_UNKNOWNCOMMAND;
-    if (commandEquals(cmd, "JOIN"))
+    if (commandEquals(cmd, "LOGIM"))
+    {
+        result = ERR_ALREADY_LOGGED_IN;
+    }
+    else if (commandEquals(cmd, "JOIN"))
     {
         result = handleJoinCommand(cmd);
     }
