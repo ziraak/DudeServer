@@ -1,5 +1,7 @@
 #include "part.h"
 
+void removeChannelFromCurrentUserChannels(const char *channelName);
+
 int handlePartCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
@@ -13,6 +15,7 @@ int handlePartCommand(commandStruct cmd)
     {
         deleteUserFromChannel(channelName, currentUser.username);
         deleteChannelFromUser(currentUser.username, channelName);
+        removeChannelFromCurrentUserChannels(channelName);
 
         if (checkIfChannelEmpty(channelName))
         {
@@ -21,4 +24,16 @@ int handlePartCommand(commandStruct cmd)
         return RPL_SUCCESS;
     }
     return ERR_NOSUCHCHANNEL;
+}
+
+void removeChannelFromCurrentUserChannels(const char *channelName)
+{
+    int i;
+    for(i = 0; currentUser.channels[i] != NULL; i++)
+    {
+        if (strcmp(channelName, currentUser.channels[i]) == 0)
+        {
+            strcpy(currentUser.channels[i], "");
+        }
+    }
 }
