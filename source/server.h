@@ -5,6 +5,8 @@
 
 userInfo currentUser;
 
+void freeCurrentUser();
+
 void runServer(int USE_FORK, int port);
 
 void exitIfError(ssize_t variableToCheckForError, char *errorMessage);

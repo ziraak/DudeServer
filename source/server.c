@@ -49,7 +49,7 @@ int authenticateClient(commandStruct cmd)
 void processConnectedClient()
 {
     printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
-    sslSendInteger(RPL_CONNECTED); // acknownledge connection
+    sslSendInteger(RPL_CONNECTED);
     int bufferLength = 256, result;
     char buffer[bufferLength];
     bzero(buffer, (size_t)bufferLength);
@@ -81,9 +81,20 @@ void processConnectedClient()
         bzero(buffer, sizeof(buffer));
     }
     printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
-    sslClose();
     authenticated = BOOL_FALSE;
+    freeCurrentUser();
+    sslClose();
 }
+
+void freeCurrentUser()
+{
+    free(currentUser.channels);
+    free(currentUser.username);
+    free(currentUser.loginToken);
+    free(currentUser.nickname);
+    free(currentUser.password);
+}
+
 void processConnectedClientWithFork()
 {
     int childpid = fork();
