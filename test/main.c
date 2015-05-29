@@ -3,10 +3,10 @@
 int main()
 {
     int numberOfFailedTests = 0;
-    //numberOfFailedTests += unitTests();
+    numberOfFailedTests += unitTests();
     //performanceMetingCommandsTests();
     //performanceMetingServer();
-    numberOfFailedTests += knownBugsSuiteCommand();
+//    numberOfFailedTests += knownBugsSuiteCommand();
 
     //numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
 
@@ -16,10 +16,10 @@ int main()
 int unitTests()
 {
     int numberOfFailedTests = 0;
-    numberOfFailedTests += utils_tests();
-    numberOfFailedTests += user_tests();
+//    numberOfFailedTests += utils_tests();
+//    numberOfFailedTests += user_tests();
     numberOfFailedTests += channel_tests();
-    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
+//    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
     return numberOfFailedTests;
 }
 

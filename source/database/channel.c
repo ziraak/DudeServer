@@ -1,74 +1,7 @@
 #include "channel.h"
 
-int writeChannel(channelInfo channel)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    channelUser *users = getUsersFromChannel(channel.name);
-    xmlTextWriterPtr file = openChannelFile(channel.name);
-    xmlTextWriterStartElement(file, channelTagName);
-    xmlTextWriterWriteElement(file, nameTagName, (xmlChar const *) channel.name);
-    if (channel.password != NULL)
-    {
-        xmlTextWriterWriteElement(file, BAD_CAST "password", BAD_CAST channel.password);
-    }
-    if (channel.topic != NULL)
-    {
-        xmlTextWriterWriteElement(file, BAD_CAST "topic", BAD_CAST channel.topic);
-    }
-    writeUsersToChannel(file, users);
-    writeMessagesToChannel(file, channel.messages);
-    xmlTextWriterEndElement(file);
-    int suc = xmlTextWriterEndDocument(file);
-    xmlFreeTextWriter(file);
-    return suc;
-}
-
-xmlTextWriterPtr openChannelFile(char *channelName)
-//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-{
-    char filename[maxFilenameSize];
-    sprintf(filename, FILEFORMATSTRING, channelName);
-    return xmlNewTextWriterFilename(filename, compression);
-}
-
-void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users)
-//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-{
-    xmlTextWriterStartElement(xmlptr, usersTagName);
-    int index = 0;
-    while (users[index].username != NULL)
-    {
-        xmlTextWriterStartElement(xmlptr,userTagName);
-        xmlTextWriterWriteAttribute(xmlptr, BAD_CAST "role",BAD_CAST users[index].role);
-        xmlTextWriterWriteString(xmlptr,BAD_CAST users[index].username);
-        xmlTextWriterEndElement(xmlptr);
-        index++;
-    }
-    xmlTextWriterEndElement(xmlptr);
-}
-
-void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[])
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    xmlTextWriterStartElement(xmlptr, messagesTagName);
-    int i = 0;
-    while (messages[i].writer != NULL)
-    {
-        writeMessageToXml(xmlptr, messages[i]);
-        i++;
-    }
-    xmlTextWriterEndElement(xmlptr);
-}
-
-void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    xmlTextWriterStartElement(xmlptr, messageTagName);
-    xmlTextWriterWriteAttribute(xmlptr, userTagName, (xmlChar const *) message.writer);
-    xmlTextWriterWriteElement(xmlptr, timestampTagName, (xmlChar const *) message.timestamp);
-    xmlTextWriterWriteElement(xmlptr, bodyTagName, (xmlChar const *) message.body);
-    xmlTextWriterEndElement(xmlptr);
-}
-
 int countMessages(messageInfo *message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
+{
     int total = 0;
     while (message[total].writer != NULL)
     {
@@ -77,24 +10,105 @@ int countMessages(messageInfo *message)
     return total;
 }
 
-int writeMessageToChannel(char *channelName, messageInfo message)
-{//TODO: dit moet echt anders, bestanden volledig herschrijven is te lelijk en gevaarlijk
-    channelInfo ci;
-    if (getChannel(channelName, &ci) < 0)
+void writeMessage(messageInfo message, char* channelName)
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    xmlNodePtr root_node;
+    char *docname;
+    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+
+    if ((docPtr = openDoc(docname)) == NULL)
     {
-        return EXIT_FAILURE;
+        return;
     }
 
-    int messageCount = countMessages(ci.messages);
-    ci.messages = realloc(ci.messages, (messageCount + 2) * sizeof(messageInfo));
-    ci.messages[messageCount] = message;
-    memset(&ci.messages[messageCount + 1], 0, sizeof(messageInfo));
+    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return;
+    }
+
+    while (currentNodePtr != NULL)
+    {
+        if (!xmlStrcmp(currentNodePtr->name,BAD_CAST "messages"))
+        {
+            xmlNodePtr newMsgPtr = xmlNewChild(currentNodePtr,NULL,BAD_CAST "message",NULL);
+            xmlNewProp(newMsgPtr,BAD_CAST  "user",BAD_CAST message.writer);
+            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
+            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
+            break;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+
+    xmlSaveFormatFileEnc(docname, docPtr,DB_XML_ENCODING, DB_XML_FORMAT);
+    xmlFreeDoc(docPtr);
+    free(docname);
+}
+void deleteMessage(char* channelname)
+{
+    xmlDocPtr docPtr;
+    xmlNodePtr currentNodePtr;
+    char *docname;
+    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+
+    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelname);
+
+    if ((docPtr = openDoc(docname)) == NULL)
+    {
+        return;
+    }
+
+    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
+    {
+        return;
+    }
+
+    while (currentNodePtr != NULL)
+    {
+        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "messages")))
+        {
+            currentNodePtr = currentNodePtr->children;
+            while (currentNodePtr != NULL)
+            {
+                if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "message")))
+                {
+                    xmlUnlinkNode(currentNodePtr);
+                    break;
+                }
+                currentNodePtr = currentNodePtr->next;
+            }
+            break;
+        }
+        currentNodePtr = currentNodePtr->next;
+    }
+    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
+    xmlFreeDoc(docPtr);
+    free(docname);
+}
+
+
+
+int writeMessageToChannel(char *channelName, messageInfo message)
+{
+    messageInfo *ci;
+    ci = getMessages(channelName);
+    int messageCount = countMessages(ci);
+    free(ci);
+    printf("count: %i\n",messageCount);
     if (messageCount >= maxMessages)
     {
-        ci.messages = &ci.messages[1];
+        deleteMessage(channelName);
     }
-    return writeChannel(ci);
+    writeMessage(message,channelName);
+
+    return DB_RETURN_SUCCES;
 }
+
+
+
 
 
 int getChannel(char *channelName, channelInfo *channel)
@@ -402,17 +416,19 @@ messageInfo *getMessages(char *channelName)
 
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
+    char *documentName = malloc(DB_DOCNAMEMEMORYSPACE);
     xmlDocPtr docPtr;
     xmlNodePtr nodePtr;
-    messageInfo *messages = malloc(DB_MAXMESSAGES);
+    messageInfo *messages = malloc(DB_MAXMESSAGES * sizeof(messageInfo));
 
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
+    sprintf(documentName, "%s%s.xml", DB_CHANNELLOCATION, channelName);
 
-    if ((docPtr = openDoc(docname)) == NULL)
+    if ((docPtr = openDoc(documentName)) == NULL)
     {
         return messages;
     }
+
+    free(documentName);
 
     if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
     {
@@ -441,14 +457,12 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
         }
         nodePtr = nodePtr->next;
     }
+    xmlFreeDoc(docPtr);
 
     messages[index].writer = NULL;
     messages[index].body = NULL;
     messages[index].timestamp = NULL;
 
-    xmlFreeDoc(docPtr);
-
-    free(docname);
     return messages;
 }
 
@@ -462,8 +476,6 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
     root_node = xmlNewNode(NULL, BAD_CAST "channel");
     xmlDocSetRootElement(docPtr, root_node);
     xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST channelName);
-    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
-    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
     if (topic != NULL)
     {
         xmlNewChild(root_node, NULL, BAD_CAST "topic", BAD_CAST topic);
@@ -472,6 +484,9 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
     {
         xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
     }
+
+    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
+    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
 
     sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
     xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
