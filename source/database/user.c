@@ -8,6 +8,7 @@ char **getUserList()
     currentNodePtr = checkDoc(docPtr, "users");
     currentNodePtr = currentNodePtr->parent;
     list = getListOfValues(docPtr, currentNodePtr, "users", "user");
+    xmlFreeDoc(docPtr);
     return list;
 }
 int getUser(char *username, userInfo *result)
@@ -104,12 +105,12 @@ int checkUser(char *userName)
     {
         if (!strcmp(userList[listIndex], userName))
         {
-            //printf("user: %s found it was : %s \n",userName,userList[listIndex]);
+            free(userList);
             return BOOL_TRUE;
         }
         listIndex++;
     }
-    //printf("%s not found\n", userName);
+    free(userList);
     return BOOL_FALSE;
 }
 

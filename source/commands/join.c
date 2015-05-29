@@ -27,7 +27,6 @@ int handleJoinCommand(commandStruct cmd)
     {
         return resultGetChannel;
     }
-
     return joinChannel(channelName);
 }
 

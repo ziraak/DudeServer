@@ -289,7 +289,7 @@ int checkChannel(char *channelName)
         }
         listIndex++;
     }
-
+    free(channellist);
     return DB_RETURN_DOESNOTEXIST;
 }
 

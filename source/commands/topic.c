@@ -47,7 +47,6 @@ int handleTopicCommand(commandStruct cmd)
                 return RPL_TOPIC;
             }
         }
-
         return RPL_NOTOPIC;
     }
 }
