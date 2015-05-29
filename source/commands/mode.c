@@ -141,7 +141,7 @@ int checkFlags(modeStruct ms)
 
                 if(error == BOOL_TRUE)
                 {
-                    return ERR_NOTONCHANNEL;
+                    MODE_CHECK_FLAGS_RETURN(ERR_NOTONCHANNEL, ci);
                 }
                 break;
 
@@ -158,11 +158,11 @@ int checkFlags(modeStruct ms)
                 break;
 
             default:
-                return ERR_UMODEUNKNOWNFLAG;
+                MODE_CHECK_FLAGS_RETURN(ERR_UMODEUNKNOWNFLAG, ci);
         }
     }
 
-    return RPL_SUCCESS;
+    MODE_CHECK_FLAGS_RETURN(RPL_SUCCESS, ci);
 }
 
 int handleModeCommand(commandStruct cmd)
