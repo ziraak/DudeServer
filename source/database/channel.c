@@ -89,15 +89,12 @@ void deleteMessage(char* channelname)
     free(docname);
 }
 
-
-
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
     messageInfo *ci;
     ci = getMessages(channelName);
     int messageCount = countMessages(ci);
     free(ci);
-    printf("count: %i\n",messageCount);
     if (messageCount >= maxMessages)
     {
         deleteMessage(channelName);

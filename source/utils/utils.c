@@ -25,8 +25,8 @@ int substringCharacter(char *str, char **result)
     }
 
     size_t i = strcspn(str, " ");
-    *result = malloc(i);
-    bzero(*result, i);
+    *result = malloc(i + 1);
+    bzero(*result, i + 1);
     strncpy(*result, str, i);
 
     str += i;
