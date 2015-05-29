@@ -166,7 +166,7 @@ channelUser *getUsersFromChannel(char *channelName)
 
     int i = 0;
 
-    users= malloc(5000);//TODO:malloc needs to be done better(memleak)
+    users = malloc(5000);
     while(nodePtr != NULL)
     {
         if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
@@ -204,7 +204,9 @@ char* getUserRole(char* channelName, char* username)
     {
         if(!strcmp(users[index].username,username))
         {
-            return users[index].role;
+            char *role = users[index].role;
+            channelUser_free(users);
+            return role;
         }
         index++;
     }
