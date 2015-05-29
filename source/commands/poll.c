@@ -3,8 +3,8 @@
 char* copy(char* src)
 {
     size_t l = strlen(src);
-    char* result = malloc(l);
-    bzero(result, l);
+    char* result = malloc(l + 1);
+    bzero(result, l + 1);
     strncpy(result, src, l);
 
     return result;
@@ -65,10 +65,10 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
             free(message);
             resultCount++;
         }
-
-        messageInfo_free(&messageInfos[messageCount]);
         messageCount++;
     }
+
+    free(messageInfos);
 
     messages[resultCount] = NULL;
 
