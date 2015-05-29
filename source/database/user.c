@@ -54,13 +54,14 @@ int isUserInChannel(char* channelname, char* username)
     {
         if(!strcmp(users[index].username,username))
         {
+            channelUser_free(users);
             return BOOL_TRUE;
         }
         index++;
     }
 
     userInfo user;
-    getUser(username,&user);
+    getUser(username, &user);
 
     int channelIndex;
     channelIndex = 0;
@@ -68,12 +69,13 @@ int isUserInChannel(char* channelname, char* username)
     {
         if(!strcmp(user.channels[channelIndex],channelname))
         {
+            channelUser_free(users);
             return BOOL_TRUE;
         }
         channelIndex++;
     }
 
-
+    channelUser_free(users);
     return BOOL_FALSE;
 }
 
