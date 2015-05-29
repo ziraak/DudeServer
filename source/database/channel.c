@@ -89,15 +89,12 @@ void deleteMessage(char* channelname)
     free(docname);
 }
 
-
-
 int writeMessageToChannel(char *channelName, messageInfo message)
 {
     messageInfo *ci;
     ci = getMessages(channelName);
     int messageCount = countMessages(ci);
     free(ci);
-    printf("count: %i\n",messageCount);
     if (messageCount >= maxMessages)
     {
         deleteMessage(channelName);
@@ -608,6 +605,7 @@ void setChannelVisibility(char* channelname,int visible)
     xmlFreeDoc(docPtr);
 }
 
+// TODO: return waarde toevoegen? kan hier nu niet op controleren of het goed is gegaan in MODE (Sjuul)
 void setChannelUserRole(char* channelname, char* username, char* newRole)
 {
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);

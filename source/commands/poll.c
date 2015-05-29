@@ -2,10 +2,10 @@
 
 char* copy(char* src)
 {
-    size_t l = strlen(src) + 1;
-    char* result = malloc(l);
-    bzero(result, l);
-    strncpy(result, src, l - 1);
+    size_t l = strlen(src);
+    char* result = malloc(l + 1);
+    bzero(result, l + 1);
+    strncpy(result, src, l);
 
     return result;
 }
@@ -21,8 +21,12 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
             *body = copy(msg.body),
             *timestamp = copy(msg.timestamp);
 
-    *str = malloc(12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
+    *str = malloc(11 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
+
+    free(writer);
+    free(body);
+    free(timestamp);
 
     return BOOL_TRUE;
 }
@@ -56,15 +60,13 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
 
         if(convertChannelMessageToString(messageInfos[messageCount], channelName, &message) == BOOL_TRUE)
         {
-            messages[resultCount] = malloc(sizeof(char) * strlen(message));
-            strcpy(messages[resultCount], message);
-            free(message);
+            messages[resultCount] = message;
             resultCount++;
         }
-
-        messageInfo_free(&messageInfos[messageCount]);
         messageCount++;
     }
+
+    free(messageInfos);
 
     messages[resultCount] = NULL;
 
@@ -85,7 +87,7 @@ int getPollMessages(pollStruct *ps)
     }
 
     int i;
-    channelMessagesStruct *channelMessages = malloc(1);
+    channelMessagesStruct *channelMessages = malloc(sizeof(channelMessagesStruct));
     for(i = 0; i < ps->channelCount; i++)
     {
         channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
@@ -116,7 +118,7 @@ pollStruct pollStruct_initialize(char **channels, int timestamp)
     int i = 0;
     while(channels[i] != NULL)
     {
-        innerChannels[i] = malloc(strlen(channels[i]) + 1);
+        innerChannels[i] = malloc(strlen(channels[i]));
         sprintf(innerChannels[i], "%s", channels[i]);
         i++;
     }

@@ -40,13 +40,12 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
             {
                 if(strcmp(channel.password, optionalChannelKey) != 0)
                 {
-                    //TODO: optionalChannelKey support toevoegen
                     return ERR_BADCHANNELKEY;
                 }
             }
             else
             {
-                return ERR_NEEDMOREPARAMS;
+                return ERR_BADCHANNELKEY;
             }
         }
 

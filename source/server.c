@@ -73,6 +73,7 @@ void processConnectedClient()
                     commandStruct_free(&pollCmd);
                 }
             }
+            commandStruct_free(&cmd);
         }
         else
         {

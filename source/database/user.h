@@ -9,6 +9,8 @@ char **getUserList();
 
 int getUser(char *username, userInfo *result);
 
+int isUserInChannel(char* channelname, char* username);
+
 int userJoinChannel(char *username, char *channelName, char *userRole);
 
 void deleteChannelFromUser(char *username, char *channelName);

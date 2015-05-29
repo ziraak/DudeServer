@@ -40,7 +40,7 @@ commandStruct commandStruct_initialize(char *message)
     char *command = NULL,
          *trailing = NULL,
          **parameters = NULL;
-    parameters = realloc(parameters, strlen(message));
+    parameters = malloc(sizeof(char));
 
     int offset = substringCharacter(message, &command);
     message += offset;
@@ -95,6 +95,8 @@ void commandStruct_free(commandStruct *cmdStruct)
             free(cmdStruct->parameters[j]);
             j++;
         }
+
+        free(cmdStruct->parameters);
     }
 
     if(cmdStruct->command != NULL)
