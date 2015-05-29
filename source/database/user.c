@@ -61,7 +61,11 @@ int isUserInChannel(char* channelname, char* username)
     }
 
     userInfo user;
-    getUser(username, &user);
+    if (getUser(username, &user) != DB_RETURN_SUCCES)
+    {
+        userInfo_free(&user);
+        return BOOL_FALSE;
+    }
 
     int channelIndex;
     channelIndex = 0;
@@ -70,12 +74,14 @@ int isUserInChannel(char* channelname, char* username)
         if(!strcmp(user.channels[channelIndex],channelname))
         {
             channelUser_free(users);
+            userInfo_free(&user);
             return BOOL_TRUE;
         }
         channelIndex++;
     }
 
     channelUser_free(users);
+    userInfo_free(&user);
     return BOOL_FALSE;
 }
 

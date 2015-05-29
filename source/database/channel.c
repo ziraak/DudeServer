@@ -166,7 +166,7 @@ channelUser *getUsersFromChannel(char *channelName)
 
     int i = 0;
 
-    users = malloc(5000);
+    users = malloc(sizeof(channelUser));
     while(nodePtr != NULL)
     {
         if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
@@ -191,8 +191,8 @@ channelUser *getUsersFromChannel(char *channelName)
     users[i].username = NULL;
     users[i].role = NULL;
     xmlFreeDoc(docPtr);
+    free(docname);
 
-//    free(docname);
     return users;
 }
 
@@ -400,12 +400,11 @@ int checkIfChannelEmpty(char *channelName)
     getChannel(channelName, &info);
     if (info.users[0] == NULL)
     {
+        channelInfo_free(&info);
         return BOOL_TRUE;
     }
-    else
-    {
-        return BOOL_FALSE;
-    }
+    channelInfo_free(&info);
+    return BOOL_FALSE;
 }
 
 messageInfo *getMessages(char *channelName)

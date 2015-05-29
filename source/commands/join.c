@@ -20,13 +20,16 @@ int handleJoinCommand(commandStruct cmd)
         int result = authenticateChannel(channel, channelName, optionalChannelKey);
         if(result != BOOL_TRUE)
         {
+            channelInfo_free(&channel);
             return result;
         }
     }
     else
     {
+        channelInfo_free(&channel);
         return resultGetChannel;
     }
+    channelInfo_free(&channel);
     return joinChannel(channelName);
 }
 
