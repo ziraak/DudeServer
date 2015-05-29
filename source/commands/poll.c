@@ -2,10 +2,10 @@
 
 char* copy(char* src)
 {
-    size_t l = strlen(src) + 1;
+    size_t l = strlen(src);
     char* result = malloc(l);
     bzero(result, l);
-    strncpy(result, src, l - 1);
+    strncpy(result, src, l);
 
     return result;
 }
@@ -23,6 +23,10 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
 
     *str = malloc(12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
+
+    free(writer);
+    free(body);
+    free(timestamp);
 
     return BOOL_TRUE;
 }
@@ -85,7 +89,7 @@ int getPollMessages(pollStruct *ps)
     }
 
     int i;
-    channelMessagesStruct *channelMessages = malloc(1);
+    channelMessagesStruct *channelMessages = malloc(sizeof(channelMessagesStruct));
     for(i = 0; i < ps->channelCount; i++)
     {
         channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
@@ -116,7 +120,7 @@ pollStruct pollStruct_initialize(char **channels, int timestamp)
     int i = 0;
     while(channels[i] != NULL)
     {
-        innerChannels[i] = malloc(strlen(channels[i]) + 1);
+        innerChannels[i] = malloc(strlen(channels[i]));
         sprintf(innerChannels[i], "%s", channels[i]);
         i++;
     }
@@ -160,7 +164,11 @@ void pollStruct_free(pollStruct *ps)
                 free(ps->channelMessages[i].messages[j]);
                 j++;
             }
+
+            free(ps->channelMessages[i].messages);
         }
+
+        free(ps->channelMessages);
     }
 }
 
