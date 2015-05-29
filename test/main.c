@@ -4,22 +4,21 @@ int main()
 {
     int numberOfFailedTests = 0;
     numberOfFailedTests += unitTests();
-    //performanceMetingCommandsTests();
-    //performanceMetingServer();
-//    numberOfFailedTests += knownBugsSuiteCommand();
+//    performanceMetingCommandsTests();
+//    performanceMetingServer();
 
-    //numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
-
+    numberOfFailedTests += knownBugsSuiteCommand();
+    
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
 int unitTests()
 {
     int numberOfFailedTests = 0;
-//    numberOfFailedTests += utils_tests();
-//    numberOfFailedTests += user_tests();
+    numberOfFailedTests += utils_tests();
+    numberOfFailedTests += user_tests();
     numberOfFailedTests += channel_tests();
-//    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
+    numberOfFailedTests += testSuiteCommand(); // achteraan want forked niet
     return numberOfFailedTests;
 }
 

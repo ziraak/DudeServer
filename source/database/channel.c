@@ -606,6 +606,7 @@ void setChannelVisibility(char* channelname,int visible)
     xmlFreeDoc(docPtr);
 }
 
+// TODO: return waarde toevoegen? kan hier nu niet op controleren of het goed is gegaan in MODE (Sjuul)
 void setChannelUserRole(char* channelname, char* username, char* newRole)
 {
     char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
