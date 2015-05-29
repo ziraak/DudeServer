@@ -21,7 +21,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
             *body = copy(msg.body),
             *timestamp = copy(msg.timestamp);
 
-    *str = malloc(12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
+    *str = malloc(11 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
 
     free(writer);
@@ -60,9 +60,7 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
 
         if(convertChannelMessageToString(messageInfos[messageCount], channelName, &message) == BOOL_TRUE)
         {
-            messages[resultCount] = malloc(sizeof(char) * strlen(message));
-            strcpy(messages[resultCount], message);
-            free(message);
+            messages[resultCount] = message;
             resultCount++;
         }
         messageCount++;
@@ -164,11 +162,7 @@ void pollStruct_free(pollStruct *ps)
                 free(ps->channelMessages[i].messages[j]);
                 j++;
             }
-
-            free(ps->channelMessages[i].messages);
         }
-
-        free(ps->channelMessages);
     }
 }
 
