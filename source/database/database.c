@@ -88,8 +88,7 @@ char *getValue(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *fieldname)
 char** getListOfValues(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *listname, char *fieldname)
 {
     char **key;
-    key = calloc(50, 500);
-    //TODO: malloc
+    key = calloc(50, sizeof(char));
     int i;
     i = 0;
     while (currentNodePtr != NULL)
