@@ -35,18 +35,15 @@ int getUser(char *username, userInfo *result)
     {
         return DB_RETURN_CORRUPTFILE;
     }
-//TODO: malloc
     result->username = malloc(30);
     result->nickname = malloc(30);
     result->password = malloc(30);
-// result->channels = malloc(1000);
     strcpy(result->username, username);
     strcpy(result->nickname, getValue(docPtr, currentNodePtr, "nickname"));
     strcpy(result->password, getValue(docPtr, currentNodePtr, "password"));
     result->channels = getListOfValues(docPtr, currentNodePtr, "channels", "channel");
     result->loginToken = getValue(docPtr, currentNodePtr, "loginToken");
     xmlFreeDoc(docPtr);
-//TODO: frees
     return DB_RETURN_SUCCES;
 }
 int isUserInChannel(char* channelname, char* username)
@@ -86,7 +83,9 @@ char* getUserNickname(char* username)
     userInfo info;
     if(getUser(username,&info) == DB_RETURN_SUCCES)
     {
-        return info.nickname;
+        char* nickname = info.nickname;
+        userInfo_free(&info);
+        return nickname;
     }
     return NULL;
 }

@@ -8,6 +8,7 @@
 #include "../main.h"
 
 void userInfo_free(userInfo *ui);
+void channelUser_free(channelUser *cu);
 void messageInfo_free(messageInfo *mi);
 void channelInfo_free(channelInfo *ci);
 

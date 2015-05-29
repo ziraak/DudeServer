@@ -1,7 +1,3 @@
-//
-// Created by osboxes on 13/05/15.
-//
-
 #include "databaseStructs_free.h"
 
 void userInfo_free(userInfo *ui)
@@ -29,6 +25,29 @@ void userInfo_free(userInfo *ui)
     if(ui->nickname != NULL)
     {
         free(ui->nickname);
+    }
+}
+
+void channelUser_free(channelUser *cu)
+{
+    if(cu == NULL)
+    {
+        return;
+    }
+
+    if(cu->username != NULL)
+    {
+        free(cu->username);
+    }
+
+    if(cu->role != NULL)
+    {
+        free(cu->role);
+    }
+
+    if(cu->nickname != NULL)
+    {
+        free(cu->nickname);
     }
 }
 
