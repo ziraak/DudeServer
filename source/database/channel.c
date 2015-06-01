@@ -105,10 +105,20 @@ char* getUserRole(char* channelName, char* username)
     return NULL;
 }
 
-char **getVisibleChannels()
+channelInfo* getVisibleChannels(char* columns, int *result)
 {
-    char **key;
-    return key;
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", columns, "visible=1");
+
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        free(sql);
+        return _getChannels(stmt, result);
+    }
+
+    free(sql);
+    *result = BOOL_FALSE;
+    STMT_RETURN(NULL, stmt);
 }
 
 int checkIfChannelVisible(char* channelName)
@@ -135,22 +145,20 @@ int checkChannel(char *channelName)
     return BOOL_FALSE;
 }
 
-int deleteChannelInDB(char *channelName)
+int deleteChannel(char *channelName)
 {
-    char *statementChannelMessages = malloc(255);
-    sprintf(statementChannelMessages, "DELETE FROM CHANNEL_MESSAGES WHERE channel_name = '%s';", channelName);
-    executeStatement(statementChannelMessages);
-    free(statementChannelMessages);
+    char *channelMessagesDelete = sqlite3_mprintf("DELETE FROM CHANNEL_MESSAGES WHERE channel_name = '%s';", channelName);
+    executeStatement(channelMessagesDelete);
+    sqlite3_free(channelMessagesDelete);
 
-    char *statementChannelUsers = malloc(255);
-    sprintf(statementChannelUsers, "DELETE FROM CHANNEL_USERS WHERE channel_name = '%s';", channelName);
-    executeStatement(statementChannelUsers);
-    free(statementChannelUsers);
+    char *channelUsersDelete = sqlite3_mprintf("DELETE FROM CHANNEL_USERS WHERE channel_name = '%s';", channelName);
+    executeStatement(channelUsersDelete);
+    sqlite3_free(channelUsersDelete);
 
-    char *statement = malloc(255);
-    sprintf(statement, "DELETE FROM CHANNELS WHERE name = '%s';", channelName);
-    executeStatement(statement);
-    free(statement);
+    char *channelDelete = sqlite3_mprintf("DELETE FROM CHANNELS WHERE name = '%s';", channelName);
+    executeStatement(channelDelete);
+    sqlite3_free(channelDelete);
+
     return checkChannel(channelName) == BOOL_FALSE;
 }
 
@@ -177,14 +185,11 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 
 }
 
-void createNewChannel(char *channelName, char *password, char *topic, int visible)
+void insertChannel(char *channelName, char *password, char *topic, int visible)
 {
-
-}
-
-void addChannelToList(char *channelName, int visible)
-{
-
+    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('%s', '%s', '%s', '%i');", channelName, password, topic, visible);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
 }
 
 int checkIfChannelHasPassword(char *channelname)
@@ -213,22 +218,31 @@ int authenticateChannelPassword(char *channelname, char *password)
     return BOOL_FALSE;
 }
 
-void newChannelPassword(char *channelName, char *newPass)
+void updateChannelPassword(char *channelName, char *newPass)
+{
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = '%s' WHERE name = '%s';", newPass, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+}
+
+void updateChannelTopic(char *channelName, char *newTopic)
+{
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topic = '%s' WHERE name = '%s';", newTopic, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+}
+
+void updateChannelVisibility(char *channelName, int visible)
+{
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET visible = %i WHERE name = '%s';", visible, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+}
+
+void updateChannelUserRole(char *channelName, char *username, char *newRole)
 {
     if(checkChannel(channelName) == BOOL_TRUE)
     {
 
     }
-}
-
-void newChannelTopic(char *channelName, char *newTopic)
-{
-}
-
-void setChannelVisibility(char* channelname,int visible)
-{
-}
-
-void setChannelUserRole(char* channelname, char* username, char* newRole)
-{
 }

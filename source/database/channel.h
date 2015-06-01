@@ -15,6 +15,7 @@
 #include <stdlib.h>
 
 channelInfo* getChannels(char* columns, int *result);
+channelInfo* getVisibleChannels(char* columns, int *result);
 int getChannelByName(char *channelName, channelInfo *channel);
 
 int checkChannel(char *channelName);
@@ -23,17 +24,17 @@ int checkIfChannelEmpty(char* channelName);
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp);
 
-void createNewChannel(char *channelName, char *password, char *topic, int visible);
+void insertChannel(char *channelName, char *password, char *topic, int visible);
 
 int checkIfChannelHasPassword(char* channelname);
 
-int deleteChannelInDB(char *channelName);
+int deleteChannel(char *channelName);
 
 int authenticateChannelPassword(char* channelname,char* password);
 
-void newChannelPassword(char* channelname, char* newPass);
+void updateChannelPassword(char *channelname, char *newPass);
 
-void newChannelTopic(char* channelname,char* newTopic);
+void updateChannelTopic(char *channelname, char *newTopic);
 
 int checkIfChannelVisible(char* channelName);
 
@@ -41,9 +42,9 @@ channelUser* getUsersFromChannel(char *channelName);
 
 char* getUserRole(char* channelName, char* username);
 
-void setChannelVisibility(char* channelname,int visible);
+void updateChannelVisibility(char *channelName, int visible);
 
-void setChannelUserRole(char* channelname, char* username, char* newRole);
+void updateChannelUserRole(char *channelName, char *username, char *newRole);
 
 
 #endif 

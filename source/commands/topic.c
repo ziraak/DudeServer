@@ -27,7 +27,7 @@ int handleTopicCommand(commandStruct cmd)
     if(topic != NULL)
     {
         //set
-        newChannelTopic(channelName, topic);
+        updateChannelTopic(channelName, topic);
 
         return RPL_TOPIC;
     }

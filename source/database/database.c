@@ -1,6 +1,5 @@
 #include "database.h"
 
-
 void executeStatement(char* stmt)
 {
     char* err;
@@ -13,7 +12,6 @@ void executeStatement(char* stmt)
     else
     {
         printf(" -EXECUTED: %.125s%s\n", stmt, (strlen(stmt)>125?" ...":""));
-
     }
 }
 

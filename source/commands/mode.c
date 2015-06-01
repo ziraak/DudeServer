@@ -80,7 +80,7 @@ void handleSFlag(char *channelName, flagStruct flag)
 {
     if(flag.flag == 's')
     {
-        setChannelVisibility(channelName, flag.set);
+        updateChannelVisibility(channelName, flag.set);
     }
 }
 
@@ -91,7 +91,7 @@ void handleOFlag(char *channelName, flagStruct flag)
         return;
     }
 
-    setChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+    updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
 }
 
 void handleFlags(modeStruct ms)

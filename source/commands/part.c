@@ -18,7 +18,7 @@ int handlePartCommand(commandStruct cmd)
 
         if (checkIfChannelEmpty(channelName))
         {
-            deleteChannelInDB(channelName);
+            deleteChannel(channelName);
         }
         return RPL_SUCCESS;
     }
