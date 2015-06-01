@@ -123,16 +123,31 @@ int checkChannel(char *channelName)
         channelInfo_free(&channelInfoStruct);
         return BOOL_TRUE;
     }
-    channelInfo_free(&channelInfoStruct);
     return BOOL_FALSE;
 }
 
 int deleteChannelInDB(char *channelName)
 {
+    char *statementChannelMessages = malloc(255);
+    sprintf(statementChannelMessages, "DELETE FROM CHANNEL_MESSAGES WHERE channel_name = '%s';", channelName);
+    executeStatement(statementChannelMessages);
+    free(statementChannelMessages);
+
+    char *statementChannelUsers = malloc(255);
+    sprintf(statementChannelUsers, "DELETE FROM CHANNEL_USERS WHERE channel_name = '%s';", channelName);
+    executeStatement(statementChannelUsers);
+    free(statementChannelUsers);
+
+    char *statement = malloc(255);
+    sprintf(statement, "DELETE FROM CHANNELS WHERE name = '%s';", channelName);
+    executeStatement(statement);
+    free(statement);
+    return checkChannel(channelName) == BOOL_FALSE;
 }
 
 int deleteChannelFromList(char *channelName)
 {
+
 }
 
 int deleteUserFromChannel(char *channelName, char *username)

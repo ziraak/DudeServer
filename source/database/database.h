@@ -29,6 +29,8 @@ int tableExists(char* name);
 char* sqlite3_column_string(sqlite3_stmt *stmt, int id);
 char* getSelectSQL(char* table, char* columns, char* where);
 
+void executeStatement(char* stmt);
+
 void stopDatabase();
 
 #endif
