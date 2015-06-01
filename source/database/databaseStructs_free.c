@@ -72,6 +72,8 @@ void messageInfo_free(messageInfo *mi)
     {
         free(mi->timestamp);
     }
+
+    free(mi);
 }
 
 void channelInfo_free(channelInfo *ci)

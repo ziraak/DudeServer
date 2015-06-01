@@ -14,7 +14,7 @@ int handleJoinCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing; //;
+    char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
 
     channelInfo channel;
     int resultGetChannel = getChannel(channelName, &channel);
@@ -27,13 +27,16 @@ int handleJoinCommand(commandStruct cmd)
         int result = authenticateChannel(channel, channelName, optionalChannelKey);
         if(result != BOOL_TRUE)
         {
+            channelInfo_free(&channel);
             return result;
         }
     }
     else
     {
+        channelInfo_free(&channel);
         return resultGetChannel;
     }
+    channelInfo_free(&channel);
     return joinChannel(channelName);
 }
 
@@ -64,12 +67,18 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
 
 int joinChannel(char* channelName)
 {
+    joinChannelByUsername(channelName, currentUser.username);
+}
+
+
+int joinChannelByUsername(char* channelName, char *username)
+{
     if(userHasChannel(channelName) == BOOL_TRUE)
     {
         return RPL_TOPIC;
     }
 
-    if(userJoinChannel(currentUser.username, channelName, NULL) == DB_RETURN_DOESNOTEXIST)
+    if(userJoinChannel(username, channelName, NULL) == DB_RETURN_DOESNOTEXIST)
     {
         return ERR_BADCHANMASK;
     }

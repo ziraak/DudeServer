@@ -10,6 +10,8 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
 
 int joinChannel(char* channelName);
 
+int joinChannelByUsername(char* channelName, char *username);
+
 int createChannel(char *channelName, char *optionalChannelKey);
 
 int userHasChannel(char* channelName);
