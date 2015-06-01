@@ -101,6 +101,7 @@ void channelInfo_free(channelInfo *ci)
     free(ci->name);
     free(ci->users);
     free(ci->password);
+    free(ci->topic);
 }
 
 void channelInfos_free(channelInfo *channels, int amount)

@@ -14,20 +14,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-
-static char *const FILEFORMATSTRING = "xml/channels/%s.xml";
-static xmlChar *const channelTagName = "channel";
-static xmlChar *const nameTagName = "name";
-static const int maxFilenameSize = 250;
-static const int compression = 0;
-static xmlChar *const usersTagName = "users";
-static xmlChar *const userTagName = "user";
-static xmlChar *const messagesTagName = "messages";
-static xmlChar *const messageTagName = "message";
-static xmlChar *const timestampTagName = "timestamp";
-static xmlChar *const bodyTagName = "body";
-static const int maxMessages = 100;
-
 channelInfo* getChannels(char* columns, int *result);
 int getChannelByName(char *channelName, channelInfo *channel);
 

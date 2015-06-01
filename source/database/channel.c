@@ -10,7 +10,8 @@ void fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
     {
         if(strcmp(sqlite3_column_name(stmt, i), "name") == 0) { channel->name = sqlite3_column_string(stmt, i); continue; }
         if(strcmp(sqlite3_column_name(stmt, i), "password") == 0) { channel->password = sqlite3_column_string(stmt, i); continue; }
-//        if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel-> = sqlite3_column_int(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "topic") == 0) { channel->topic = sqlite3_column_string(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel->visible = sqlite3_column_int(stmt, i); continue; }
     }
 }
 
