@@ -24,6 +24,7 @@
 #include "protocolDefines.h"
 #include "time.h"
 #include "server.h"
+#include "commands/invite.h"
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0

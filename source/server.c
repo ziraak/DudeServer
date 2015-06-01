@@ -157,6 +157,10 @@ int parseMessage(char *message)
     {
         result = handlePollCommand(cmd);
     }
+    else if(commandEquals(cmd, "INVITE"))
+    {
+        result = handleInviteCommand(cmd);
+    }
     commandStruct_free(&cmd);
     return result;
 }
