@@ -1,5 +1,7 @@
 #include "main.h"
 
+#define PRINT_CHANNEL(c) printf("%s: %s | %s | %i\n", c.name, c.password, c.topic, c.visible)
+
 int main(int argc, char **argv)
 {
 
@@ -22,11 +24,17 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    channelInfo ci;
-    if(getChannelByName("batcave", &ci) == DB_RETURN_SUCCES)
+    int i;
+    channelInfo *cis = getChannels(ALL_COLUMNS, &i);
+    if(i != BOOL_FALSE)
     {
-        printf("%s | %s\n", ci.name, ci.password);
-        channelInfo_free(&ci);
+        int j;
+        for(j = 0; j < i; j++)
+        {
+            PRINT_CHANNEL(cis[j]);
+        }
+
+        channelInfos_free(cis, i);
     }
 
     stopDatabase();

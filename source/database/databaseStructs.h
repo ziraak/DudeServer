@@ -31,6 +31,7 @@ typedef struct channelInfo
     char *topic;
     char *password;
     char** users;
+    int visible;
     messageInfo *messages;
 } channelInfo;
 
