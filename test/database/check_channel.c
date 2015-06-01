@@ -17,9 +17,9 @@ END_TEST
 
 START_TEST(test_getUserRole)
     {
-        setChannelUserRole("fatihs head","fatih",USER_ROLE_USER);
+        updateChannelUserRole("fatihs head", "fatih", USER_ROLE_USER);
         ck_assert_str_eq(getUserRole("fatihs head","fatih"),USER_ROLE_USER);
-        setChannelUserRole("fatihs head","fatih",USER_ROLE_OPERATOR);
+        updateChannelUserRole("fatihs head", "fatih", USER_ROLE_OPERATOR);
     }
 END_TEST
 
@@ -77,10 +77,10 @@ START_TEST(test_authenticatePassword)
         ck_assert_int_eq(checkIfChannelHasPassword("batcave"),BOOL_TRUE);
         ck_assert_int_eq(authenticateChannelPassword("batcave","open sesame"),BOOL_TRUE);
 
-        newChannelPassword("batcave","open batcave");
+        updateChannelPassword("batcave", "open batcave");
         ck_assert_int_eq(authenticateChannelPassword("batcave","open sesame"),BOOL_FALSE);
         ck_assert_int_eq(authenticateChannelPassword("batcave","open batcave"),BOOL_TRUE);
-        newChannelPassword("batcave","open sesame");
+        updateChannelPassword("batcave", "open sesame");
 
         ck_assert_int_eq(checkIfChannelHasPassword("fatihs head"),BOOL_FALSE);
         ck_assert_int_eq(authenticateChannelPassword("fatihs head","open sesame"),BOOL_FALSE);
@@ -92,10 +92,10 @@ START_TEST(test_channelTopics)
         channelInfo info;
         ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"everything is batman");
-        newChannelTopic("batcave","the dark knight");
+        updateChannelTopic("batcave", "the dark knight");
         ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"the dark knight");
-        newChannelTopic("batcave","everything is batman");
+        updateChannelTopic("batcave", "everything is batman");
         ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"everything is batman");
     }
@@ -105,9 +105,9 @@ START_TEST(test_addToList)
     {
         ck_assert_int_eq(checkIfChannelVisible("fatihs head"),BOOL_TRUE);
         ck_assert_int_eq(checkIfChannelVisible("batcave"),BOOL_FALSE);
-        setChannelVisibility("batcave",BOOL_TRUE);
+        updateChannelVisibility("batcave", BOOL_TRUE);
         ck_assert_int_eq(checkIfChannelVisible("batcave"),BOOL_TRUE);
-        setChannelVisibility("batcave",BOOL_FALSE);
+        updateChannelVisibility("batcave", BOOL_FALSE);
     }
 END_TEST
 

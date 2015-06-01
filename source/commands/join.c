@@ -13,7 +13,7 @@ int handleJoinCommand(commandStruct cmd)
     int resultGetChannel = getChannelByName(channelName, &channel);
     if(resultGetChannel == DB_RETURN_DOESNOTEXIST)
     {
-        createNewChannel(channelName, NULL, NULL, BOOL_TRUE);
+        insertChannel(channelName, NULL, NULL, BOOL_TRUE);
     }
     else if (resultGetChannel == DB_RETURN_SUCCES)
     {
