@@ -29,6 +29,8 @@ int main(int argc, char **argv)
         channelInfo_free(&ci);
     }
 
+    printf("Return check channel: %i", checkChannel(ci.name));
+
     stopDatabase();
 
     return EXIT_SUCCESS;

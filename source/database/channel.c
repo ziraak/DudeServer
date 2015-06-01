@@ -20,7 +20,7 @@ int getChannel(sqlite3_stmt *stmt, channelInfo *channel)
     {
         fillChannel(stmt, channel);
 
-        STMT_RETURN(DB_RETURN_SUCCES, stmt);
+        STMT_RETURN(BOOL_TRUE, stmt);
     }
 
     STMT_RETURN(BOOL_FALSE, stmt);
@@ -117,6 +117,14 @@ int checkIfChannelVisible(char* channelName)
 
 int checkChannel(char *channelName)
 {
+    channelInfo channelInfoStruct;
+    if (getChannelByName(channelName, &channelInfoStruct) == BOOL_TRUE)
+    {
+        channelInfo_free(&channelInfoStruct);
+        return BOOL_TRUE;
+    }
+    channelInfo_free(&channelInfoStruct);
+    return BOOL_FALSE;
 }
 
 int deleteChannelInDB(char *channelName)
