@@ -1,6 +1,6 @@
 #include "channel.h"
 
-void fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
+void _fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
 {
     int columnCount = sqlite3_column_count(stmt);
     bzero(channel, sizeof(channelInfo));
@@ -15,11 +15,11 @@ void fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
     }
 }
 
-int getChannel(sqlite3_stmt *stmt, channelInfo *channel)
+int _getChannel(sqlite3_stmt *stmt, channelInfo *channel)
 {
     while(sqlite3_step(stmt) == SQLITE_ROW)
     {
-        fillChannel(stmt, channel);
+        _fillChannel(stmt, channel);
 
         STMT_RETURN(BOOL_TRUE, stmt);
     }
@@ -27,44 +27,50 @@ int getChannel(sqlite3_stmt *stmt, channelInfo *channel)
     STMT_RETURN(BOOL_FALSE, stmt);
 }
 
-channelInfo * getChannels(char* columns, int *result)
+channelInfo *_getChannels(sqlite3_stmt *stmt, int *result)
+{
+    channelInfo *channels = NULL;
+    int i = 0;
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        channels = realloc(channels, (i + 1) * sizeof(channelInfo));
+        channelInfo cs;
+        _fillChannel(stmt, &cs);
+        channels[i] = cs;
+        i++;
+    }
+
+    *result = i;
+    STMT_RETURN(channels, stmt);
+}
+
+channelInfo *getChannels(char* columns, int *result)
 {
     sqlite3_stmt *stmt;
     char *sql = getSelectSQL("channels", columns, NULL);
-    channelInfo *channels = NULL;
+
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
         free(sql);
-
-        int i = 0;
-        while(sqlite3_step(stmt) == SQLITE_ROW)
-        {
-            channels = realloc(channels, (i + 1) * sizeof(channelInfo));
-            channelInfo cs;
-            fillChannel(stmt, &cs);
-            channels[i] = cs;
-            i++;
-        }
-
-        *result = i;
-        STMT_RETURN(channels, stmt);
+        return _getChannels(stmt, result);
     }
 
     free(sql);
     *result = BOOL_FALSE;
-    STMT_RETURN(channels, stmt);
+    STMT_RETURN(NULL, stmt);
 }
 
 int getChannelByName(char *name, channelInfo *channel)
 {
     sqlite3_stmt *stmt;
     char *sql = getSelectSQL("channels", ALL_COLUMNS, "name=?");
+
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
         free(sql);
         if(sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
         {
-            return getChannel(stmt, channel);
+            return _getChannel(stmt, channel);
         }
     }
 
@@ -99,12 +105,6 @@ char* getUserRole(char* channelName, char* username)
     return NULL;
 }
 
-char **getChannellist()
-{
-    char **list;
-    return list;
-}
-
 char **getVisibleChannels()
 {
     char **key;
@@ -113,6 +113,14 @@ char **getVisibleChannels()
 
 int checkIfChannelVisible(char* channelName)
 {
+    channelInfo ci;
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
+    {
+        int result = ci.visible;
+        channelInfo_free(&ci);
+        return (result == BOOL_TRUE) ? BOOL_TRUE : BOOL_FALSE;
+    }
+
     return BOOL_FALSE;
 }
 
@@ -151,28 +159,51 @@ messageInfo *getMessages(char *channelName)
 
 messageInfo *getMessagesOnTime(char *channelName, int timestamp)
 {
+
 }
 
 void createNewChannel(char *channelName, char *password, char *topic, int visible)
 {
+
 }
 
 void addChannelToList(char *channelName, int visible)
 {
+
 }
 
 int checkIfChannelHasPassword(char *channelname)
 {
-    return BOOL_TRUE;
+    channelInfo ci;
+    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
+    {
+        int result = ci.password != NULL ? BOOL_TRUE : BOOL_FALSE;
+        channelInfo_free(&ci);
+        return result;
+    }
+
+    return BOOL_FALSE;
 }
 
 int authenticateChannelPassword(char *channelname, char *password)
 {
+    channelInfo ci;
+    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
+    {
+        int result = (strcmp(password, ci.password) == 0);
+        channelInfo_free(&ci);
+        return result;
+    }
+
     return BOOL_FALSE;
 }
 
 void newChannelPassword(char *channelName, char *newPass)
 {
+    if(checkChannel(channelName) == BOOL_TRUE)
+    {
+
+    }
 }
 
 void newChannelTopic(char *channelName, char *newTopic)

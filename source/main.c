@@ -4,8 +4,6 @@
 
 int main(int argc, char **argv)
 {
-
-//    mallopt(M_CHECK_ACTION, 1);
 //
 //    int fork = BOOL_FALSE;
 //    if(argc > 1)
@@ -36,6 +34,12 @@ int main(int argc, char **argv)
 
         channelInfos_free(cis, i);
     }
+
+    printf("VIS: %i\n", authenticateChannelPassword("batcave", "because im awesome"));
+    printf("VIS: %i\n", authenticateChannelPassword("eigendunk", "open hh"));
+
+    printf("VIS: %i\n", checkIfChannelVisible("batcave"));
+    printf("VIS: %i\n", checkIfChannelVisible("eigendunk"));
 
     stopDatabase();
 
