@@ -2,6 +2,7 @@
 
 int main(int argc, char **argv)
 {
+    /*
     mallopt(M_CHECK_ACTION, 1);
 
     int fork = BOOL_FALSE;
@@ -14,6 +15,16 @@ int main(int argc, char **argv)
     }
 
     runServer(fork, SERVER_PORT);
+    */
+
+    if(setupDatabaseConnection() != BOOL_TRUE)
+    {
+        return EXIT_FAILURE;
+    }
+
+
+
+    stopDatabase();
 
     return EXIT_SUCCESS;
 }
