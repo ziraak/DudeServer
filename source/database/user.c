@@ -112,12 +112,12 @@ int checkUser(char *userName)
     {
         if (!strcmp(userList[listIndex], userName))
         {
-            free(userList);
+            //free(userList);
             return BOOL_TRUE;
         }
         listIndex++;
     }
-    free(userList);
+    //free(userList);
     return BOOL_FALSE;
 }
 

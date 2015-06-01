@@ -47,7 +47,7 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     if(messageInfos == NULL)
     {
         channelMessagesStruct result = { .channelName = innerChannelName };
-        free(messageInfos);
+        messageInfo_free(messageInfos);
         return result;
     }
 
@@ -71,7 +71,7 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
             .messageCount = resultCount,
             .channelName = innerChannelName
     };
-    free(messageInfos);
+    messageInfo_free(messageInfos);
     return result;
 }
 
