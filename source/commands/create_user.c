@@ -1,3 +1,9 @@
+/*
+ * Command: CREATE_USER
+ * CREATE_USER <username> :<password>
+ *
+ * Maak een gebruiker aan met <username> en <password>.
+ */
 #include "create_user.h"
 
 int handleCreateUserCommand(commandStruct cmd)

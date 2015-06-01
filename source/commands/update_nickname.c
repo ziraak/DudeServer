@@ -1,3 +1,9 @@
+/*
+ * Command: UPDATE_NICKNAME
+ * UPDATE_NICKNAME <nickname>
+ *
+ * Update de nickname van de huidige gebruiker naar <nickname>.
+ */
 #include "update_nickname.h"
 
 int handleUpdateNicknameCommand(commandStruct cmd)

@@ -1,18 +1,21 @@
-//
-// Created by osboxes on 21/04/15.
-//
-
+/*
+ * Command: LOGIN
+ * LOGIN <username> <#nickname> :<password>
+ *
+ * Logt de gebruiker in als <username> met <password>.
+ * Indien <#nickname> meegegeven is, is dit de nieuwe nickname.
+ */
 #include "login.h"
 
 int handleLoginCommand(commandStruct cmd)
 {
-    if(cmd.parameterCount < 2)
+    if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
         return ERR_NEEDMOREPARAMS;
     }
 
     char *username = cmd.parameters[0],
-            *password = cmd.parameters[1];
+            *password = cmd.trailing;
 
     userInfo user;
     int userAuthenticated = authenticateUser(username, password, &user);
@@ -21,9 +24,9 @@ int handleLoginCommand(commandStruct cmd)
         currentUser = user;
     }
 
-    if(cmd.parameterCount > 2)
+    if(cmd.parameterCount > 1)
     {
-        // TODO: doe iets met nickname op cmd.parameters[2]
+        // TODO: doe iets met nickname op cmd.parameters[1]
     }
 
     return userAuthenticated;

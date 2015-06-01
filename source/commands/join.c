@@ -1,3 +1,10 @@
+/*
+ * Command: JOIN
+ * JOIN <channel> :<#password>
+ *
+ * Joint <channel>.
+ * Indien <#password> meegegeven is, wordt deze gebruikt om te authenticeren.
+ */
 #include "join.h"
 
 int handleJoinCommand(commandStruct cmd)

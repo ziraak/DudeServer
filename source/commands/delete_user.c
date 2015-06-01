@@ -1,5 +1,12 @@
+/*
+ * Command: DELETE_USER
+ * DELETE_USER
+ *
+ * Verwijdert de huidige gebruiker.
+ */
 #include "delete_user.h"
 
+//TODO verificatie a.d.h.v. password? iets.. veiliger, lijkt me
 int handleDeleteUserCommand()
 {
     if (checkUser(currentUser.username) == BOOL_TRUE)

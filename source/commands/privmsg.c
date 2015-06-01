@@ -1,3 +1,9 @@
+/*
+ * Command: PRIVMSG
+ * PRIVMSG <channel> :<message>
+ *
+ * Stuurt <message> naar <channel>.
+ */
 #include "privmsg.h"
 
 int handlePrivateMessageCommand(commandStruct cmd)

@@ -1,7 +1,10 @@
-//
-// Created by osboxes on 27/05/15.
-//
-
+/*
+ * Command: TOPIC
+ * TOPIC <channel> :<#topic>
+ *
+ * Geeft het huidige topic van <channel> terug.
+ * Indien <#topic> meegegeven is, wordt het topic gezet van <channel>.
+ */
 #include "topic.h"
 
 int handleTopicCommand(commandStruct cmd)
@@ -44,9 +47,11 @@ int handleTopicCommand(commandStruct cmd)
                 sprintf(snd, "%i %s", RPL_TOPIC, channel.topic);
 
                 sslSend(snd);
+                channelInfo_free(&channel);
                 return RPL_TOPIC;
             }
         }
+        channelInfo_free(&channel);
         return RPL_NOTOPIC;
     }
 }

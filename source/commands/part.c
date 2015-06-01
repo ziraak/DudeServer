@@ -1,6 +1,22 @@
+/*
+ * Command: PART
+ * PART <channel>
+ *
+ * Vertrek uit <channel>.
+ */
 #include "part.h"
 
-void removeChannelFromCurrentUserChannels(const char *channelName);
+void removeChannelFromCurrentUserChannels(const char *channelName)
+{
+    int i;
+    for(i = 0; currentUser.channels[i] != NULL; i++)
+    {
+        if (strcmp(channelName, currentUser.channels[i]) == 0)
+        {
+            strcpy(currentUser.channels[i], "");
+        }
+    }
+}
 
 int handlePartCommand(commandStruct cmd)
 {
@@ -24,16 +40,4 @@ int handlePartCommand(commandStruct cmd)
         return RPL_SUCCESS;
     }
     return ERR_NOSUCHCHANNEL;
-}
-
-void removeChannelFromCurrentUserChannels(const char *channelName)
-{
-    int i;
-    for(i = 0; currentUser.channels[i] != NULL; i++)
-    {
-        if (strcmp(channelName, currentUser.channels[i]) == 0)
-        {
-            strcpy(currentUser.channels[i], "");
-        }
-    }
 }

@@ -1,3 +1,9 @@
+/*
+ * Command: UPDATE_PASSWORD
+ * UPDATE_PASSWORD <password>
+ *
+ * Update het password van de huidige gebruiker naar <password>.
+ */
 #include "update_password.h"
 
 int handleUpdatePasswordCommand(commandStruct cmd)
