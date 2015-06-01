@@ -42,7 +42,8 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     char *innerChannelName = malloc(strlen(channelName));
     strncpy(innerChannelName, channelName, strlen(channelName));
 
-    messageInfo *messageInfos = getMessagesOnTime(channelName, timestamp);
+    int getMessagesOnTimeResult;
+    messageInfo *messageInfos = getMessagesOnTime(channelName, timestamp, &getMessagesOnTimeResult);
 
     if(messageInfos == NULL)
     {

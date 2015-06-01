@@ -36,5 +36,4 @@ typedef struct channelInfo
 } channelInfo;
 
 
-
 #endif //DUDESERVER_DATABASESTRUCTS_H

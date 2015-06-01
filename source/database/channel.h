@@ -21,7 +21,7 @@ int checkChannel(char *channelName);
 
 int checkIfChannelEmpty(char* channelName);
 
-messageInfo* getMessagesOnTime(char *channelName, int timestamp);
+messageInfo* getMessagesOnTime(char *channelName, int timestamp, int *result);
 
 void createNewChannel(char *channelName, char *password, char *topic, int visible);
 
