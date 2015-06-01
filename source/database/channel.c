@@ -115,6 +115,19 @@ int checkIfChannelVisible(char* channelName)
 {
     return BOOL_FALSE;
 }
+
+int checkChannel(char *channelName)
+{
+    channelInfo channelInfoStruct;
+    if (getChannelByName(channelName, &channelInfoStruct) == BOOL_TRUE)
+    {
+        channelInfo_free(&channelInfoStruct);
+        return BOOL_TRUE;
+    }
+    channelInfo_free(&channelInfoStruct);
+    return BOOL_FALSE;
+}
+
 int deleteChannelInDB(char *channelName)
 {
 }
