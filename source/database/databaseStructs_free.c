@@ -102,3 +102,19 @@ void channelInfo_free(channelInfo *ci)
     free(ci->users);
     free(ci->password);
 }
+
+void channelInfos_free(channelInfo *channels, int amount)
+{
+    if(channels == NULL)
+    {
+        return;
+    }
+
+    int i = 0;
+    for(i = 0; i < amount; i++)
+    {
+        channelInfo_free(&channels[i]);
+    }
+
+    free(channels);
+}

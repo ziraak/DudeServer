@@ -28,35 +28,12 @@ static xmlChar *const timestampTagName = "timestamp";
 static xmlChar *const bodyTagName = "body";
 static const int maxMessages = 100;
 
-int writeChannel(channelInfo channel);
-
-int writeMessageToChannel(char *channelName, messageInfo message);
-
-xmlTextWriterPtr openChannelFile(char *channelName);
-
-void writeUsersToChannel(xmlTextWriterPtr xmlptr, channelUser* users);
-
-void writeMessagesToChannel(xmlTextWriterPtr xmlptr, messageInfo messages[]);
-
-void writeMessageToXml(xmlTextWriterPtr xmlptr, messageInfo message);
-
-int deleteChannelFromList(char *channelName);
-
-int deleteChannelInDB(char *channelName);
+channelInfo* getChannels(char* columns, int *result);
+int getChannelByName(char *channelName, channelInfo *channel);
 
 int checkChannel(char *channelName);
 
-char **getChannellist();
-
-int deleteUserFromChannel(char *channelName, char *username);
-
-int getChannelByName(char *channelName, char* columns, channelInfo *channel);
-
-int countMessages(messageInfo *message);
-
 int checkIfChannelEmpty(char* channelName);
-
-messageInfo* getMessages(char *channelName);
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp);
 
@@ -69,10 +46,6 @@ int authenticateChannelPassword(char* channelname,char* password);
 void newChannelPassword(char* channelname, char* newPass);
 
 void newChannelTopic(char* channelname,char* newTopic);
-
-void addChannelToList(char* channelName,int visible);
-
-char **getVisibleChannels();
 
 int checkIfChannelVisible(char* channelName);
 

@@ -54,10 +54,10 @@ channelInfo * getChannels(char* columns, int *result)
     STMT_RETURN(channels, stmt);
 }
 
-int getChannelByName(char* name, char *columns, channelInfo *channel)
+int getChannelByName(char *name, channelInfo *channel)
 {
     sqlite3_stmt *stmt;
-    char *sql = getSelectSQL("channels", columns, "name=?");
+    char *sql = getSelectSQL("channels", ALL_COLUMNS, "name=?");
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
         free(sql);
@@ -69,22 +69,6 @@ int getChannelByName(char* name, char *columns, channelInfo *channel)
 
     free(sql);
     STMT_RETURN(BOOL_FALSE, stmt);
-}
-
-void channelInfos_free(channelInfo *channels, int amount)
-{
-    if(channels == NULL)
-    {
-        return;
-    }
-
-    int i = 0;
-    for(i = 0; i < amount; i++)
-    {
-        channelInfo_free(&channels[i]);
-    }
-
-    free(channels);
 }
 
 int countMessages(messageInfo *message)

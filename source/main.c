@@ -2,7 +2,7 @@
 
 int main(int argc, char **argv)
 {
-    /*
+
     mallopt(M_CHECK_ACTION, 1);
 
     int fork = BOOL_FALSE;
@@ -15,7 +15,7 @@ int main(int argc, char **argv)
     }
 
     runServer(fork, SERVER_PORT);
-    */
+
 
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
@@ -23,7 +23,7 @@ int main(int argc, char **argv)
     }
 
     channelInfo ci;
-    if(getChannelByName("batcave", ALL_COLUMNS, &ci) == DB_RETURN_SUCCES)
+    if(getChannelByName("batcave", &ci) == DB_RETURN_SUCCES)
     {
         printf("%s | %s\n", ci.name, ci.password);
         channelInfo_free(&ci);

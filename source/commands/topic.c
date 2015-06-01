@@ -35,7 +35,7 @@ int handleTopicCommand(commandStruct cmd)
     {
         //get
         channelInfo channel;
-        if(getChannelByName(channelName, ALL_COLUMNS, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
+        if(getChannelByName(channelName, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
         {
             size_t len = strlen(channel.topic);
             if(len > 0)

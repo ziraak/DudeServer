@@ -30,10 +30,10 @@ START_TEST(test_getChannel)
     {
         channelInfo channelInfo1;
         channelInfo channelInfo2;
-        getChannelByName("batcave", &channelInfo1);
+        getChannelByName("batcave", NULL);
         ck_assert_str_eq(channelInfo1.topic,"everything is batman");
         ck_assert_str_eq(channelInfo1.password,"open sesame");
-        getChannelByName("eigendunk", &channelInfo2);
+        getChannelByName("eigendunk", NULL);
         ck_assert_str_eq(channelInfo2.topic,"zoiets als ego");
         ck_assert_str_eq(channelInfo2.password,"fatih");
     }
@@ -42,7 +42,7 @@ END_TEST
 START_TEST(test_getChannel_noPass)
     {
         channelInfo channelInfo1;
-        getChannelByName("fatihs head", &channelInfo1);
+        getChannelByName("fatihs head", NULL);
         ck_assert(channelInfo1.password == NULL);
     }
 END_TEST
@@ -90,13 +90,13 @@ END_TEST
 START_TEST(test_channelTopics)
     {
         channelInfo info;
-        ck_assert_int_eq(getChannelByName("batcave", &info),DB_RETURN_SUCCES);
+        ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"everything is batman");
         newChannelTopic("batcave","the dark knight");
-        ck_assert_int_eq(getChannelByName("batcave", &info),DB_RETURN_SUCCES);
+        ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"the dark knight");
         newChannelTopic("batcave","everything is batman");
-        ck_assert_int_eq(getChannelByName("batcave", &info),DB_RETURN_SUCCES);
+        ck_assert_int_eq(getChannelByName("batcave", NULL),DB_RETURN_SUCCES);
         ck_assert_str_eq(info.topic,"everything is batman");
     }
 END_TEST
