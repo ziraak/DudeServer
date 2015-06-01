@@ -12,7 +12,7 @@ int handleUpdatePasswordCommand(commandStruct cmd)
         return ERR_PASSWORDTOOSHORT;
     }
 
-    if (checkUser(currentUser.username) == BOOL_TRUE)
+    if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
     {
         changePassword(currentUser.username, cmd.parameters[0]);
         return RPL_SUCCESS;

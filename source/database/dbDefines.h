@@ -3,9 +3,6 @@
 
 #define DB_MAXMESSAGES 101
 #define DB_DOCNAMEMEMORYSPACE 500
-#define DB_XML_FORMAT 1
-//1 is indent, 0 is no indent
-#define DB_XML_ENCODING "UTF-8"
 
 //database propertie values
 #define DB_VISIBLE_TRUE "y"
@@ -30,5 +27,15 @@
 #define DB_CHANNELLISTLOCATION "xml/channellist.xml"
 #define DB_USERLISTLOCATION "xml/userlist.xml"
 #define DB_USERLOCATION "xml/users/"
+
+//sql defines by sjuul
+
+#define ALL_COLUMNS "*"
+
+#define SETUP_ERROR_RETURN(val, err) printf("ERROR: %s\n", err); sqlite3_close(db); return val
+
+#define STMT_RETURN(val, stmt) sqlite3_finalize(stmt); return val
+
+
 
 #endif //DUDESERVER_DBDEFINES_H

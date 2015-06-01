@@ -65,6 +65,9 @@ include_directories(${LIBXML2_INCLUDE_DIR})
 find_package(OpenSSL REQUIRED)
 include_directories(${OPENSSL_INCLUDE_DIR})
 
+find_package(sqlite3 REQUIRED)
+include_directories(${SQLITE3_INCLUDE_DIR})
+
 ###############################################################################
 # Generate "config.h" from "cmake/config.h.cmake"
 configure_file(${CMAKE_CURRENT_SOURCE_DIR}/cmake/config.h.in

@@ -13,31 +13,22 @@
 #include <libxml/xmlreader.h>
 #include "../main.h"
 #include "dbDefines.h"
+#include <sqlite3.h>
 
-xmlDocPtr openDoc(char *docname);
+sqlite3 *db;
 
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
 
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+#define SETUP_ERROR_RETURN(val, err) printf("ERROR: %s\n", err); sqlite3_close(db); return val
 
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
+#define STMT_RETURN(val, stmt) sqlite3_finalize(stmt); return val
 
-void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
 
-void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent, char *optPropertyName,
-              char *optPropertyValue);
+int setupDatabaseConnection();
+int tableExists(char* name);
 
-void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content,
-                          char *optPropertyName, char *optPropertyValue);
+char* sqlite3_column_string(sqlite3_stmt *stmt, int id);
+char* getSelectSQL(char* table, char* columns, char* where);
 
-int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
-
-int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
-
-void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
-
-void assignFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
-
-void addToListFile(char* itemType,char* newItem);
+void stopDatabase();
 
 #endif

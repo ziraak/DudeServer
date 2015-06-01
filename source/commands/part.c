@@ -13,8 +13,7 @@ int handlePartCommand(commandStruct cmd)
 
     if (checkChannel(channelName) == BOOL_TRUE)
     {
-        deleteUserFromChannel(channelName, currentUser.username);
-        deleteChannelFromUser(currentUser.username, channelName);
+        userLeaveChannel(currentUser.username, channelName);
         removeChannelFromCurrentUserChannels(channelName);
 
         if (checkIfChannelEmpty(channelName))

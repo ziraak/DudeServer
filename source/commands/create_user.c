@@ -10,7 +10,7 @@ int handleCreateUserCommand(commandStruct cmd)
     char *username = cmd.parameters[0],
             *password = cmd.parameters[1];
 
-    if (checkUser(username) == BOOL_TRUE)
+    if (checkIfUserExists(username) == BOOL_TRUE)
     {
         return ERR_USERNAMEINUSE;
     }

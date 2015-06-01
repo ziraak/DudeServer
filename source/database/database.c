@@ -1,271 +1,129 @@
 #include "database.h"
 
-char* readFileToMemory(char* filename)
-{
-    FILE *f;
-    f = fopen(filename, "r");
-    long length;
-    char* result = NULL;
 
-    if(f == NULL)
+void executeStatement(char* stmt)
+{
+    char* err;
+
+    if(sqlite3_exec(db, stmt, NULL, NULL, &err) != SQLITE_OK)
     {
+        printf("ERROR: %s\nIN STATEMENT: %s\n", err, stmt);
+        sqlite3_free(err);
+    }
+    else
+    {
+        printf(" -EXECUTED: %.125s%s\n", stmt, (strlen(stmt)>125?" ...":""));
+
+    }
+}
+
+void firstTimeSetup()
+{
+    printf("-- PERFORMING FIRST TIME SETUP --\n\n");
+
+    executeStatement("CREATE TABLE CHANNELS (name TEXT PRIMARY KEY, password TEXT,topic TEXT, visible INT NOT NULL);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('batcave','because im awesome','open sesame', 1);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('eigendunk','erg bekend bij ...', NULL, 0);");
+
+    executeStatement("CREATE TABLE USERS (name TEXT PRIMARY KEY, password TEXT NOT NULL, nickname TEXT);");
+    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('fatih', 'nub', 'fatihawesome');");
+    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('sjuul', 'hahaha', 'khlox');");
+    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('harmen', 'ziraak', 'angutar');");
+    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('ferdi', 'hohohaha', '[FaZe] Lord Chin Chin');");
+    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('desmond', 'moonbear', 'des');");
+
+    executeStatement("CREATE TABLE CHANNEL_USERS (user_name TEXT NOT NULL, channel_name TEXT NOT NULL, user_privileges TEXT NOT NULL, PRIMARY KEY(user_name, channel_name), FOREIGN KEY(user_name) REFERENCES USERS(name), FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'batcave', 'o');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('desmond','batcave', 'u');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('sjuul',  'batcave', 'u');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('harmen', 'batcave', 'o');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('ferdi',  'batcave', 'u');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'eigendunk','u');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('desmond','eigendunk','u');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('sjuul',  'eigendunk','o');");
+
+    executeStatement("CREATE TABLE CHANNEL_MESSAGES (message_id INTERGER PRIMARY KEY, user_name TEXT NOT NULL, channel_name TEXT NOT NULL, timestamp INTEGER NOT NULL, body TEXT, FOREIGN KEY(user_name) REFERENCES USERS(name), FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih','batcave',1313213, 'im batman');");
+
+    printf("\n-- FIRST TIME SETUP COMPLETED --");
+}
+
+int setupDatabaseConnection()
+{
+    int rc = sqlite3_open("dude@chat.db", &db);
+
+    if(rc != SQLITE_OK)
+    {
+        SETUP_ERROR_RETURN(-1, sqlite3_errmsg(db));
+    }
+
+    executeStatement("PRAGMA foreign_keys = ON;");
+
+    if(tableExists("CHANNELS") == BOOL_FALSE)
+    {
+        firstTimeSetup();
+    }
+
+    return DB_RETURN_SUCCES;
+}
+void stopDatabase()
+{
+    sqlite3_close(db);
+}
+
+int tableExists(char* name)
+{
+    sqlite3_stmt *stmt;
+
+    int rc = sqlite3_prepare_v2(db, "SELECT name FROM sqlite_master WHERE type='table' AND name=?", -1, &stmt, NULL);
+    if(rc == SQLITE_OK)
+    {
+        sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC);
+
+        while(sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            STMT_RETURN(BOOL_TRUE, stmt);
+        }
+
+        STMT_RETURN(BOOL_FALSE, stmt);
+    }
+
+    STMT_RETURN(BOOL_FALSE, stmt);
+}
+
+char* sqlite3_column_string(sqlite3_stmt *stmt, int id)
+{
+    char *stmt_res = (char*)sqlite3_column_text(stmt, id);
+
+    if(stmt_res == NULL)
+    {
+        return NULL;
+    }
+
+    size_t l = strlen(stmt_res);
+    char *func_return = malloc(l + 1);
+    bzero(func_return, l + 1);
+    strncpy(func_return, stmt_res, l);
+    return func_return;
+}
+
+char* getSelectSQL(char* table, char* columns, char* where)
+{
+    if(columns == NULL || strlen(columns) == 0)
+    {
+        columns = ALL_COLUMNS;
+    }
+
+    if(where == NULL || strlen(where) == 0)
+    {
+        char* result = malloc(strlen(columns) + strlen(table) + 15);
+        sprintf(result, "SELECT %s FROM %s", columns, table);
         return result;
     }
-
-    fseek(f, 0L, SEEK_END);
-    length = ftell(f);
-    fseek(f, 0L, SEEK_SET);
-    result = (char*) calloc(length + 1, sizeof(char));
-    bzero(result, length + 1);
-
-    if(result == NULL)
+    else
     {
+        char* result = malloc(strlen(columns) + strlen(where) + strlen(table) + 20);
+        sprintf(result, "SELECT %s FROM %s WHERE %s", columns, table, where);
         return result;
-    }
-
-    fread(result, sizeof(char), length, f);
-    fclose(f);
-
-    return result;
-}
-
-xmlDocPtr openDoc(char *docname)
-{
-    //TODO: opschonen van docPtr zodra hij gebruikt is bij alle commands
-
-    char* memoryFile = readFileToMemory(docname);
-    if(memoryFile == NULL)
-    {
-        return NULL;
-    }
-    xmlDocPtr docPtr = xmlReadFile(docname, NULL, XML_PARSE_RECOVER | XML_PARSE_COMPACT);
-//    xmlDocPtr docPtr = xmlParseMemory(memoryFile, strlen(memoryFile));
-    free(memoryFile);
-
-    if (docPtr == NULL)
-    {
-        fprintf(stderr, "Document **%s**Was not parsed successfully. \n", docname);
-    }
-    return docPtr;
-
-}
-
-xmlNodePtr checkDoc(xmlDocPtr docPtr, char *docType)
-{
-    xmlNodePtr currentNodePtr;
-    if ((currentNodePtr = xmlDocGetRootElement(docPtr)) == NULL)
-    {
-        fprintf(stderr, "empty document\n");
-        xmlFreeDoc(docPtr);
-        return NULL;
-    }
-
-    if (xmlStrcmp(currentNodePtr->name, (const xmlChar *) docType))
-    {
-        fprintf(stderr, "document of the wrong type, this is not a %s\n", docType);
-        xmlFreeDoc(docPtr);
-        return NULL;
-    }
-
-    currentNodePtr = currentNodePtr->xmlChildrenNode;
-    return currentNodePtr;
-}
-
-char *getValue(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *fieldname)
-{
-    xmlChar *key = NULL;
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) fieldname)))
-        {
-            key = xmlNodeListGetString(docPtr, currentNodePtr->xmlChildrenNode, 1);
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-    return (char *) key;
-}
-
-char** getListOfValues(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *listname, char *fieldname)
-{
-    char **key;
-    key = calloc(50, sizeof(char));
-    int i;
-    i = 0;
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) listname)))
-        {
-            xmlNodePtr currentNodePtrChild;
-            currentNodePtrChild = currentNodePtr->xmlChildrenNode;
-            while (currentNodePtrChild != NULL)
-            {
-                if ((!xmlStrcmp(currentNodePtrChild->name, (const xmlChar *) fieldname)))
-                {
-                    key[i] = (char *) xmlNodeListGetString(docPtr, currentNodePtrChild->xmlChildrenNode, 1);
-                    i++;
-                }
-                currentNodePtrChild = currentNodePtrChild->next;
-            }
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-    return key;
-}
-
-void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content,
-                          char *optPropertyName, char *optPropertyValue)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-
-    sprintf(docname, "%s%ss/%s.xml",DB_DBLOCATION, fileType, filename);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, fileType)) == NULL)
-    {
-        return;
-    }
-
-    addChild(currentNodePtr, listname, fieldname, content, optPropertyName, optPropertyValue);
-
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-}
-
-void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-
-    sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        printf("error\n");
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, fileType)) == NULL)
-    {
-        printf("error\n");
-        return;
-    }
-    currentNodePtr = currentNodePtr->parent;
-    addChild(currentNodePtr, fileType, fieldname, content, NULL, NULL);
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-}
-
-
-void addChild(xmlNodePtr currentNodePtr, char *parent, char *child, char *childContent, char *optPropertyName,
-              char *optPropertyValue)
-{
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) parent)))
-        {
-            currentNodePtr = xmlNewTextChild(currentNodePtr, NULL, (xmlChar *) child, (xmlChar *) childContent);
-            if(optPropertyName != NULL && optPropertyValue != NULL)
-            {
-                xmlNewProp(currentNodePtr,BAD_CAST optPropertyName,BAD_CAST optPropertyValue);
-            }
-            break;
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-
-}
-
-
-void deleteField(xmlDocPtr docPtr, xmlNodePtr currentNodePtr, char *fieldText)
-{
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(xmlNodeListGetString(docPtr, currentNodePtr->xmlChildrenNode, 1), (xmlChar *) fieldText)))
-        {
-            xmlUnlinkNode(currentNodePtr);
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-}
-
-int changeField(xmlNodePtr currentNodePtr, char *nodeName, char *newContent)
-{
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) nodeName)))
-        {
-            xmlNodeSetContent(currentNodePtr,(xmlChar *) newContent);
-            return DB_RETURN_SUCCES;
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-    return DB_RETURN_DOESNOTEXIST;
-}
-
-int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    int succes;
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    sprintf(docname, "%s%ss/%s.xml", DB_DBLOCATION,fileType, filename);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return DB_RETURN_FILENOTFOUND;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, fileType)) == NULL)
-    {
-        return DB_RETURN_CORRUPTFILE;
-    }
-
-    succes = changeField(currentNodePtr,fieldname, newContent);
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-    return succes;
-}
-void addToListFile(char* itemType,char* newItem)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    char *doctype = (char *) malloc(50);//TODO: magic number ?make a define for this?
-    sprintf(doctype,"%ss", itemType);
-    sprintf(docname, "%s%slist.xml", DB_DBLOCATION,itemType);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, doctype)) == NULL)
-    {
-        return;
-    }
-
-    currentNodePtr = currentNodePtr->parent;
-    addChild(currentNodePtr, doctype, itemType, newItem, NULL, NULL);
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-    free(doctype);
-}
-
-void assignFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent)
-{
-    if (changeFieldInFile(fileType, filename, fieldname, newContent) == DB_RETURN_DOESNOTEXIST)
-    {
-        addFieldToFile(fileType, filename, fieldname, newContent);
     }
 }

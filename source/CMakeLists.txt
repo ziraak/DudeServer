@@ -17,6 +17,7 @@ set(HEADER_SOURCES main.h
 # creating the library for the server
 add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADER_SOURCES} commands/invite.h commands/invite.c)
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
+target_link_libraries(DudeServerLib ${SQLITE3_LIBRARY})
 target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 

@@ -2,7 +2,7 @@
 
 int handleDeleteUserCommand()
 {
-    if (checkUser(currentUser.username) == BOOL_TRUE)
+    if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
     {
         deleteUser(currentUser.username);
         return RPL_SUCCESS;
