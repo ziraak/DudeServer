@@ -27,6 +27,8 @@ void createNewChannel(char *channelName, char *password, char *topic, int visibl
 
 int checkIfChannelHasPassword(char* channelname);
 
+int deleteChannelInDB(char *channelName);
+
 int authenticateChannelPassword(char* channelname,char* password);
 
 void newChannelPassword(char* channelname, char* newPass);
