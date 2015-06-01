@@ -10,7 +10,7 @@ int handleJoinCommand(commandStruct cmd)
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
 
     channelInfo channel;
-    int resultGetChannel = getChannel(channelName, &channel);
+    int resultGetChannel = getChannelByName(channelName, ALL_COLUMNS, &channel);
     if(resultGetChannel == DB_RETURN_DOESNOTEXIST)
     {
         createNewChannel(channelName, NULL, NULL, BOOL_TRUE);

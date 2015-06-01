@@ -98,13 +98,7 @@ void channelInfo_free(channelInfo *ci)
         free(ci->messages);
     }
 
-    if(ci->name != NULL)
-    {
-        free(ci->name);
-    }
-
-    if(ci->users != NULL)
-    {
-        free(ci->users);
-    }
+    free(ci->name);
+    free(ci->users);
+    free(ci->password);
 }

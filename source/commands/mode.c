@@ -118,7 +118,7 @@ void handleFlags(modeStruct ms)
 int checkFlags(modeStruct ms)
 {
     channelInfo ci;
-    if(getChannel(ms.channelName, &ci) != DB_RETURN_SUCCES)
+    if(getChannelByName(ms.channelName, ALL_COLUMNS, &ci) != DB_RETURN_SUCCES)
     {
         return ERR_NOSUCHCHANNEL;
     }

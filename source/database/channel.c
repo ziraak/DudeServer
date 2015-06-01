@@ -1,5 +1,92 @@
 #include "channel.h"
 
+void fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
+{
+    int columnCount = sqlite3_column_count(stmt);
+    bzero(channel, sizeof(channelInfo));
+
+    int i;
+    for(i = 0; i < columnCount; i++)
+    {
+        if(strcmp(sqlite3_column_name(stmt, i), "name") == 0) { channel->name = sqlite3_column_string(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "password") == 0) { channel->password = sqlite3_column_string(stmt, i); continue; }
+//        if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel-> = sqlite3_column_int(stmt, i); continue; }
+    }
+}
+
+int getChannel(sqlite3_stmt *stmt, channelInfo *channel)
+{
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        fillChannel(stmt, channel);
+
+        STMT_RETURN(DB_RETURN_SUCCES, stmt);
+    }
+
+    STMT_RETURN(BOOL_FALSE, stmt);
+}
+
+channelInfo * getChannels(char* columns, int *result)
+{
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", columns, NULL);
+    channelInfo *channels = NULL;
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        free(sql);
+
+        int i = 0;
+        while(sqlite3_step(stmt) == SQLITE_ROW)
+        {
+            channels = realloc(channels, (i + 1) * sizeof(channelInfo));
+            channelInfo cs;
+            fillChannel(stmt, &cs);
+            channels[i] = cs;
+            i++;
+        }
+
+        *result = i;
+        STMT_RETURN(channels, stmt);
+    }
+
+    free(sql);
+    *result = BOOL_FALSE;
+    STMT_RETURN(channels, stmt);
+}
+
+int getChannelByName(char* name, char *columns, channelInfo *channel)
+{
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", columns, "name=?");
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        free(sql);
+        if(sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
+        {
+            return getChannel(stmt, channel);
+        }
+    }
+
+    free(sql);
+    STMT_RETURN(BOOL_FALSE, stmt);
+}
+
+void channelInfos_free(channelInfo *channels, int amount)
+{
+    if(channels == NULL)
+    {
+        return;
+    }
+
+    int i = 0;
+    for(i = 0; i < amount; i++)
+    {
+        channelInfo_free(&channels[i]);
+    }
+
+    free(channels);
+}
+
 int countMessages(messageInfo *message)
 {
 }
@@ -12,11 +99,6 @@ void deleteMessage(char* channelname)
 }
 
 int writeMessageToChannel(char *channelName, messageInfo message)
-{
-    return DB_RETURN_SUCCES;
-}
-
-int getChannel(char *channelName, channelInfo *channel)
 {
     return DB_RETURN_SUCCES;
 }

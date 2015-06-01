@@ -50,7 +50,7 @@ char **getChannellist();
 
 int deleteUserFromChannel(char *channelName, char *username);
 
-int getChannel(char *channelName, channelInfo *channel);
+int getChannelByName(char *channelName, char* columns, channelInfo *channel);
 
 int countMessages(messageInfo *message);
 

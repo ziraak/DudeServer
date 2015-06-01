@@ -17,7 +17,7 @@
 
 sqlite3 *db;
 
-
+#define ALL_COLUMNS "*"
 #define SETUP_ERROR_RETURN(val, err) printf("ERROR: %s\n", err); sqlite3_close(db); return val
 
 #define STMT_RETURN(val, stmt) sqlite3_finalize(stmt); return val

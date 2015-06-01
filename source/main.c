@@ -17,12 +17,17 @@ int main(int argc, char **argv)
     runServer(fork, SERVER_PORT);
     */
 
-    if(setupDatabaseConnection() != BOOL_TRUE)
+    if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
     }
 
-
+    channelInfo ci;
+    if(getChannelByName("batcave", ALL_COLUMNS, &ci) == DB_RETURN_SUCCES)
+    {
+        printf("%s | %s\n", ci.name, ci.password);
+        channelInfo_free(&ci);
+    }
 
     stopDatabase();
 
