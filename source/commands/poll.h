@@ -8,7 +8,6 @@
 
 typedef struct channelMessagesStruct
 {
-    char* channelName;
     char** messages;
     int messageCount;
 } channelMessagesStruct;
@@ -16,8 +15,8 @@ typedef struct channelMessagesStruct
 typedef struct pollStruct
 {
     int timestamp;
-    char** channels;
 
+    channelInfo *channels;
     channelMessagesStruct* channelMessages;
     int channelCount;
 } pollStruct;
