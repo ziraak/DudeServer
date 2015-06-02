@@ -39,12 +39,10 @@ channelInfo* getUserChannels(char *username, int *result)
     {
         if(sqlite3_bind_text(stmt, 1, username, -1, SQLITE_STATIC) == SQLITE_OK)
         {
-            free(sql);
             return _innerGetChannels(stmt, result);
         }
     }
 
-    free(sql);
     *result = 0;
     STMT_RETURN(NULL, stmt);
 }

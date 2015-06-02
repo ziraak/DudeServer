@@ -184,7 +184,7 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    if(userHasChannel(channelName) == BOOL_FALSE)
+    if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
     }

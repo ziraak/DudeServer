@@ -5,39 +5,21 @@
 
 int main(int argc, char **argv)
 {
-//
-//    int fork = BOOL_FALSE;
-//    if(argc > 1)
-//    {
-//        if(strcmp(argv[1], "FORK") == 0 || strcmp(argv[1], "fork") == 0 || strcmp(argv[1], "-f") == 0)
-//        {
-//            fork = BOOL_TRUE;
-//        }
-//    }
-//
-//    runServer(fork, SERVER_PORT);
-
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
     }
 
-    int result, j;
-    userInfo *uis = getChannelUsers("batcave", &result);
-    if(result > 0)
+    int fork = BOOL_FALSE;
+    if(argc > 1)
     {
-        for(j = 0; j < result; j++)
+        if(strcmp(argv[1], "FORK") == 0 || strcmp(argv[1], "fork") == 0 || strcmp(argv[1], "-f") == 0)
         {
-            PRINT_USER(uis[j]);
+            fork = BOOL_TRUE;
         }
     }
-    users_free(uis, result);
 
-    messageInfo messageInfoStruct = {
-        .writer = "fatih",
-        .timestamp = "0",
-        .body = "Test message"
-    };
+    runServer(fork, SERVER_PORT);
 
     stopDatabase();
 

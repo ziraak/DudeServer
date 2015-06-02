@@ -10,21 +10,32 @@ void runServer(int USE_FORK, int port)
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-    for (; ;)
-    {
-        if(sslAcceptConnection(sock) == SSL_OK)
-        {
-            if(USE_FORK == BOOL_TRUE)
-            {
-                processConnectedClientWithFork();
-            }
-            else
-            {
-                processConnectedClient();
-            }
-        }
-    }
+//    for (; ;)
+//    {
+//        if(sslAcceptConnection(sock) == SSL_OK)
+//        {
+//            if(USE_FORK == BOOL_TRUE)
+//            {
+//                processConnectedClientWithFork();
+//            }
+//            else
+//            {
+//                processConnectedClient();
+//            }
+//        }
+//    }
 #pragma clang diagnostic pop
+    if(sslAcceptConnection(sock) == SSL_OK)
+    {
+        processConnectedClient();
+//        if(USE_FORK == BOOL_TRUE)
+//        {
+//            processConnectedClientWithFork();
+//        }
+//        else
+//        {
+//        }
+    }
     sslDestroy();
 }
 
@@ -92,12 +103,6 @@ void freeCurrentUser()
     free(currentUser.username);
     free(currentUser.nickname);
     free(currentUser.password);
-
-    int i;
-    for(i = 0; currentUser.channels[i] != NULL; i++)
-    {
-        free(currentUser.channels[i]);
-    }
 }
 
 void processConnectedClientWithFork()
