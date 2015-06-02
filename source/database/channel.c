@@ -185,7 +185,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result)
 {
     sqlite3_stmt *statement;
     messageInfo *messageInfoStruct;
-    char *sql = getSelectSQL("CHANNEL_MESSAGES", ALL_COLUMNS, "channel_name=? AND timestamp=?");
+    char *sql = getSelectSQL("CHANNEL_MESSAGES", ALL_COLUMNS, "channel_name=? AND timestamp >= ?");
 
     if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK)
     {

@@ -34,6 +34,15 @@ int main(int argc, char **argv)
         channelInfos_free(cis, i);
     }
 
+    messageInfo messageInfoStruct = {
+        .writer = "fatih",
+        .timestamp = "0",
+        .body = "Test message"
+    };
+
+    int result  = insertMessage(messageInfoStruct, "batcave");
+    printf("Result: %i", result);
+
     stopDatabase();
 
     return EXIT_SUCCESS;
