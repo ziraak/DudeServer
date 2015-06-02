@@ -26,6 +26,11 @@ void userInfo_free(userInfo *ui)
     {
         free(ui->nickname);
     }
+
+    if (ui->role != NULL)
+    {
+        free(ui->role);
+    }
 }
 
 void channelUser_free(channelUser *cu)
@@ -124,4 +129,19 @@ void messageInfos_free(messageInfo *messageInfoStruct, int amount)
         messageInfo_free(&messageInfoStruct[i]);
     }
     free(messageInfoStruct);
+}
+
+void userInfos_free(userInfo *userInfoStruct, int amount)
+{
+    if (userInfoStruct == NULL)
+    {
+        return;
+    }
+
+    int i;
+    for (i = 0; i < amount; i++)
+    {
+        userInfo_free(&userInfoStruct[i]);
+    }
+    free(userInfoStruct);
 }

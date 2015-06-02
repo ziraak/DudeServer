@@ -20,8 +20,10 @@ int main(int argc, char **argv)
     }
 
     runServer(fork, SERVER_PORT);
-
     stopDatabase();
+
+    //commandStruct cmd = commandStruct_initialize("NAMES batcave");
+    //handleNamesCommand(cmd);
 
     return EXIT_SUCCESS;
 }

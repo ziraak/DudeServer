@@ -50,7 +50,7 @@ channelInfo* getUserChannels(char *username, int *result)
 userInfo* getChannelUsers(char *channelName, int *result)
 {
     sqlite3_stmt *stmt;
-    char *sql = "SELECT u.* FROM USERS u INNER JOIN CHANNEL_USERS cu ON u.name = cu.user_name WHERE cu.channel_name = ?;";
+    char *sql = "SELECT u.*, cu.user_privileges FROM USERS u INNER JOIN CHANNEL_USERS cu ON u.name = cu.user_name WHERE cu.channel_name = ?;";
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
