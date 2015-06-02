@@ -12,6 +12,7 @@ void fillUser(sqlite3_stmt *statement, userInfo *user)
         if(strcmp(sqlite3_column_name(statement, i), "name") == 0) { user->username = sqlite3_column_string(statement, i); }
         else if(strcmp(sqlite3_column_name(statement, i), "password") == 0) { user->password = sqlite3_column_string(statement, i); }
         else if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); }
+        else if(strcmp(sqlite3_column_name(statement, i), "user_privileges") == 0) { user->role = sqlite3_column_string(statement, i); }
     }
 }
 

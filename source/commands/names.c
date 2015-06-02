@@ -22,31 +22,32 @@ int handleNamesCommand(commandStruct cmd)
     size_t mallocUsersLength = 0;
     size_t mallocRolesLength = 0;
     int i = 0;
-    while (channelUserStruct[i].username != NULL)
+    for (i = 0; i < result; i++)
     {
-        mallocUsersLength += strlen(channelUserStruct[i].username) + 6 + 1 + 1; // 6 = "REPLY " AND 1 = "," AND 1 = " "
-        mallocRolesLength += strlen(channelUserStruct[i].role) + 1; // 1 = ","
-        i++;
+        mallocUsersLength += strlen(userInfoStruct[i].username) + 4 + 1 + 1; // 4 = "300 " AND 1 = "," AND 1 = " "
+        mallocRolesLength += strlen(userInfoStruct[i].role) + 1; // 1 = ","
     }
 
     char *users = malloc(mallocUsersLength + mallocRolesLength);
     char *roles = malloc(mallocRolesLength);
-    strcat(users, "REPLY ");
+    bzero(users, mallocUsersLength + mallocRolesLength);
+    bzero(roles, mallocRolesLength);
+
+    strcat(users, RPL_SUCCESS);
+    strcat(users, " ");
     strcat(roles, "");
-    i = 0;
-    while (channelUserStruct[i].username != NULL)
+    for (i = 0; i < result; i++)
     {
+        strcat(users, userInfoStruct[i].username);
         strcat(users, ",");
-        strcat(users, channelUserStruct[i].username);
+        strcat(roles, userInfoStruct[i].role);
         strcat(roles, ",");
-        strcat(roles, channelUserStruct[i].role);
-        i++;
     }
     strcat(users, " ");
     strcat(users, roles);
     sslSend(users);
     free(users);
     free(roles);
-    channelUser_free(channelUserStruct);
+    userInfo_free(userInfoStruct);
     return RPL_SUCCESS;
 }
