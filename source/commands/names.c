@@ -33,21 +33,25 @@ int handleNamesCommand(commandStruct cmd)
     bzero(users, mallocUsersLength + mallocRolesLength);
     bzero(roles, mallocRolesLength);
 
-    strcat(users, RPL_SUCCESS);
+    sprintf(users, "%i", RPL_SUCCESS);
     strcat(users, " ");
     strcat(roles, "");
     for (i = 0; i < result; i++)
     {
         strcat(users, userInfoStruct[i].username);
-        strcat(users, ",");
         strcat(roles, userInfoStruct[i].role);
-        strcat(roles, ",");
+
+        if (i < result - 1)
+        {
+            strcat(users, ",");
+            strcat(roles, ",");
+        }
     }
     strcat(users, " ");
     strcat(users, roles);
     sslSend(users);
     free(users);
     free(roles);
-    userInfo_free(userInfoStruct);
+    userInfos_free(userInfoStruct, result);
     return RPL_SUCCESS;
 }
