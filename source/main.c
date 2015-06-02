@@ -39,9 +39,6 @@ int main(int argc, char **argv)
         .body = "Test message"
     };
 
-    int result  = insertMessage(messageInfoStruct, "batcave");
-    printf("Result: %i", result);
-
     stopDatabase();
 
     return EXIT_SUCCESS;
