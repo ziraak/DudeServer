@@ -90,55 +90,105 @@ char* getUserNickname(char* username)
 }
 int checkIfUserExists(char *username)
 {
-    userInfo info;
-
-    sqlite3_stmt *statement;
-    char *sql = getSelectSQL("users", ALL_COLUMNS, "name=?");
-    if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK)
+    userInfo user;
+    if(getUser("username",&user)== BOOL_TRUE)
     {
-        free(sql);
-        if(sqlite3_bind_text(statement, 1, username, -1, SQLITE_STATIC) == SQLITE_OK)
-        {
-
-        }
-
-    }
-    free(sql);
-
-    if(info.username !=NULL)
-    {
-        user_free(&info);
+        userInfo_free(&user);
         return BOOL_TRUE;
     }
-//    user_free(&info);
+    userInfo_free(&user);
     return BOOL_FALSE;
 }
 
 int userJoinChannel(char *username, char *channelName, char *userRole)
 {
+    if(username == NULL || channelName == NULL || userRole == NULL) return DB_RETURN_NULLPOINTER;
+
+    char*values = malloc(strlen(username)+ strlen(channelName) + strlen(userRole)+ 10);
+    sprintf(values,"'%s','%s','%s'",username,channelName,userRole);
+
+    char* statement = getInsertSQL("CHANNEL_USERS","user_name, channel_name, user_privileges",values);
+    free(values);
+
+    executeStatement(statement);
+    free(statement);
     return DB_RETURN_SUCCES;
 }
 
 int userLeaveChannel(char* username, char *channelname)
 {
+    if(username == NULL || channelname == NULL) return DB_RETURN_NULLPOINTER;
+
+    char* where = malloc(strlen(username) + strlen(channelname)+ 40);
+    sprintf(where,"user_name = '%s' AND channel_name = '%s'",username,channelname);
+
+    char*statement = getDeleteSQL("CHANNEL_USERS",where);
+    free(where);
+
+    executeStatement(statement);
+    free(statement);
+
     return DB_RETURN_SUCCES;
 }
 
 
 int deleteUser(char *username)
 {
+    if(username == NULL) return DB_RETURN_NULLPOINTER;
+
+    char* where = malloc(strlen(username) + 20);
+    sprintf(where,"user_name = '%s'",username);
+
+    char*statement = getDeleteSQL("CHANNEL_USERS",where);
+    executeStatement(statement);
+    free(statement);
+
+    sprintf(where,"name = '%s'",username);
+    char* statement2 = getDeleteSQL("USERS",where);
+    free(where);
+
+    executeStatement(statement2);
+    free(statement2);
     return DB_RETURN_SUCCES;
 }
 
 int changeNickname(char *username, char *newNickname)
 {
+    if(username == NULL || newNickname == NULL) return DB_RETURN_NULLPOINTER;
+    char* where = malloc(strlen(username) + 10);
+    sprintf(where,"name = '%s'",username);
+
+    char*statement = getUpdateSQL("USERS",where,"nickname",newNickname);
+    free(where);
+    executeStatement(statement);
+    free(statement);
+    return DB_RETURN_SUCCES;
 }
 
 int changePassword(char *username, char *newPassword)
 {
+    if(username == NULL || newPassword == NULL) return DB_RETURN_NULLPOINTER;
+    char* where = malloc(strlen(username) + 10);
+    sprintf(where,"name = '%s'",username);
+
+    char*statement = getUpdateSQL("USERS",where,"password",newPassword);
+    free(where);
+    executeStatement(statement);
+    free(statement);
+    return DB_RETURN_SUCCES;
 }
 
 int createNewUser(char *username, char *password)
 {
+    if(username == NULL || password == NULL) return DB_RETURN_NULLPOINTER;
+
+    char*values = malloc(strlen(username)+ strlen(password) + 10);
+    sprintf(values,"'%s','%s','%s'",username,password,username);
+
+    char* statement = getInsertSQL("USERS","name, password, nickname",values);
+    free(values);
+
+    executeStatement(statement);
+    free(statement);
     return DB_RETURN_SUCCES;
 }
