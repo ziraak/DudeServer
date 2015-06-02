@@ -29,7 +29,7 @@ void userInfo_free(userInfo *ui)
 
     if (ui->role != NULL)
     {
-        free(ui->NULL);
+        free(ui->role);
     }
 }
 

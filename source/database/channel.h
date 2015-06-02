@@ -6,11 +6,6 @@
 #define DUDESERVER_CHANNEL_H
 
 #include "database.h"
-#include <libxml/xmlstring.h>
-#include <libxml/xmlwriter.h>
-#include <libxml/parser.h>
-#include <libxml/xmlreader.h>
-#include <libxml/xmlmemory.h>
 #include <stdio.h>
 #include <stdlib.h>
 
