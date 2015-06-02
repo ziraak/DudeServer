@@ -63,7 +63,7 @@ int insertMessage(messageInfo message, char *channelName)
 
     int result, resultMessageInfos;
     messageInfo *resultMessageInfo = getMessagesOnTime(channelName, atoi(message.timestamp), &resultMessageInfos);
-    result = resultMessageInfo->writer != NULL ? BOOL_TRUE : BOOL_FALSE;
+    result = resultMessageInfo != NULL ? BOOL_TRUE : BOOL_FALSE;
     messageInfos_free(resultMessageInfo, resultMessageInfos);
     return result;
 }

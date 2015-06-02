@@ -6,6 +6,7 @@ typedef struct userInfo
     char *username;
     char *nickname;
     char *password;
+    char *role;
     char **channels;
 } userInfo;
 
