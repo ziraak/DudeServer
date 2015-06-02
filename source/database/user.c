@@ -1,6 +1,5 @@
 #include "user.h"
 
-
 void fillUser(sqlite3_stmt *statement, userInfo *user)
 {
     int columnCount = sqlite3_column_count(statement);
@@ -13,6 +12,23 @@ void fillUser(sqlite3_stmt *statement, userInfo *user)
         if(strcmp(sqlite3_column_name(statement, i), "password") == 0) { user->password = sqlite3_column_string(statement, i); continue; }
         if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); continue; }
     }
+}
+
+userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result)
+{
+    userInfo *users = NULL;
+    int i = 0;
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        users = realloc(users, (i + 1) * sizeof(userInfo));
+        userInfo ui;
+        fillUser(stmt, &ui);
+        users[i] = ui;
+        i++;
+    }
+
+    *result = i;
+    STMT_RETURN(users, stmt);
 }
 
 int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
@@ -73,10 +89,10 @@ int getUser(char *username, userInfo *result)
     return DB_RETURN_SUCCES;
 }
 
-int isUserInChannel(char* channelname, char* username)
-{
-    return BOOL_FALSE;
-}
+//int isUserInChannel(char* channelname, char* username)
+//{
+//    return BOOL_FALSE;
+//}
 
 
 char* getUserNickname(char* username)

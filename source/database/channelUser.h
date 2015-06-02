@@ -8,7 +8,13 @@
 #include "database.h"
 
 channelInfo* getUserChannels(char *username, int *result);
-void updateChannelUserRole(char *channelName, char *username, char *newRole);
+userInfo* getChannelUsers(char *channelName, int *result);
+int getChannelUser(char *channelName, char *username, channelUser *cu);
+
+int isUserInChannel(char *channelName, char *username);
+
+char *getChannelUserRole(char *channelName, char *username);
+int updateChannelUserRole(char *channelName, char *username, char *newRole);
 int checkIfChannelEmpty(char *channelName);
 
 #endif //DUDESERVER_CHANNELUSERS_H

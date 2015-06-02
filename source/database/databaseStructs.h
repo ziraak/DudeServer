@@ -14,8 +14,8 @@ typedef struct userInfo
 typedef struct channelUser
 {
     char* username;
+    char* channelName;
     char* role;
-    char* nickname;
 }channelUser;
 
 typedef struct messageInfo

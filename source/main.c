@@ -1,6 +1,7 @@
 #include "main.h"
 
 #define PRINT_CHANNEL(c) printf("%s: %s | %s | %i\n", c.name, c.password, c.topic, c.visible)
+#define PRINT_USER(u) printf("%s: %s | %s | %i\n", u.username, u.password, u.nickname)
 
 int main(int argc, char **argv)
 {
@@ -21,18 +22,16 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    int i;
-    channelInfo *cis = getChannels(ALL_COLUMNS, &i);
-    if(i != BOOL_FALSE)
+    int result, j;
+    userInfo *uis = getChannelUsers("batcave", &result);
+    if(result > 0)
     {
-        int j;
-        for(j = 0; j < i; j++)
+        for(j = 0; j < result; j++)
         {
-            PRINT_CHANNEL(cis[j]);
+            PRINT_USER(uis[j]);
         }
-
-        channelInfos_free(cis, i);
     }
+    users_free(uis, result);
 
     messageInfo messageInfoStruct = {
         .writer = "fatih",
