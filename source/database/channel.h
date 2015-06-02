@@ -14,6 +14,9 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+int _innerGetChannel(sqlite3_stmt *stmt, channelInfo *channel);
+channelInfo *_innerGetChannels(sqlite3_stmt *stmt, int *result);
+
 channelInfo* getChannels(char* columns, int *result);
 channelInfo* getVisibleChannels(char* columns, int *result);
 int getChannelByName(char *channelName, channelInfo *channel);

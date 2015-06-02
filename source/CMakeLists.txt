@@ -15,7 +15,7 @@ set(HEADER_SOURCES main.h
     commands/poll.h)
 
 # creating the library for the server
-add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADER_SOURCES} commands/invite.h commands/invite.c)
+add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADER_SOURCES} commands/invite.h commands/invite.c database/channelUser.h database/channelUser.c database/channelMessage.h database/channelMessage.c)
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
 target_link_libraries(DudeServerLib ${SQLITE3_LIBRARY})
 target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})

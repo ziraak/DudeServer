@@ -9,10 +9,6 @@ void executeStatement(char* stmt)
         printf("ERROR: %s\nIN STATEMENT: %s\n", err, stmt);
         sqlite3_free(err);
     }
-    else
-    {
-        printf(" -EXECUTED: %.125s%s\n", stmt, (strlen(stmt)>125?" ...":""));
-    }
 }
 
 void firstTimeSetup()

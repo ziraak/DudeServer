@@ -22,6 +22,6 @@ int writeMessageToDB(char *msgToSend, char *channel)
     message.timestamp = malloc(11);
     bzero(message.timestamp, 11);
     sprintf(message.timestamp, "%i", (int)time(NULL));
-    writeMessageToChannel(channel, message);
+    insertMessage(message, channel);
     return DB_RETURN_SUCCES;
 }

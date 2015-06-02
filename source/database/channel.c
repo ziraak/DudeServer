@@ -8,14 +8,14 @@ void _fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
     int i;
     for(i = 0; i < columnCount; i++)
     {
-        if(strcmp(sqlite3_column_name(stmt, i), "name") == 0) { channel->name = sqlite3_column_string(stmt, i); continue; }
-        if(strcmp(sqlite3_column_name(stmt, i), "password") == 0) { channel->password = sqlite3_column_string(stmt, i); continue; }
-        if(strcmp(sqlite3_column_name(stmt, i), "topic") == 0) { channel->topic = sqlite3_column_string(stmt, i); continue; }
-        if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel->visible = sqlite3_column_int(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "name") == 0) { channel->name = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "password") == 0) { channel->password = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "topic") == 0) { channel->topic = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel->visible = sqlite3_column_int(stmt, i); }
     }
 }
 
-int _getChannel(sqlite3_stmt *stmt, channelInfo *channel)
+int _innerGetChannel(sqlite3_stmt *stmt, channelInfo *channel)
 {
     while(sqlite3_step(stmt) == SQLITE_ROW)
     {
@@ -27,7 +27,7 @@ int _getChannel(sqlite3_stmt *stmt, channelInfo *channel)
     STMT_RETURN(BOOL_FALSE, stmt);
 }
 
-channelInfo *_getChannels(sqlite3_stmt *stmt, int *result)
+channelInfo *_innerGetChannels(sqlite3_stmt *stmt, int *result)
 {
     channelInfo *channels = NULL;
     int i = 0;
@@ -52,7 +52,7 @@ channelInfo *getChannels(char* columns, int *result)
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
         free(sql);
-        return _getChannels(stmt, result);
+        return _innerGetChannels(stmt, result);
     }
 
     free(sql);
@@ -67,31 +67,15 @@ int getChannelByName(char *name, channelInfo *channel)
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
-        free(sql);
         if(sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
         {
-            return _getChannel(stmt, channel);
+            free(sql);
+            return _innerGetChannel(stmt, channel);
         }
     }
 
     free(sql);
     STMT_RETURN(BOOL_FALSE, stmt);
-}
-
-int countMessages(messageInfo *message)
-{
-}
-
-void writeMessage(messageInfo message, char* channelName)
-{
-}
-void deleteMessage(char* channelname)
-{
-}
-
-int writeMessageToChannel(char *channelName, messageInfo message)
-{
-    return DB_RETURN_SUCCES;
 }
 
 channelUser *getUsersFromChannel(char *channelName)
@@ -113,7 +97,7 @@ channelInfo* getVisibleChannels(char* columns, int *result)
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
         free(sql);
-        return _getChannels(stmt, result);
+        return _innerGetChannels(stmt, result);
     }
 
     free(sql);
@@ -160,19 +144,6 @@ int deleteChannel(char *channelName)
     sqlite3_free(channelDelete);
 
     return checkChannel(channelName) == BOOL_FALSE;
-}
-
-int deleteChannelFromList(char *channelName)
-{
-
-}
-
-int deleteUserFromChannel(char *channelName, char *username)
-{
-}
-
-int checkIfChannelEmpty(char *channelName)
-{
 }
 
 messageInfo *getMessages(char *channelName)
@@ -237,12 +208,4 @@ void updateChannelVisibility(char *channelName, int visible)
     char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET visible = %i WHERE name = '%s';", visible, channelName);
     executeStatement(stmt);
     sqlite3_free(stmt);
-}
-
-void updateChannelUserRole(char *channelName, char *username, char *newRole)
-{
-    if(checkChannel(channelName) == BOOL_TRUE)
-    {
-
-    }
 }

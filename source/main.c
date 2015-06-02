@@ -16,7 +16,6 @@ int main(int argc, char **argv)
 //
 //    runServer(fork, SERVER_PORT);
 
-
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
