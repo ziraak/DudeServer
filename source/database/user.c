@@ -73,10 +73,10 @@ int getUser(char *username, userInfo *result)
     return DB_RETURN_SUCCES;
 }
 
-int isUserInChannel(char* channelname, char* username)
-{
-    return BOOL_FALSE;
-}
+//int isUserInChannel(char* channelname, char* username)
+//{
+//    return BOOL_FALSE;
+//}
 
 
 char* getUserNickname(char* username)

@@ -108,17 +108,6 @@ int getChannelByName(char *name, channelInfo *channel)
     STMT_RETURN(BOOL_FALSE, stmt);
 }
 
-channelUser *getUsersFromChannel(char *channelName)
-{
-    channelUser* users = NULL;
-    return users;
-}
-
-char* getUserRole(char* channelName, char* username)
-{
-    return NULL;
-}
-
 channelInfo* getVisibleChannels(char* columns, int *result)
 {
     sqlite3_stmt *stmt;

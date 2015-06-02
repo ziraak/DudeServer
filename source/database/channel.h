@@ -43,11 +43,8 @@ int checkIfChannelVisible(char* channelName);
 
 channelUser* getUsersFromChannel(char *channelName);
 
-char* getUserRole(char* channelName, char* username);
+char*getChannelUserRole(char *channelName, char *username);
 
 void updateChannelVisibility(char *channelName, int visible);
-
-void updateChannelUserRole(char *channelName, char *username, char *newRole);
-
 
 #endif 
