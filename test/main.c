@@ -11,6 +11,7 @@ int main()
 //    numberOfFailedTests += knownBugsSuiteCommand();
 
     stopDatabase();
+    remove("dude@chat.db");
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 

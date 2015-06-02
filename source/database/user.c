@@ -87,6 +87,7 @@ char* getUserNickname(char* username)
 }
 int checkIfUserExists(char *username)
 {
+    if(username == NULL || !strcmp(username,"")) return DB_RETURN_NULLPOINTER;
     userInfo user;
     bzero(&user, sizeof(userInfo));
     if(getUser(username, &user)== BOOL_TRUE)
@@ -180,13 +181,14 @@ int createNewUser(char *username, char *password)
 {
     if(username == NULL || password == NULL) return DB_RETURN_NULLPOINTER;
 
-    char*values = malloc(strlen(username)+ strlen(password) + 10);
+    char*values = malloc(strlen(username)+ strlen(password) + strlen(username)+10);
     sprintf(values,"'%s','%s','%s'",username,password,username);
 
     char* statement = getInsertSQL("USERS","name, password, nickname",values);
-    free(values);
 
+    free(values);
     executeStatement(statement);
+
     free(statement);
     return DB_RETURN_SUCCES;
 }

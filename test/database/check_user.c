@@ -17,6 +17,7 @@ char *newUname = "dummy2";
 START_TEST(checkUser_test_NULL)
     {
         ck_assert_int_eq(checkIfUserExists(NULL), DB_RETURN_NULLPOINTER);
+        ck_assert_int_eq(checkIfUserExists(""), DB_RETURN_NULLPOINTER);
     }
 END_TEST
 
@@ -28,9 +29,8 @@ END_TEST
 
 START_TEST(checkUser_test_true)
     {
-        userInfo info;
-        getUser("fatih",&info);
-        ck_assert_str_eq(info.username,"fatih");
+        int result = checkIfUserExists("fatih");
+        ck_assert_int_eq(result, BOOL_TRUE);
     }
 END_TEST
 
@@ -42,11 +42,6 @@ START_TEST(createUser_test_alreadyExists)
     }
 END_TEST
 
-START_TEST(createUser_test_alreadyExistsButBanned)
-    {
-        ck_assert_int_eq(createNewUser(bannedName, "a"), DB_RETURN_ALREADYEXISTS);
-    }
-END_TEST
 
 START_TEST(createUser_test_NULL)
     {
@@ -74,12 +69,11 @@ START_TEST(userJoinChannel_test_correct)
         ck_assert_int_eq(userJoinChannel("ferdi", "eigendunk", USER_ROLE_USER), DB_RETURN_SUCCES);
         userInfo user;
         channelInfo channel;
-//        ck_assert_int_eq(getUser(uName, &user), DB_RETURN_SUCCES);
+        ck_assert_int_eq(getUser("ferdi", &user), DB_RETURN_SUCCES);
 //        ck_assert_str_eq(user.channels[0], cName);
 //        ck_assert_int_eq(getChannel(cName, &channel), DB_RETURN_SUCCES);
 //        ck_assert_str_eq(channel.users[0], uName);
-//        deleteUserFromChannel(cName,uName);
-//        deleteChannelFromUser(uName,cName);
+        userLeaveChannel("ferdie","eigendunk");
     }
 END_TEST
 
@@ -98,32 +92,45 @@ END_TEST
 //delete users test-----------------------------------------------------------------------------------
 START_TEST(test_deleteUser_correct)
     {
-//        char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-//        sprintf(docname, "%s%s.xml", DB_USERLOCATION, newUname);
+
         deleteUser(newUname);
         ck_assert_int_eq(checkIfUserExists(newUname),BOOL_FALSE);
-//        ck_assert_int_eq(openDoc(docname),NULL);
 
-//        free(docname);
-    }
-END_TEST
-
-START_TEST(test_deleteUser_banned)//TODO: doesn't support banned users
-    {
-//        char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-//        sprintf(docname, "%s%s.xml", DB_USERLOCATION, bannedName);
-        deleteUser(bannedName);
-        ck_assert_int_eq(checkIfUserExists(bannedName),BOOL_FALSE);
-//        ck_assert_int_eq(openDoc(docname),!NULL);
-//        free(docname);
     }
 END_TEST
 
 START_TEST(test_getUsrNickname)
     {
-        ck_assert_str_eq(getUserNickname("alibaba"),"ali-b");
+        createNewUser("alibaba","open sesame");
+        changeNickname("alibaba","ali-b");
+        char* nickname = getUserNickname("alibaba");
+        ck_assert_str_eq(nickname,"ali-b");
+        free(nickname);
     }
 END_TEST
+
+START_TEST(test_all)
+    {
+        createNewUser("awesome","awesome");
+        checkIfUserExists("awesome");
+        userInfo result;
+        getUser("awesome",&result);
+        userInfo_free(&result);
+        userJoinChannel("awesome", "eigendunk","Fuhrer");
+
+        changeNickname("awesome", "not awesome");
+
+        changePassword("awesome","P@$$w0rd");
+
+        char* awesome = getUserNickname("awesome");
+        ck_assert_str_eq("not awesome",awesome);
+        free(awesome);
+
+        userLeaveChannel("awesome","eigendunk");
+        deleteUser("awesome");
+    }
+END_TEST
+
 
 
 
@@ -137,23 +144,23 @@ Suite *user_suite(void)
 
     tc_user_core = tcase_create("core");
 
-//    tcase_add_test(tc_user_core, checkUser_test_NULL);
-//    tcase_add_test(tc_user_core, checkUser_test_false);
-//    tcase_add_test(tc_user_core, checkUser_test_true);
-//
+    tcase_add_test(tc_user_core, checkUser_test_NULL);
+    tcase_add_test(tc_user_core, checkUser_test_false);
+    tcase_add_test(tc_user_core, checkUser_test_true);
+
 //    tcase_add_test(tc_user_core, createUser_test_alreadyExists);
-//    tcase_add_test(tc_user_core, createUser_test_alreadyExistsButBanned);
-//    tcase_add_test(tc_user_core, createUser_test_NULL);
-//    tcase_add_test(tc_user_core, createUser_test_CORRECT);
+    tcase_add_test(tc_user_core, createUser_test_NULL);
+    tcase_add_test(tc_user_core, createUser_test_CORRECT);
 
     tcase_add_test(tc_user_core, userJoinChannel_test_correct);
-    tcase_add_test(tc_user_core, userJoinChannel_test_wrongChannel);
-    tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
+//    tcase_add_test(tc_user_core, userJoinChannel_test_wrongChannel);
+//    tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
 
-//    tcase_add_test(tc_user_core, test_deleteUser_correct);
-//
-//
-//    tcase_add_test(tc_user_core, test_getUsrNickname);
+    tcase_add_test(tc_user_core, test_deleteUser_correct);
+
+    tcase_add_test(tc_user_core, test_all);
+
+    tcase_add_test(tc_user_core, test_getUsrNickname);
 
     suite_add_tcase(s, tc_user_core);
 
@@ -167,9 +174,11 @@ int user_tests()
     Suite *s;
     SRunner *sr;
 
+
     s = user_suite();
     sr = srunner_create(s);
 
+    srunner_set_fork_status(sr, CK_NOFORK);
     srunner_run_all(sr, CK_NORMAL);
     number_failed = srunner_ntests_failed(sr);
     srunner_free(sr);
