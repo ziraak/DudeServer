@@ -15,7 +15,9 @@ int handleNamesCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    channelUserStruct = NULL;
+    int result;
+    userInfo *userInfoStruct;
+    userInfoStruct = getChannelUsers(channelName, &result);
 
     size_t mallocUsersLength = 0;
     size_t mallocRolesLength = 0;
