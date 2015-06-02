@@ -12,5 +12,6 @@ void channelUser_free(channelUser *cu);
 void messageInfo_free(messageInfo *mi);
 void channelInfo_free(channelInfo *ci);
 void channelInfos_free(channelInfo *channels, int amount);
+void messageInfos_free(messageInfo *messageInfoStruct, int amount);
 
 #endif //DUDESERVER_DATABASESTRUCTS_FREE_H

@@ -111,11 +111,26 @@ void channelInfos_free(channelInfo *channels, int amount)
         return;
     }
 
-    int i = 0;
+    int i;
     for(i = 0; i < amount; i++)
     {
         channelInfo_free(&channels[i]);
     }
 
     free(channels);
+}
+
+void messageInfos_free(messageInfo *messageInfoStruct, int amount)
+{
+    if (messageInfoStruct == NULL)
+    {
+        return;
+    }
+
+    int i;
+    for (i = 0; i < amount; i++)
+    {
+        messageInfo_free(&messageInfoStruct[i]);
+    }
+    free(messageInfoStruct);
 }
