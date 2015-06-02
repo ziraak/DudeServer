@@ -27,7 +27,7 @@ int checkIfChannelEmpty(char* channelName);
 
 messageInfo* getMessagesOnTime(char *channelName, int timestamp, int *result);
 
-void insertChannel(char *channelName, char *password, char *topic, int visible);
+int insertChannel(char *channelName, char *password, char *topic, int visible);
 
 int checkIfChannelHasPassword(char* channelname);
 
@@ -40,8 +40,6 @@ void updateChannelPassword(char *channelname, char *newPass);
 void updateChannelTopic(char *channelname, char *newTopic);
 
 int checkIfChannelVisible(char* channelName);
-
-channelUser* getUsersFromChannel(char *channelName);
 
 char*getChannelUserRole(char *channelName, char *username);
 

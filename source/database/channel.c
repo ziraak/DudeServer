@@ -190,11 +190,18 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result)
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
-void insertChannel(char *channelName, char *password, char *topic, int visible)
+int insertChannel(char *channelName, char *password, char *topic, int visible)
 {
+    if(checkChannel(channelName) == BOOL_TRUE)
+    {
+        return BOOL_FALSE;
+    }
+
     char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('%s', '%s', '%s', '%i');", channelName, password, topic, visible);
     executeStatement(stmt);
     sqlite3_free(stmt);
+
+    return checkChannel(channelName);
 }
 
 int checkIfChannelHasPassword(char *channelname)

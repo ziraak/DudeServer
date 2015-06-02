@@ -8,6 +8,7 @@
 #include "database.h"
 
 channelInfo* getUserChannels(char *username, int *result);
+userInfo* getChannelUsers(char *channelName, int *result);
 int getChannelUser(char *channelName, char *username, channelUser *cu);
 
 int isUserInChannel(char *channelName, char *username);

@@ -49,6 +49,23 @@ channelInfo* getUserChannels(char *username, int *result)
     STMT_RETURN(NULL, stmt);
 }
 
+userInfo* getChannelUsers(char *channelName, int *result)
+{
+    sqlite3_stmt *stmt;
+    char *sql = "SELECT u.* FROM USERS u INNER JOIN CHANNEL_USERS cu ON u.name = cu.user_name WHERE cu.channel_name = ?;";
+
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        if(sqlite3_bind_text(stmt, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK)
+        {
+            return _innerGetUsers(stmt, result);
+        }
+    }
+
+    *result = 0;
+    STMT_RETURN(NULL, stmt);
+}
+
 int getChannelUser(char *channelName, char *username, channelUser *cu)
 {
     sqlite3_stmt *stmt;
