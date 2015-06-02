@@ -57,7 +57,7 @@ channelMessagesStruct getChannelMessages(char* channelName, int timestamp)
     char **messages = malloc(sizeof(char));
     int messageCount = 0,
         resultCount = 0;
-    while(messageInfos[messageCount].writer != NULL && messageInfos[messageCount].body != NULL)
+    while(messageCount < getMessagesOnTimeResult)
     {
         char *message;
 
@@ -119,7 +119,6 @@ pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int ti
     {
         innerChannels[i] = malloc(strlen(channels[i].name));
         sprintf(innerChannels[i], "%s", channels[i].name);
-        i++;
     }
     innerChannels[i] = NULL;
 
@@ -139,11 +138,6 @@ void pollStruct_free(pollStruct *ps)
         return;
     }
 
-    if(ps->channels != NULL)
-    {
-        free(ps->channels);
-    }
-
     if(ps->channelMessages != NULL)
     {
         int i;
@@ -154,13 +148,16 @@ void pollStruct_free(pollStruct *ps)
                 free(ps->channelMessages[i].channelName);
             }
 
-            int j = 0;
-            while(ps->channelMessages[i].messages[j] != NULL)
+            int j;
+            for(j = 0; j < ps->channelMessages[i].messageCount; j++)
             {
                 free(ps->channelMessages[i].messages[j]);
-                j++;
             }
+            free(ps->channelMessages[i].messages);
+            free(ps->channels[i]);
         }
+        free(ps->channels);
+        free(ps->channelMessages);
     }
 }
 
@@ -173,7 +170,7 @@ int handlePollCommand(commandStruct cmd)
 
     int channelCount;
     channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
-    pollStruct ps = pollStruct_initialize(channels, 0, channelCount);
+    pollStruct ps = pollStruct_initialize(channels, channelCount, atoi(cmd.parameters[0]));
     channelInfos_free(channels, channelCount);
 
     if(getPollMessages(&ps) == BOOL_TRUE)
