@@ -33,10 +33,9 @@ void firstTimeSetup()
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('harmen', 'batcave', 'o');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('ferdi',  'batcave', 'u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'eigendunk','u');");
-    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('desmond','eigendunk','u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('sjuul',  'eigendunk','o');");
 
-    executeStatement("CREATE TABLE CHANNEL_MESSAGES (message_id INTERGER PRIMARY KEY, user_name TEXT NOT NULL, channel_name TEXT NOT NULL, timestamp INTEGER NOT NULL, body TEXT, FOREIGN KEY(user_name) REFERENCES USERS(name), FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
+    executeStatement("CREATE TABLE CHANNEL_MESSAGES (message_id INTERGER PRIMARY KEY, user_name TEXT NOT NULL, channel_name TEXT NOT NULL, timestamp INTEGER NOT NULL, body TEXT, FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih','batcave',1313213, 'im batman');");
 
     printf("\n-- FIRST TIME SETUP COMPLETED --");
@@ -120,4 +119,36 @@ char* getSelectSQL(char* table, char* columns, char* where)
         sprintf(result, "SELECT %s FROM %s WHERE %s", columns, table, where);
         return result;
     }
+}
+
+char* getInsertSQL(char* table,char* valueNames ,char* values)
+{
+    if(table == NULL||valueNames == NULL || values == NULL) return NULL;
+
+    char* statement = malloc(strlen(table)+ strlen(valueNames) + strlen(values)+ 30);
+    sprintf(statement,"INSERT INTO %s (%s) VALUES (%s);",table,valueNames,values);
+    return statement;
+}
+
+char* getDeleteSQL(char* table, char* where)
+{
+    if(table == NULL || where == NULL)
+    {
+        return NULL;
+    }
+
+    char* statement = malloc(strlen(table)+ strlen(where) + 30);
+    sprintf(statement,"DELETE FROM %s WHERE %s;",table,where);
+    return statement;
+}
+
+char* getUpdateSQL(char* table, char* where, char* valueName, char* newValue)
+{
+    if(table == NULL || where== NULL || valueName== NULL || newValue == NULL)
+    {
+        return NULL;
+    }
+    char* statement = malloc(strlen(table)+ strlen(where)+ strlen(valueName)+strlen(newValue)  + 26);
+    sprintf(statement,"UPDATE %s SET %s = '%s' WHERE %s;",table,valueName,newValue, where);
+    return statement;
 }

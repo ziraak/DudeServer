@@ -90,7 +90,6 @@ void processConnectedClient()
 void freeCurrentUser()
 {
     free(currentUser.username);
-    free(currentUser.loginToken);
     free(currentUser.nickname);
     free(currentUser.password);
 
