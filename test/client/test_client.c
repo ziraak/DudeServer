@@ -15,7 +15,7 @@ void clientBusinessSend()
         {
             if (strcmp(snd, "LOGIN\n") == 0)
             {
-                SSL_write(connection.ssl_handle, "LOGIN fatih nub", 15);
+                SSL_write(connection.ssl_handle, "LOGIN fatih :nub", 16);
             }
             else if (strcmp(snd, "JOIN\n") == 0)
             {
