@@ -1,7 +1,7 @@
 #include "main.h"
 
 #define PRINT_CHANNEL(c) printf("%s: %s | %s | %i\n", c.name, c.password, c.topic, c.visible)
-#define PRINT_USER(u) printf("%s: %s | %s | %i\n", u.username, u.password, u.nickname)
+#define PRINT_USER(u) printf("%s: %s | %s\n", u.username, u.password, u.nickname)
 
 int main(int argc, char **argv)
 {

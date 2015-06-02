@@ -9,13 +9,10 @@ void fillUser(sqlite3_stmt *statement, userInfo *user)
     int i;
     for(i = 0; i < columnCount; i++)
     {
-        if(strcmp(sqlite3_column_name(statement, i), "name") == 0) { user->username = sqlite3_column_string(statement, i); continue; }
-        if(strcmp(sqlite3_column_name(statement, i), "password") == 0) { user->password = sqlite3_column_string(statement, i); continue; }
-        if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); continue; }
+        if(strcmp(sqlite3_column_name(statement, i), "name") == 0) { user->username = sqlite3_column_string(statement, i); }
+        else if(strcmp(sqlite3_column_name(statement, i), "password") == 0) { user->password = sqlite3_column_string(statement, i); }
+        else if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); }
     }
-    user[i].username = NULL;
-    user[i].nickname = NULL;
-    user[i].password = NULL;
 }
 
 int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
@@ -28,6 +25,23 @@ int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
     }
 
     STMT_RETURN(BOOL_FALSE, statement);
+}
+
+userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result)
+{
+    userInfo *users = NULL;
+    int i = 0;
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        users = realloc(users, (i + 1) * sizeof(userInfo));
+        userInfo ui;
+        fillUser(stmt, &ui);
+        users[i] = ui;
+        i++;
+    }
+
+    *result = i;
+    STMT_RETURN(users, stmt);
 }
 
 int getUserByName(char *name, userInfo *user)

@@ -22,6 +22,9 @@ int tableExists(char* name);
 
 char* sqlite3_column_string(sqlite3_stmt *stmt, int id);
 char* getSelectSQL(char* table, char* columns, char* where);
+char* getInsertSQL(char* table,char* valueNames ,char* values);
+char* getDeleteSQL(char* table, char* where);
+char* getUpdateSQL(char* table, char* where, char* valueName, char* newValue);
 
 void executeStatement(char* stmt);
 
