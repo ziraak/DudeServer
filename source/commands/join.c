@@ -17,10 +17,10 @@ int handleJoinCommand(commandStruct cmd)
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
 
     channelInfo channel;
-    int resultGetChannel = getChannel(channelName, &channel);
+    int resultGetChannel = getChannelByName(channelName, &channel);
     if(resultGetChannel == DB_RETURN_DOESNOTEXIST)
     {
-        createNewChannel(channelName, NULL, NULL, BOOL_TRUE);
+        insertChannel(channelName, NULL, NULL, BOOL_TRUE);
     }
     else if (resultGetChannel == DB_RETURN_SUCCES)
     {
@@ -33,7 +33,6 @@ int handleJoinCommand(commandStruct cmd)
     }
     else
     {
-        channelInfo_free(&channel);
         return resultGetChannel;
     }
     channelInfo_free(&channel);
@@ -73,43 +72,15 @@ int joinChannel(char* channelName)
 
 int joinChannelByUsername(char* channelName, char *username)
 {
-    if(userHasChannel(channelName) == BOOL_TRUE)
+    if(isUserInChannel(channelName, username) == BOOL_TRUE)
     {
         return RPL_TOPIC;
     }
 
-    if(userJoinChannel(username, channelName, NULL) == DB_RETURN_DOESNOTEXIST)
+    if(userJoinChannel(username, channelName, USER_ROLE_USER) == DB_RETURN_DOESNOTEXIST)
     {
         return ERR_BADCHANMASK;
     }
 
-    userAddChannel(channelName);
-
     return RPL_TOPIC;
-}
-
-int userHasChannel(char* channelName)
-{
-    int j;
-    for(j = 0; currentUser.channels[j] != NULL; j++)
-    {
-        if(strcmp(channelName, currentUser.channels[j]) == 0)
-        {
-            return BOOL_TRUE;
-        }
-    }
-
-    return BOOL_FALSE;
-}
-
-void userAddChannel(char* channelName)
-{
-    if(userHasChannel(channelName) == BOOL_FALSE)
-    {
-        char** channels = currentUser.channels;
-
-        while(*channels != NULL) { channels++; }
-
-        *channels = channelName;
-    }
 }

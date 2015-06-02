@@ -3,19 +3,14 @@
 
 #include "database.h"
 
-int checkUser(char *userName);
+void fillUser(sqlite3_stmt *statement, userInfo *user);
+userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result);
 
-char **getUserList();
+int checkIfUserExists(char *username);
 
 int getUser(char *username, userInfo *result);
 
-int isUserInChannel(char* channelname, char* username);
-
 int userJoinChannel(char *username, char *channelName, char *userRole);
-
-void deleteChannelFromUser(char *username, char *channelName);
-
-int deleteUserFromList(char *username);
 
 int deleteUser(char *username);
 
@@ -23,10 +18,13 @@ int changeNickname(char *username, char *newNickname);
 
 int changePassword(char *username, char *newPassword);
 
-int assignLoginToken(char *username, char *loginToken);
-
 int createNewUser(char *username, char *password);
 
 char* getUserNickname(char* username);
+
+int userLeaveChannel(char* username, char *channelname);
+
+void user_free(userInfo *user);
+void users_free(userInfo *users, int amount);
 
 #endif

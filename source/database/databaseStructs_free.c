@@ -35,42 +35,26 @@ void channelUser_free(channelUser *cu)
         return;
     }
 
-    if(cu->username != NULL)
-    {
-        free(cu->username);
-    }
+    free(cu->username);
+    free(cu->channelName);
+    free(cu->role);
 
-    if(cu->role != NULL)
-    {
-        free(cu->role);
-    }
-
-    if(cu->nickname != NULL)
-    {
-        free(cu->nickname);
-    }
+    cu->username = NULL;
+    cu->channelName = NULL;
+    cu->role = NULL;
 }
 
 void messageInfo_free(messageInfo *mi)
 {
-    if(mi == NULL)
-    {
-        return;
-    }
-
-    if(mi->writer != NULL)
+    if(mi != NULL)
     {
         free(mi->writer);
-    }
-
-    if(mi->body != NULL)
-    {
         free(mi->body);
-    }
-
-    if(mi->timestamp != NULL)
-    {
         free(mi->timestamp);
+
+        mi->writer = NULL;
+        mi->body = NULL;
+        mi->timestamp = NULL;
     }
 
     free(mi);
@@ -93,20 +77,51 @@ void channelInfo_free(channelInfo *ci)
                 break;
             }
 
-            free(ci->messages[i].body);
-            free(ci->messages[i].timestamp);
-            free(ci->messages[i].writer);
+            messageInfo_free(&ci->messages[i]);
         }
         free(ci->messages);
+
+        ci->messages = NULL;
     }
 
-    if(ci->name != NULL)
+    free(ci->name);
+    free(ci->users);
+    free(ci->password);
+    free(ci->topic);
+
+    ci->name = NULL;
+    ci->users = NULL;
+    ci->password = NULL;
+    ci->topic = NULL;
+}
+
+void channelInfos_free(channelInfo *channels, int amount)
+{
+    if(channels == NULL)
     {
-        free(ci->name);
+        return;
     }
 
-    if(ci->users != NULL)
+    int i;
+    for(i = 0; i < amount; i++)
     {
-        free(ci->users);
+        channelInfo_free(&channels[i]);
     }
+
+    free(channels);
+}
+
+void messageInfos_free(messageInfo *messageInfoStruct, int amount)
+{
+    if (messageInfoStruct == NULL)
+    {
+        return;
+    }
+
+    int i;
+    for (i = 0; i < amount; i++)
+    {
+        messageInfo_free(&messageInfoStruct[i]);
+    }
+    free(messageInfoStruct);
 }

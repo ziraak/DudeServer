@@ -3,20 +3,21 @@ set(MAIN_SOURCES main.c)
 
 # all files contained inside the library
 set(LIB_SOURCES utils/utils.c ssl/communication.c server.h
-    commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c commands/topic.c commands/mode.c
+    commands/names.c commands/login.c commands/join.c commands/privmsg.c commands/part.c commands/create_user.c commands/delete_user.c commands/update_password.c commands/update_nickname.c commands/topic.c commands/mode.c
     database/database.c database/channel.c database/user.c database/databaseStructs_free.c
     commands/poll.c)
 
 # all header files
 set(HEADER_SOURCES main.h
     utils/utils.h ssl/communication.h ssl/communicationStructs.h server.c
-    commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h commands/topic.h commands/mode.h
+    commands/names.h commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h commands/topic.h commands/mode.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h
     commands/poll.h)
 
 # creating the library for the server
-add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADER_SOURCES} commands/invite.h commands/invite.c commands/names.h commands/names.c)
+add_library(DudeServerLib STATIC ${LIB_SOURCES} ${HEADER_SOURCES} commands/invite.h commands/invite.c database/channelUser.h database/channelUser.c database/channelMessage.h database/channelMessage.c)
 target_link_libraries(DudeServerLib ${LIBXML2_LIBRARIES})
+target_link_libraries(DudeServerLib ${SQLITE3_LIBRARY})
 target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 

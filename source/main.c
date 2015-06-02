@@ -1,8 +1,14 @@
 #include "main.h"
 
+#define PRINT_CHANNEL(c) printf("%s: %s | %s | %i\n", c.name, c.password, c.topic, c.visible)
+#define PRINT_USER(u) printf("%s: %s | %s\n", u.username, u.password, u.nickname)
+
 int main(int argc, char **argv)
 {
-    mallopt(M_CHECK_ACTION, 1);
+    if(setupDatabaseConnection() != DB_RETURN_SUCCES)
+    {
+        return EXIT_FAILURE;
+    }
 
     int fork = BOOL_FALSE;
     if(argc > 1)
@@ -14,6 +20,8 @@ int main(int argc, char **argv)
     }
 
     runServer(fork, SERVER_PORT);
+
+    stopDatabase();
 
     return EXIT_SUCCESS;
 }

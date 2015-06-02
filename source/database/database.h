@@ -1,43 +1,33 @@
 #ifndef DUDESERVER_DATABASE_H
 #define DUDESERVER_DATABASE_H
 
-#include "databaseStructs.h"
-#include "channel.h"
-#include "user.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <libxml/xmlmemory.h>
-#include <malloc.h>
-#include <libxml/parser.h>
-#include <libxml/xmlreader.h>
+#include <sqlite3.h>
 #include "../main.h"
+
+#include "databaseStructs.h"
 #include "dbDefines.h"
+#include "user.h"
+#include "channel.h"
+#include "channelUser.h"
+#include "channelMessage.h"
 
-xmlDocPtr openDoc(char *docname);
+sqlite3 *db;
 
-xmlNodePtr checkDoc(xmlDocPtr doc, char *docType);
+#define ALL_COLUMNS "*"
+#define SETUP_ERROR_RETURN(val, err) printf("ERROR: %s\n", err); sqlite3_close(db); return val
+#define STMT_RETURN(val, stmt) sqlite3_finalize(stmt); return val
 
-char *getValue(xmlDocPtr doc, xmlNodePtr node, char *fieldname);
+int setupDatabaseConnection();
+int tableExists(char* name);
 
-char **getListOfValues(xmlDocPtr doc, xmlNodePtr node, char *listname, char *fieldname);
+char* sqlite3_column_string(sqlite3_stmt *stmt, int id);
+char* getSelectSQL(char* table, char* columns, char* where);
+char* getInsertSQL(char* table,char* valueNames ,char* values);
+char* getDeleteSQL(char* table, char* where);
+char* getUpdateSQL(char* table, char* where, char* valueName, char* newValue);
 
-void deleteField(xmlDocPtr doc, xmlNodePtr currentNode, char *fieldText);
+void executeStatement(char* stmt);
 
-void addChild(xmlNodePtr cur, char *parent, char *child, char *childContent, char *optPropertyName,
-              char *optPropertyValue);
-
-void addFieldToFileInList(char *fileType, char *filename, char *listname, char *fieldname, char *content,
-                          char *optPropertyName, char *optPropertyValue);
-
-int changeField(xmlNodePtr cur, char *nodeName, char *newContent);
-
-int changeFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
-
-void addFieldToFile(char *fileType, char *filename , char *fieldname, char *content);
-
-void assignFieldInFile(char *fileType, char *filename , char *fieldname, char *newContent);
-
-void addToListFile(char* itemType,char* newItem);
+void stopDatabase();
 
 #endif

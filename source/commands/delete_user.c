@@ -9,7 +9,7 @@
 //TODO verificatie a.d.h.v. password? iets.. veiliger, lijkt me
 int handleDeleteUserCommand()
 {
-    if (checkUser(currentUser.username) == BOOL_TRUE)
+    if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
     {
         deleteUser(currentUser.username);
         return RPL_SUCCESS;

@@ -22,7 +22,7 @@ int handleTopicCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    if(userHasChannel(channelName) == BOOL_FALSE)
+    if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
     }
@@ -30,7 +30,7 @@ int handleTopicCommand(commandStruct cmd)
     if(topic != NULL)
     {
         //set
-        newChannelTopic(channelName, topic);
+        updateChannelTopic(channelName, topic);
 
         return RPL_TOPIC;
     }
@@ -38,7 +38,7 @@ int handleTopicCommand(commandStruct cmd)
     {
         //get
         channelInfo channel;
-        if(getChannel(channelName, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
+        if(getChannelByName(channelName, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
         {
             size_t len = strlen(channel.topic);
             if(len > 0)

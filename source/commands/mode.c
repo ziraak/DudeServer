@@ -80,7 +80,7 @@ void handleSFlag(char *channelName, flagStruct flag)
 {
     if(flag.flag == 's')
     {
-        setChannelVisibility(channelName, flag.set);
+        updateChannelVisibility(channelName, flag.set);
     }
 }
 
@@ -91,7 +91,7 @@ void handleOFlag(char *channelName, flagStruct flag)
         return;
     }
 
-    setChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+    updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
 }
 
 void handleFlags(modeStruct ms)
@@ -118,7 +118,7 @@ void handleFlags(modeStruct ms)
 int checkFlags(modeStruct ms)
 {
     channelInfo ci;
-    if(getChannel(ms.channelName, &ci) != DB_RETURN_SUCCES)
+    if(getChannelByName(ms.channelName, &ci) != DB_RETURN_SUCCES)
     {
         return ERR_NOSUCHCHANNEL;
     }
@@ -184,12 +184,12 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    if(userHasChannel(channelName) == BOOL_FALSE)
+    if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
     }
 
-    char* role = getUserRole(channelName, currentUser.username);
+    char* role = getChannelUserRole(channelName, currentUser.username);
     if(role == NULL || strcmp(role, USER_ROLE_OPERATOR) != 0)
     {
         return ERR_CHANOPPRIVSNEEDED;

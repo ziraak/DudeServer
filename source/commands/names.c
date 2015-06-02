@@ -10,12 +10,12 @@ int handleNamesCommand(commandStruct cmd)
     {
         return ERR_NEEDMOREPARAMS;
     }
-    if (checkChannel(channelName) == NULL)
+    if (checkChannel(channelName) == BOOL_FALSE)
     {
         return ERR_NOSUCHCHANNEL;
     }
 
-    channelUserStruct = getUsersFromChannel(channelName);
+    channelUserStruct = NULL;
 
     size_t mallocUsersLength = 0;
     size_t mallocRolesLength = 0;

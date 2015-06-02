@@ -1,651 +1,197 @@
 #include "channel.h"
 
-int countMessages(messageInfo *message)
+void _fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
 {
-    int total = 0;
-    while (message[total].writer != NULL)
-    {
-        total++;
-    }
-    return total;
-}
+    int columnCount = sqlite3_column_count(stmt);
+    bzero(channel, sizeof(channelInfo));
 
-void writeMessage(messageInfo message, char* channelName)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    xmlNodePtr root_node;
-    char *docname;
-    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return;
-    }
-
-    while (currentNodePtr != NULL)
-    {
-        if (!xmlStrcmp(currentNodePtr->name,BAD_CAST "messages"))
-        {
-            xmlNodePtr newMsgPtr = xmlNewChild(currentNodePtr,NULL,BAD_CAST "message",NULL);
-            xmlNewProp(newMsgPtr,BAD_CAST  "user",BAD_CAST message.writer);
-            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "timestamp",BAD_CAST message.timestamp);
-            xmlNewTextChild(newMsgPtr,NULL,BAD_CAST "body",BAD_CAST message.body);
-            break;
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-
-    xmlSaveFormatFileEnc(docname, docPtr,DB_XML_ENCODING, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-}
-void deleteMessage(char* channelname)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname;
-    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelname);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return;
-    }
-
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "messages")))
-        {
-            currentNodePtr = currentNodePtr->children;
-            while (currentNodePtr != NULL)
-            {
-                if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "message")))
-                {
-                    xmlUnlinkNode(currentNodePtr);
-                    break;
-                }
-                currentNodePtr = currentNodePtr->next;
-            }
-            break;
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-}
-
-int writeMessageToChannel(char *channelName, messageInfo message)
-{
-    messageInfo *ci;
-    ci = getMessages(channelName);
-    int messageCount = countMessages(ci);
-    free(ci);
-    if (messageCount >= maxMessages)
-    {
-        deleteMessage(channelName);
-    }
-    writeMessage(message,channelName);
-
-    return DB_RETURN_SUCCES;
-}
-
-
-
-
-
-int getChannel(char *channelName, channelInfo *channel)
-{
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-
-    int checkChannelResult = checkChannel(channelName);
-
-    if (checkChannelResult == DB_RETURN_NULLPOINTER || checkChannelResult == DB_RETURN_DOESNOTEXIST)
-    {
-        fprintf(stderr, "channel: %s does not exist\n", channelName);
-        return checkChannelResult;
-    }
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return DB_RETURN_FILENOTFOUND;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return DB_RETURN_CORRUPTFILE;
-    }
-
-    channel->name = getValue(docPtr, currentNodePtr, "name");
-    channel->password = getValue(docPtr, currentNodePtr, "password");
-    channel->topic = getValue(docPtr, currentNodePtr, "topic");
-    channel->users = getListOfValues(docPtr, currentNodePtr, "users", "user");
-    channel->messages = getMessages(channelName);
-
-    xmlFreeDoc(docPtr);
-    free(docname);
-    return DB_RETURN_SUCCES;
-}
-
-channelUser *getUsersFromChannel(char *channelName)
-{
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
-    channelUser* users = NULL;
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return users;
-    }
-
-    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return users;
-    }
-
-    int i = 0;
-
-    users = malloc(sizeof(channelUser));
-    while(nodePtr != NULL)
-    {
-        if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
-        {
-            xmlNodePtr currentNodePtrChild;
-            currentNodePtrChild = nodePtr->xmlChildrenNode;
-            while (currentNodePtrChild != NULL)
-            {
-                if ((!xmlStrcmp(currentNodePtrChild->name, BAD_CAST "user")))
-                {
-                    users[i].username = (char *) xmlNodeListGetString(docPtr, currentNodePtrChild->xmlChildrenNode, 1);
-                    users[i].role = (char *) xmlGetProp(currentNodePtrChild,BAD_CAST "role");
-                    users[i].nickname = getUserNickname(users[i].username);
-                    i++;
-                }
-                currentNodePtrChild = currentNodePtrChild->next;
-            }
-        }
-        nodePtr = nodePtr->next;
-    }
-
-    users[i].username = NULL;
-    users[i].role = NULL;
-    xmlFreeDoc(docPtr);
-    free(docname);
-
-    return users;
-}
-
-char* getUserRole(char* channelName, char* username)
-{
-    channelUser *users = getUsersFromChannel(channelName);
-    int index = 0;
-    while(users[index].username != NULL)
-    {
-        if(!strcmp(users[index].username,username))
-        {
-            char *role = users[index].role;
-            channelUser_free(users);
-            return role;
-        }
-        index++;
-    }
-    return NULL;
-}
-
-
-
-char **getChannellist()
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char **list;
-
-    docPtr = openDoc(DB_CHANNELLISTLOCATION);
-    currentNodePtr = checkDoc(docPtr, "channels");
-    currentNodePtr = currentNodePtr->parent;
-
-    list = getListOfValues(docPtr, currentNodePtr, "channels", "channel");
-    xmlFreeDoc(docPtr);
-    return list;
-}
-
-char **getVisibleChannels()
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-
-    docPtr = openDoc(DB_CHANNELLISTLOCATION);
-    currentNodePtr = checkDoc(docPtr, "channels");
-    char **key;
-    key = calloc(50, 500);
-    //TODO: malloc
     int i;
-    i = 0;
-    while (currentNodePtr != NULL)
+    for(i = 0; i < columnCount; i++)
     {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) BAD_CAST "channel")) &&
-                !xmlStrcmp(xmlGetProp(currentNodePtr, (xmlChar *) "visible"),BAD_CAST DB_VISIBLE_TRUE ))
-        {
-            key[i] = (char *) xmlNodeListGetString(docPtr, currentNodePtr->xmlChildrenNode, 1);
-            i++;
-        }
-        currentNodePtr = currentNodePtr->next;
+        if(strcmp(sqlite3_column_name(stmt, i), "name") == 0) { channel->name = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "password") == 0) { channel->password = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "topic") == 0) { channel->topic = sqlite3_column_string(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel->visible = sqlite3_column_int(stmt, i); }
     }
-    return key;
 }
 
+int _innerGetChannel(sqlite3_stmt *stmt, channelInfo *channel)
+{
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        _fillChannel(stmt, channel);
+
+        STMT_RETURN(BOOL_TRUE, stmt);
+    }
+
+    STMT_RETURN(BOOL_FALSE, stmt);
+}
+
+channelInfo *_innerGetChannels(sqlite3_stmt *stmt, int *result)
+{
+    channelInfo *channels = NULL;
+    int i = 0;
+    while(sqlite3_step(stmt) == SQLITE_ROW)
+    {
+        channels = realloc(channels, (i + 1) * sizeof(channelInfo));
+        channelInfo cs;
+        _fillChannel(stmt, &cs);
+        channels[i] = cs;
+        i++;
+    }
+
+    *result = i;
+    STMT_RETURN(channels, stmt);
+}
+
+channelInfo *getChannels(char* columns, int *result)
+{
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", columns, NULL);
+
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        free(sql);
+        return _innerGetChannels(stmt, result);
+    }
+
+    free(sql);
+    *result = BOOL_FALSE;
+    STMT_RETURN(NULL, stmt);
+}
+
+int getChannelByName(char *name, channelInfo *channel)
+{
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", ALL_COLUMNS, "name=?");
+
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        if(sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
+        {
+            free(sql);
+            return _innerGetChannel(stmt, channel);
+        }
+    }
+
+    free(sql);
+    STMT_RETURN(BOOL_FALSE, stmt);
+}
+
+channelInfo* getVisibleChannels(char* columns, int *result)
+{
+    sqlite3_stmt *stmt;
+    char *sql = getSelectSQL("channels", columns, "visible=1");
+
+    if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
+    {
+        free(sql);
+        return _innerGetChannels(stmt, result);
+    }
+
+    free(sql);
+    *result = BOOL_FALSE;
+    STMT_RETURN(NULL, stmt);
+}
 
 int checkIfChannelVisible(char* channelName)
 {
-    if (channelName == NULL)
+    channelInfo ci;
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
-        fprintf(stderr, "channel can not be NULL ");
-        return DB_RETURN_NULLPOINTER;
+        int result = ci.visible;
+        channelInfo_free(&ci);
+        return (result == BOOL_TRUE) ? BOOL_TRUE : BOOL_FALSE;
     }
 
-    char **channellist;
-    channellist = getVisibleChannels();
-    int listIndex;
-    listIndex = 0;
-
-    while (channellist[listIndex] != NULL)
-    {
-        if (!strcmp(channellist[listIndex], channelName))
-        {
-            return BOOL_TRUE;
-        }
-        listIndex++;
-    }
     return BOOL_FALSE;
 }
-
 
 int checkChannel(char *channelName)
 {
-    if (channelName == NULL)
+    channelInfo channelInfoStruct;
+    if (getChannelByName(channelName, &channelInfoStruct) == BOOL_TRUE)
     {
-        fprintf(stderr, "channel can not be NULL ");
-        return DB_RETURN_NULLPOINTER;
-    }
-
-    char **channellist;
-    channellist = getChannellist();
-    int listIndex;
-    listIndex = 0;
-
-    while (channellist[listIndex] != NULL)
-    {
-        if (!strcmp(channellist[listIndex], channelName))
-        {
-            return BOOL_TRUE;
-        }
-        listIndex++;
-    }
-    free(channellist);
-    return DB_RETURN_DOESNOTEXIST;
-}
-
-
-int deleteChannelInDB(char *channelName)
-{
-    channelInfo channel;
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    int returnvalue = getChannel(channelName, &channel);
-
-    if (returnvalue != DB_RETURN_SUCCES)
-    {
-        return returnvalue;
-    }
-
-    int userindex;
-    userindex = 0;
-    while (channel.users[userindex] != NULL)
-    {
-        deleteChannelFromUser(channel.users[userindex], channelName);
-        userindex++;
-    }
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    remove(docname);
-    free(docname);
-    if (deleteChannelFromList(channelName) == DB_RETURN_SUCCES)
-    {
-        return DB_RETURN_SUCCES;
-    }
-    return EXIT_FAILURE;
-}
-
-int deleteChannelFromList(char *channelName)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-
-
-    if ((docPtr = openDoc(DB_CHANNELLISTLOCATION)) == NULL)
-    {
-        printf("error\n");
-        return DB_RETURN_FILENOTFOUND;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, "channels")) == NULL)
-    {
-        printf("error\n");
-        return DB_RETURN_CORRUPTFILE;
-    }
-    deleteField(docPtr, currentNodePtr, channelName);
-
-    xmlSaveFormatFile(DB_CHANNELLISTLOCATION, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    return DB_RETURN_SUCCES;
-}
-
-int deleteUserFromChannel(char *channelName, char *username)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname;
-    docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return DB_RETURN_FILENOTFOUND;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return DB_RETURN_CORRUPTFILE;
-    }
-
-    while (currentNodePtr != NULL)
-    {
-        if ((!xmlStrcmp(currentNodePtr->name, (const xmlChar *) "users")))
-        {
-            deleteField(docPtr, currentNodePtr->xmlChildrenNode, username);
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-    free(docname);
-    return DB_RETURN_SUCCES;
-}
-
-int checkIfChannelEmpty(char *channelName)
-{
-    channelInfo info;
-    getChannel(channelName, &info);
-    if (info.users[0] == NULL)
-    {
-        channelInfo_free(&info);
+        channelInfo_free(&channelInfoStruct);
         return BOOL_TRUE;
     }
-    channelInfo_free(&info);
     return BOOL_FALSE;
 }
 
-messageInfo *getMessages(char *channelName)
+int deleteChannel(char *channelName)
 {
-    return getMessagesOnTime(channelName, 0);
+    char *channelMessagesDelete = sqlite3_mprintf("DELETE FROM CHANNEL_MESSAGES WHERE channel_name = '%s';", channelName);
+    executeStatement(channelMessagesDelete);
+    sqlite3_free(channelMessagesDelete);
+
+    char *channelUsersDelete = sqlite3_mprintf("DELETE FROM CHANNEL_USERS WHERE channel_name = '%s';", channelName);
+    executeStatement(channelUsersDelete);
+    sqlite3_free(channelUsersDelete);
+
+    char *channelDelete = sqlite3_mprintf("DELETE FROM CHANNELS WHERE name = '%s';", channelName);
+    executeStatement(channelDelete);
+    sqlite3_free(channelDelete);
+
+    return checkChannel(channelName) == BOOL_FALSE;
 }
 
-messageInfo *getMessagesOnTime(char *channelName, int timestamp)
+int insertChannel(char *channelName, char *password, char *topic, int visible)
 {
-    char *documentName = malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
-    messageInfo *messages = malloc(DB_MAXMESSAGES * sizeof(messageInfo));
-
-    sprintf(documentName, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-
-    if ((docPtr = openDoc(documentName)) == NULL)
-    {
-        return messages;
-    }
-
-    free(documentName);
-
-    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return messages;
-    }
-
-    int index = 0;
-    while (nodePtr != NULL)
-    {
-        if ((!xmlStrcmp(nodePtr->name, (const xmlChar *) "messages")))
-        {
-            xmlNodePtr currentNodePtrChild;
-            currentNodePtrChild = nodePtr->xmlChildrenNode;
-            while (currentNodePtrChild != NULL)
-            {
-                if ((!xmlStrcmp(currentNodePtrChild->name, (const xmlChar *) "message")) &&
-                    atoi(getValue(docPtr, currentNodePtrChild->xmlChildrenNode, "timestamp")) >= timestamp)
-                {
-                    messages[index].writer = (char *) xmlGetProp(currentNodePtrChild, (xmlChar *) "user");
-                    messages[index].timestamp = getValue(docPtr, currentNodePtrChild->xmlChildrenNode, "timestamp");
-                    messages[index].body = getValue(docPtr, currentNodePtrChild->xmlChildrenNode, "body");
-                    index++;
-                }
-                currentNodePtrChild = currentNodePtrChild->next;
-            }
-        }
-        nodePtr = nodePtr->next;
-    }
-    xmlFreeDoc(docPtr);
-
-    messages[index].writer = NULL;
-    messages[index].body = NULL;
-    messages[index].timestamp = NULL;
-
-    return messages;
-}
-
-void createNewChannel(char *channelName, char *password, char *topic, int visible)
-{
-    xmlDocPtr docPtr = NULL;
-    xmlNodePtr root_node = NULL;
-    char *docname = malloc(DB_DOCNAMEMEMORYSPACE);
-
-    docPtr = xmlNewDoc(BAD_CAST "1.0");
-    root_node = xmlNewNode(NULL, BAD_CAST "channel");
-    xmlDocSetRootElement(docPtr, root_node);
-    xmlNewChild(root_node, NULL, BAD_CAST "name", BAD_CAST channelName);
-    if (topic != NULL)
-    {
-        xmlNewChild(root_node, NULL, BAD_CAST "topic", BAD_CAST topic);
-    }
-    if (password != NULL)
-    {
-        xmlNewChild(root_node, NULL, BAD_CAST "password", BAD_CAST password);
-    }
-
-    xmlNewChild(root_node, NULL, BAD_CAST "users", NULL);
-    xmlNewChild(root_node, NULL, BAD_CAST "messages", NULL);
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelName);
-    xmlSaveFormatFileEnc(docname, docPtr, DB_XML_ENCODING, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-//    xmlCleanupParser();
-    free(docname);
-    addToListFile("channel", channelName);
-    addChannelToList(channelName, visible);
-}
-
-void addChannelToList(char *channelName, int visible)
-{
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname = DB_CHANNELLISTLOCATION;
-    char *doctype = "channels";
-    char *visibility;
-    if (visible == BOOL_TRUE)
-    {
-        visibility = DB_VISIBLE_TRUE;
-    }
-    else
-    {
-        visibility = DB_VISIBLE_FALSE;
-    }
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, doctype)) == NULL)
-    {
-        return;
-    }
-
-    currentNodePtr = currentNodePtr->parent;
-    currentNodePtr = xmlNewTextChild(currentNodePtr, NULL, BAD_CAST "channel", BAD_CAST channelName);
-    xmlNewProp(currentNodePtr, BAD_CAST "visible", BAD_CAST visibility);
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-}
-
-
-int checkIfChannelHasPassword(char *channelname)
-{
-    channelInfo channel;
-    getChannel(channelname, &channel);
-    if (channel.password == NULL)
+    if(checkChannel(channelName) == BOOL_TRUE)
     {
         return BOOL_FALSE;
     }
-    return BOOL_TRUE;
+
+    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('%s', '%s', '%s', '%i');", channelName, password, topic, visible);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+
+    return checkChannel(channelName);
+}
+
+int checkIfChannelHasPassword(char *channelname)
+{
+    channelInfo ci;
+    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
+    {
+        int result = ci.password != NULL ? BOOL_TRUE : BOOL_FALSE;
+        channelInfo_free(&ci);
+        return result;
+    }
+
+    return BOOL_FALSE;
 }
 
 int authenticateChannelPassword(char *channelname, char *password)
 {
-    if (checkIfChannelHasPassword(channelname) == BOOL_TRUE)
+    channelInfo ci;
+    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
     {
-        channelInfo channel;
-        getChannel(channelname, &channel);
-        if (!strcmp(channel.password, password))
-        {
-            return BOOL_TRUE;
-        }
+        int result = (strcmp(password, ci.password) == 0);
+        channelInfo_free(&ci);
+        return result;
     }
+
     return BOOL_FALSE;
 }
 
-void newChannelPassword(char *channelName, char *newPass)
+void updateChannelPassword(char *channelName, char *newPass)
 {
-    assignFieldInFile("channel", channelName, "password", newPass);
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = '%s' WHERE name = '%s';", newPass, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
 }
 
-void newChannelTopic(char *channelName, char *newTopic)
+void updateChannelTopic(char *channelName, char *newTopic)
 {
-    assignFieldInFile("channel", channelName, "topic", newTopic);
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topic = '%s' WHERE name = '%s';", newTopic, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
 }
 
-
-void setChannelVisibility(char* channelname,int visible)
+void updateChannelVisibility(char *channelName, int visible)
 {
-    xmlDocPtr docPtr;
-    xmlNodePtr currentNodePtr;
-    char *docname = DB_CHANNELLISTLOCATION;
-    char *doctype = "channels";
-    char *visibility;
-    if (visible == BOOL_TRUE)
-    {
-        visibility = DB_VISIBLE_TRUE;
-    }
-    else
-    {
-        visibility = DB_VISIBLE_FALSE;
-    }
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((currentNodePtr = checkDoc(docPtr, doctype)) == NULL)
-    {
-        return;
-    }
-    while(currentNodePtr != NULL)
-    {
-        if(!xmlStrcmp(xmlNodeListGetString(docPtr,currentNodePtr->xmlChildrenNode,1),BAD_CAST channelname))
-        {
-            xmlSetProp(currentNodePtr,BAD_CAST "visible", BAD_CAST visibility);
-            break;
-        }
-        currentNodePtr = currentNodePtr->next;
-    }
-
-    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-    xmlFreeDoc(docPtr);
-}
-
-// TODO: return waarde toevoegen? kan hier nu niet op controleren of het goed is gegaan in MODE (Sjuul)
-void setChannelUserRole(char* channelname, char* username, char* newRole)
-{
-    char *docname = (char *) malloc(DB_DOCNAMEMEMORYSPACE);
-    xmlDocPtr docPtr;
-    xmlNodePtr nodePtr;
-
-    sprintf(docname, "%s%s.xml", DB_CHANNELLOCATION, channelname);
-
-    if ((docPtr = openDoc(docname)) == NULL)
-    {
-        return;
-    }
-
-    if ((nodePtr = checkDoc(docPtr, "channel")) == NULL)
-    {
-        return;
-    }
-
-
-    while(nodePtr != NULL)
-    {
-        if(!xmlStrcmp(nodePtr->name, (const xmlChar *) BAD_CAST "users"))
-        {
-            nodePtr = nodePtr->xmlChildrenNode;
-            while (nodePtr != NULL)
-            {
-                if (!xmlStrcmp(xmlNodeListGetString(docPtr,nodePtr->xmlChildrenNode,1),BAD_CAST username))
-                {
-                    xmlSetProp(nodePtr,BAD_CAST "role",BAD_CAST newRole);
-                    xmlSaveFormatFile(docname, docPtr, DB_XML_FORMAT);
-                    xmlFreeDoc(docPtr);
-                    free(docname);
-                    return;
-                }
-                nodePtr = nodePtr->next;
-            }
-        }
-        nodePtr = nodePtr->next;
-    }
-    xmlFreeDoc(docPtr);
-
-    free(docname);
-
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET visible = %i WHERE name = '%s';", visible, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
 }

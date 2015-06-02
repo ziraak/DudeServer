@@ -22,7 +22,7 @@ typedef struct pollStruct
     int channelCount;
 } pollStruct;
 
-pollStruct pollStruct_initialize(char **channels, int timestamp);
+pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int timestamp);
 void pollStruct_free(pollStruct *ps);
 
 int handlePollCommand(commandStruct cmd);
