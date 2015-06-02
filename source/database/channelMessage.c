@@ -55,11 +55,6 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result)
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
-int countMessages(char *channelName)
-{
-
-}
-
 int insertMessage(messageInfo message, char *channelName)
 {
     char*statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('%s', '%s', %i, '%s');", message.writer, channelName, message.timestamp, message.body);
@@ -71,9 +66,4 @@ int insertMessage(messageInfo message, char *channelName)
     result = resultMessageInfo->writer != NULL ? BOOL_TRUE : BOOL_FALSE;
     messageInfos_free(resultMessageInfo, resultMessageInfos);
     return result;
-}
-
-void deleteMessage(char *channelName)
-{
-
 }
