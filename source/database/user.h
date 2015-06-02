@@ -7,8 +7,6 @@ int checkIfUserExists(char *username);
 
 int getUser(char *username, userInfo *result);
 
-int isUserInChannel(char* channelname, char* username);
-
 int userJoinChannel(char *username, char *channelName, char *userRole);
 
 int deleteUser(char *username);

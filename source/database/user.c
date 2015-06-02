@@ -13,6 +13,9 @@ void fillUser(sqlite3_stmt *statement, userInfo *user)
         if(strcmp(sqlite3_column_name(statement, i), "password") == 0) { user->password = sqlite3_column_string(statement, i); continue; }
         if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); continue; }
     }
+    user[i].username = NULL;
+    user[i].nickname = NULL;
+    user[i].password = NULL;
 }
 
 int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
@@ -36,6 +39,7 @@ int getUserByName(char *name, userInfo *user)
         free(sql);
         if(sqlite3_bind_text(statement, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
         {
+
             return getUserinfoWithSql(statement, user);
         }
     }
@@ -69,21 +73,14 @@ void users_free(userInfo *users, int amount)
 
 int getUser(char *username, userInfo *result)
 {
-    getUserByName(username,result);
-    return DB_RETURN_SUCCES;
+    return getUserByName(username,result);
 }
-
-int isUserInChannel(char* channelname, char* username)
-{
-    return BOOL_FALSE;
-}
-
 
 char* getUserNickname(char* username)
 {
-    char* result = "";
     userInfo info;
     getUserByName(username,&info);
+    char* result = malloc(sizeof(info.nickname));
     strcpy(result,info.nickname);
     user_free(&info);
     return result;
@@ -91,12 +88,13 @@ char* getUserNickname(char* username)
 int checkIfUserExists(char *username)
 {
     userInfo user;
-    if(getUser("username",&user)== BOOL_TRUE)
+    bzero(&user, sizeof(userInfo));
+    if(getUser(username, &user)== BOOL_TRUE)
     {
-        userInfo_free(&user);
+        user_free(&user);
         return BOOL_TRUE;
     }
-    userInfo_free(&user);
+    user_free(&user);
     return BOOL_FALSE;
 }
 
