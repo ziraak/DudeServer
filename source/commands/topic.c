@@ -38,7 +38,7 @@ int handleTopicCommand(commandStruct cmd)
     {
         //get
         channelInfo channel;
-        if(getChannelByName(channelName, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
+        if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
         {
             size_t len = strlen(channel.topic);
             if(len > 0)
@@ -48,10 +48,10 @@ int handleTopicCommand(commandStruct cmd)
 
                 sslSend(snd);
                 channelInfo_free(&channel);
-                return RPL_TOPIC;
+                return RPL_NOREPLY;
             }
+            channelInfo_free(&channel);
         }
-        channelInfo_free(&channel);
         return RPL_NOTOPIC;
     }
 }

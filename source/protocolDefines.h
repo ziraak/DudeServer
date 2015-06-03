@@ -2,6 +2,7 @@
 #define DudeServer_PROTOCOLDEFINES_H
 
 #define RPL_SUCCESS 50 // Default success message
+#define RPL_NOREPLY 51 // No reply message
 #define RPL_CONNECTED 100 // CONNECT
 #define RPL_LOGIN 300 // LOGIN
 #define RPL_AWAY 301 // PRIVMSG
