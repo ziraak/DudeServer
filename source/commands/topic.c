@@ -19,7 +19,6 @@ int sendSuccessMessage(char* channelName, char* topic)
         sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
         sslSend(snd);
         FREE(snd);
-
         timeEnd("sendSuccesMessage");
         return RPL_NOREPLY;
     }

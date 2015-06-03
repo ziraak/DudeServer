@@ -13,7 +13,6 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     *str = MALLOC(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
 
-
     timeEnd("convertChannelMsg2Str");
     return BOOL_TRUE;
 }
@@ -128,7 +127,10 @@ int handlePollCommand(commandStruct cmd, int amountOfMessages)
     {
 
 //        timeEnd("handlePollCommand");
+
 //        return ERR_NEEDMOREPARAMS;
+
+        timeEnd("handlePollCommand");
     }
 
     int channelCount;

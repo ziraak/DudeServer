@@ -181,7 +181,6 @@ int parseMessage(char *message)
     }
 
     timeStop(cmd.command);
-
     commandStruct_free(&cmd);
     return result;
 }
