@@ -18,6 +18,7 @@
 
 modeStruct getFlags(commandStruct cmd)
 {
+    timeStart;
     char* flags = cmd.parameters[1], flag, *parameter = NULL;
     int set = (flags[0] == '+') ? BOOL_TRUE : BOOL_FALSE,
         getParameter, getParameterCount = 1,
@@ -72,30 +73,36 @@ modeStruct getFlags(commandStruct cmd)
             .flagCount = i,
             .flags = fs
     };
-
+    timeEnd("mode.c/getFlags");
     return ms;
 }
 
 void handleSFlag(char *channelName, flagStruct flag)
 {
+    timeStart;
     if(flag.flag == 's')
     {
         updateChannelVisibility(channelName, flag.set);
     }
+    timeEnd("handleSFlag");
 }
 
 void handleOFlag(char *channelName, flagStruct flag)
 {
+    timeStart;
     if(flag.flag != 'o')
     {
+        timeEnd("handleOFlag");
         return;
     }
 
     updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+    timeEnd("handleOFlag");
 }
 
 void handleFlags(modeStruct ms)
 {
+    timeStart;
     int i;
     for(i = 0; i < ms.flagCount; i++)
     {
@@ -113,13 +120,16 @@ void handleFlags(modeStruct ms)
                 break;
         }
     }
+    timeEnd("mode.c/handleFlags");
 }
 
 int checkFlags(modeStruct ms)
 {
+    timeStart;
     channelInfo ci;
     if(getChannelByName(ms.channelName, &ci) != DB_RETURN_SUCCES)
     {
+        timeEnd("checkFlags");
         return ERR_NOSUCHCHANNEL;
     }
 
@@ -144,6 +154,7 @@ int checkFlags(modeStruct ms)
 
                 if(error == BOOL_TRUE)
                 {
+                    timeEnd("checkFlags");
                     MODE_CHECK_FLAGS_RETURN(ERR_NOTONCHANNEL, ci, users, userCount);
                 }
                 break;
@@ -161,17 +172,20 @@ int checkFlags(modeStruct ms)
                 break;
 
             default:
+                timeEnd("checkFlags");
                 MODE_CHECK_FLAGS_RETURN(ERR_UMODEUNKNOWNFLAG, ci, users, userCount);
         }
     }
-
+    timeEnd("checkFlags");
     MODE_CHECK_FLAGS_RETURN(RPL_SUCCESS, ci, users, userCount);
 }
 
 int handleModeCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 2)
     {
+        timeEnd("handleModeCommand");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -179,16 +193,19 @@ int handleModeCommand(commandStruct cmd)
 
     if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
+        timeEnd("handleModeCommand");
         return ERR_NEEDMOREPARAMS;
     }
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
+        timeEnd("handleModeCommand");
         return ERR_NOSUCHCHANNEL;
     }
 
     if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
+        timeEnd("handleModeCommand");
         return ERR_NOTONCHANNEL;
     }
 
@@ -196,6 +213,7 @@ int handleModeCommand(commandStruct cmd)
     if(role == NULL || strcmp(role, USER_ROLE_OPERATOR) != 0)
     {
         free(role);
+        timeEnd("handleModeCommand");
         return ERR_CHANOPPRIVSNEEDED;
     }
     free(role);
@@ -217,12 +235,13 @@ int handleModeCommand(commandStruct cmd)
     }
 
     modeStruct_free(&ms);
-
+    timeEnd("handleModeCommand");
     return result;
 }
 
 void modeStruct_free(modeStruct *ms)
 {
+    timeStart;
     int j;
     for(j = 0; j < ms->flagCount; j++)
     {
@@ -233,4 +252,5 @@ void modeStruct_free(modeStruct *ms)
 
     ms->flags = NULL;
     ms->channelName = NULL;
+    timeEnd("modeStruct_free");
 }

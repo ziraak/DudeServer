@@ -5,6 +5,7 @@
 
 int main(int argc, char **argv)
 {
+    timeStart;
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
@@ -24,6 +25,6 @@ int main(int argc, char **argv)
 
     //commandStruct cmd = commandStruct_initialize("NAMES batcave");
     //handleNamesCommand(cmd);
-
+    timeStop;
     return EXIT_SUCCESS;
 }

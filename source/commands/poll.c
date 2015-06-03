@@ -2,18 +2,22 @@
 
 char* copy(char* src)
 {
+    timeStart;
     size_t l = strlen(src);
     char* result = malloc(l + 1);
     bzero(result, l + 1);
     strncpy(result, src, l);
 
+    timeEnd("poll.c/copy");
     return result;
 }
 
 int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
+    timeStart;
     if(msg.timestamp == NULL || msg.writer == NULL || msg.body == NULL || channelName == NULL)
     {
+        timeEnd("convertChannelMsg2Str");
         return BOOL_FALSE;
     }
 
@@ -27,15 +31,17 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     free(writer);
     free(body);
     free(timestamp);
-
+    timeEnd("convertChannelMsg2Str");
     return BOOL_TRUE;
 }
 
 channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
 {
+    timeStart;
     if(channel.name == NULL)
     {
         channelMessagesStruct result;
+        timeEnd("poll.c/getChannelMsgs");
         return result;
     }
 
@@ -61,13 +67,16 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     result.messages = messages;
     result.messageCount = resultCount;
     messageInfos_free(messageInfos, getMessagesOnTimeResult);
+    timeEnd("poll.c/getChannelMsgs");
     return result;
 }
 
 int getPollMessages(pollStruct *ps)
 {
+    timeStart;
     if(ps->channelCount == 0)
     {
+        timeEnd("getPollMsgs");
         return BOOL_FALSE;
     }
 
@@ -77,12 +86,13 @@ int getPollMessages(pollStruct *ps)
     {
         ps->channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
     }
-
+    timeEnd("getPollMsgs");
     return BOOL_TRUE;
 }
 
 int sendPollMessages(pollStruct *ps)
 {
+    timeStart;
     int i, j;
 
     for(i = 0; i < ps->channelCount; i++)
@@ -92,7 +102,8 @@ int sendPollMessages(pollStruct *ps)
             sslSend(ps->channelMessages[i].messages[j]);
         }
     }
-    return BOOL_TRUE;
+    timeEnd("sendPollMsgs");
+    return BOOL_TRUE;//TODO: altijd true?
 }
 
 pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int timestamp)
@@ -129,8 +140,10 @@ void pollStruct_free(pollStruct *ps)
 
 int handlePollCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount == 0)
     {
+        timeEnd("handlePollCommand");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -144,5 +157,6 @@ int handlePollCommand(commandStruct cmd)
     }
 
     pollStruct_free(&ps);
+    timeEnd("handlePollCommand");
     return RPL_SUCCESS;
 }

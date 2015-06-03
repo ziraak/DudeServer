@@ -9,6 +9,7 @@
 
 int sendSuccessMessage(char* channelName, char* topic)
 {
+    timeStart;
     size_t len = strlen(topic);
     if(len > 0)
     {
@@ -18,18 +19,21 @@ int sendSuccessMessage(char* channelName, char* topic)
         sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
         sslSend(snd);
         free(snd);
-
+        timeEnd("sendSuccesMessage");
         return RPL_NOREPLY;
     }
 
+    timeEnd("sendSuccesMessage");
     return RPL_NOTOPIC;
 }
 
 int handleTopicCommand(commandStruct cmd)
 {
+    timeStart;
     //TODO: operator rechten checken (channel +t flag)
     if(cmd.parameterCount < 1)
     {
+        timeEnd("handleTopicCommand");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -37,11 +41,13 @@ int handleTopicCommand(commandStruct cmd)
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
+        timeEnd("handleTopicCommand");
         return ERR_NOSUCHCHANNEL;
     }
 
     if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
+        timeEnd("handleTopicCommand");
         return ERR_NOTONCHANNEL;
     }
 
@@ -49,6 +55,7 @@ int handleTopicCommand(commandStruct cmd)
     {
         //set
         updateChannelTopic(channelName, topic);
+        timeEnd("handleTopicCommand");
         return sendSuccessMessage(channelName, topic);
     }
     else
@@ -59,8 +66,10 @@ int handleTopicCommand(commandStruct cmd)
         {
             int result = sendSuccessMessage(channel.name, channel.topic);
             channelInfo_free(&channel);
+            timeEnd("handleTopicCommand");
             return result;
         }
+        timeEnd("handleTopicCommand");
         return RPL_NOTOPIC;
     }
 }
