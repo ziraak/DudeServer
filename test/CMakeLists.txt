@@ -21,7 +21,7 @@ set(TEST_SOURCES
 )
 
 # entire test executable
-add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS}  client/test_client.c client/test_client.h client/test_client_main.h testStructs.h knownBugs/knownBugs.h knownBugs/knownBugs.c)
+add_executable(run_unit_tests ${TEST_SOURCES} ${TEST_HEADERS}  client/test_client.c client/test_client.h client/test_client_main.h testStructs.h knownBugs/knownBugs.h knownBugs/knownBugs.c ../source/performanceTimer.h ../source/performanceTimer.c)
 target_link_libraries(run_unit_tests DudeServerLib ${CHECK_LIBRARIES} pthread)
 
 # Server test client

@@ -22,7 +22,7 @@ target_link_libraries(DudeServerLib ${OPENSSL_LIBRARIES})
 target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 
 # create the executable and link the library
-add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES})
+add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES} performanceTimer.h performanceTimer.c)
 target_link_libraries(DudeServer DudeServerLib)
 
 # remove all older database files

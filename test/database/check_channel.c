@@ -8,6 +8,7 @@
 START_TEST(test_getUserlistFromChannel)
     {
 //        channelUser *users;
+
 //        users = getUsersFromChannel("fatihs head");
 //        ck_assert_str_eq(users[0].username,"fatih");
 //        ck_assert_str_eq(users[0].nickname,"ik moet jou in mijn team");

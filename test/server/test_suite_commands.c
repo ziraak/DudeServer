@@ -2,7 +2,7 @@
 
 START_TEST(test_create_user_command)
     {
-        commandStruct cmdStruct = commandStruct_initialize("CREATE_USER fatihTestUser testPassword");
+        commandStruct cmdStruct = commandStruct_initialize("CREATE_USER fatihTestUser ..testPassword");
         int resultCreateUser = handleCreateUserCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_SUCCESS, resultCreateUser);
@@ -11,7 +11,7 @@ END_TEST
 
 START_TEST(test_login_command)
     {
-        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser testPassword testNickname");
+        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser ..testPassword testNickname");
         int resultLogin = handleLoginCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(RPL_LOGIN, resultLogin);
@@ -20,7 +20,7 @@ END_TEST
 
 START_TEST(test_login_command_wrong_password)
     {
-        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser testPassword2 testNickname");
+        commandStruct cmdStruct = commandStruct_initialize("LOGIN fatihTestUser ..testPassword2 testNickname");
         int resultLogin = handleLoginCommand(cmdStruct);
         commandStruct_free(&cmdStruct);
         ck_assert_int_eq(ERR_NOLOGIN, resultLogin);
