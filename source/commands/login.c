@@ -14,8 +14,8 @@ int handleLoginCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    char *username = cmd.parameters[0],
-            *password = cmd.trailing;
+    char *username = cmd.parameters[0];
+    char *password = cmd.trailing;
 
     userInfo user;
     int userAuthenticated = authenticateUser(username, password, &user);

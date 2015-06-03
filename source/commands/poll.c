@@ -3,7 +3,7 @@
 char* copy(char* src)
 {
     size_t l = strlen(src);
-    char* result = malloc(l + 100000);
+    char* result = malloc(l + 1);
     bzero(result, l + 1);
     strncpy(result, src, l);
 
@@ -21,7 +21,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
             *body = copy(msg.body),
             *timestamp = copy(msg.timestamp);
 
-    *str = malloc(11 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
+    MALLOC(*str, 12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
 
     free(writer);
@@ -42,7 +42,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     int getMessagesOnTimeResult;
     messageInfo *messageInfos = getMessagesOnTime(channel.name, timestamp, &getMessagesOnTimeResult);
 
-    char **messages = malloc(sizeof(char) * getMessagesOnTimeResult);
+    char **messages = malloc(sizeof(char*) * getMessagesOnTimeResult);
     int messageCount = 0,
         resultCount = 0;
     while(messageCount < getMessagesOnTimeResult)

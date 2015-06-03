@@ -148,10 +148,12 @@ int sslAcceptConnection(int listenSocket)
 
 int sslSendInteger(int message)
 {
-    char *snd = malloc(3);
+    size_t l = ((message < 10) ? 1 : (message < 100) ? 2 : (message < 1000) ? 3 : 4) + 1;
+    char *snd;
+    MALLOC(snd, l);
     sprintf(snd, "%i", message);
     int result = sslSend(snd);
-    free(snd);
+    FREE(snd);
 
     return result;
 }
@@ -164,9 +166,9 @@ int sslSend(char* snd)
         return SSL_NO_CONNECTION;
     }
 
-    char* buffer = malloc(sizeof(char) * (bufferLength + 2));
+    char* buffer = malloc(sizeof(char) * (bufferLength + 3));
     sprintf(buffer, "%s\r\n", snd);
-    int written = SSL_write(connection.ssl_handle, buffer, (int)(bufferLength + 2));
+    int written = SSL_write(connection.ssl_handle, buffer, (int)(bufferLength + 3));
     free(buffer);
     if(written > 0)
     {
