@@ -60,7 +60,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     channelMessagesStruct result;
     result.messages = messages;
     result.messageCount = resultCount;
-    messageInfo_free(messageInfos);
+    messageInfos_free(messageInfos, getMessagesOnTimeResult);
     return result;
 }
 
