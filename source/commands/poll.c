@@ -42,7 +42,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     int getMessagesOnTimeResult;
     messageInfo *messageInfos = getMessagesOnTime(channel.name, timestamp, &getMessagesOnTimeResult);
 
-    char **messages = malloc(sizeof(char));
+    char **messages = malloc(sizeof(char) * getMessagesOnTimeResult);
     int messageCount = 0,
         resultCount = 0;
     while(messageCount < getMessagesOnTimeResult)

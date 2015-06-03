@@ -12,8 +12,8 @@ int sendSuccessMessage(char* channelName, char* topic)
     size_t len = strlen(topic);
     if(len > 0)
     {
-        len += strlen(channelName);
-        char* snd = malloc(3 + len);
+        len += strlen(channelName) + 4;
+        char* snd = malloc(len);
         bzero(snd, len);
         sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
         sslSend(snd);

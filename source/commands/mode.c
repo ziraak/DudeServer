@@ -192,8 +192,10 @@ int handleModeCommand(commandStruct cmd)
     char* role = getChannelUserRole(channelName, currentUser.username);
     if(role == NULL || strcmp(role, USER_ROLE_OPERATOR) != 0)
     {
+        free(role);
         return ERR_CHANOPPRIVSNEEDED;
     }
+    free(role);
 
     int result;
     modeStruct ms = getFlags(cmd);
