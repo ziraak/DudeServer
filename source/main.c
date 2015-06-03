@@ -22,8 +22,10 @@ int main(int argc, char **argv)
     runServer(fork, SERVER_PORT);
     stopDatabase();
 
-    //commandStruct cmd = commandStruct_initialize("NAMES batcave");
-    //handleNamesCommand(cmd);
+//    commandStruct cmd = commandStruct_initialize("POLL 0");
+//    handlePollCommand(cmd);
+
+
 
     return EXIT_SUCCESS;
 }
