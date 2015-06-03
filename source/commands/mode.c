@@ -123,6 +123,9 @@ int checkFlags(modeStruct ms)
         return ERR_NOSUCHCHANNEL;
     }
 
+    int userCount;
+    userInfo *users = getChannelUsers(ms.channelName, &userCount);
+
     int i, j, error;
     for(i = 0; i < ms.flagCount; i++)
     {
@@ -130,9 +133,9 @@ int checkFlags(modeStruct ms)
         {
             case 'o':
                 error = BOOL_TRUE;
-                for(j = 0; ci.users[j] != NULL; j++)
+                for(j = 0; j < userCount; j++)
                 {
-                    if(strcmp(ci.users[j], ms.flags[i].parameter) == 0)
+                    if(strcmp(users[j].username, ms.flags[i].parameter) == 0)
                     {
                         error = BOOL_FALSE;
                         break;
@@ -141,7 +144,7 @@ int checkFlags(modeStruct ms)
 
                 if(error == BOOL_TRUE)
                 {
-                    MODE_CHECK_FLAGS_RETURN(ERR_NOTONCHANNEL, ci);
+                    MODE_CHECK_FLAGS_RETURN(ERR_NOTONCHANNEL, ci, users, userCount);
                 }
                 break;
 
@@ -158,11 +161,11 @@ int checkFlags(modeStruct ms)
                 break;
 
             default:
-                MODE_CHECK_FLAGS_RETURN(ERR_UMODEUNKNOWNFLAG, ci);
+                MODE_CHECK_FLAGS_RETURN(ERR_UMODEUNKNOWNFLAG, ci, users, userCount);
         }
     }
 
-    MODE_CHECK_FLAGS_RETURN(RPL_SUCCESS, ci);
+    MODE_CHECK_FLAGS_RETURN(RPL_SUCCESS, ci, users, userCount);
 }
 
 int handleModeCommand(commandStruct cmd)
@@ -220,12 +223,14 @@ int handleModeCommand(commandStruct cmd)
 
 void modeStruct_free(modeStruct *ms)
 {
-    int i;
-    for(i = 0; i < ms->flagCount; i++)
+    int j;
+    for(j = 0; j < ms->flagCount; j++)
     {
-        free(ms->flags[i].parameter);
+        ms->flags[j].parameter = NULL;
     }
 
     free(ms->flags);
-    free(ms->channelName);
+
+    ms->flags = NULL;
+    ms->channelName = NULL;
 }

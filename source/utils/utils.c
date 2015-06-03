@@ -82,30 +82,22 @@ commandStruct commandStruct_initialize(char *message)
 
 void commandStruct_free(commandStruct *cmdStruct)
 {
-    if(cmdStruct == NULL)
+    if(cmdStruct != NULL)
     {
-        return;
-    }
-
-    if(cmdStruct->parameters != NULL)
-    {
-        int j = 0;
-        while(cmdStruct->parameters[j] != NULL && j < cmdStruct->parameterCount)
+        int j;
+        for(j = 0; j < cmdStruct->parameterCount; j++)
         {
             free(cmdStruct->parameters[j]);
-            j++;
+            cmdStruct->parameters[j] = NULL;
         }
 
         free(cmdStruct->parameters);
-    }
-
-    if(cmdStruct->command != NULL)
-    {
         free(cmdStruct->command);
+        free(cmdStruct->trailing);
+
+        cmdStruct->parameters = NULL;
+        cmdStruct->command = NULL;
+        cmdStruct->trailing = NULL;
     }
 
-    if(cmdStruct->trailing != NULL)
-    {
-        free(cmdStruct->trailing);
-    }
 }

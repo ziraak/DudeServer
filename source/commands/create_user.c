@@ -8,13 +8,13 @@
 
 int handleCreateUserCommand(commandStruct cmd)
 {
-    if(cmd.parameterCount < 2)
+    if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
         return ERR_NEEDMOREPARAMS;
     }
 
     char *username = cmd.parameters[0],
-            *password = cmd.parameters[1];
+            *password = cmd.trailing;
 
     if (checkIfUserExists(username) == BOOL_TRUE)
     {

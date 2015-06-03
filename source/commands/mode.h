@@ -6,7 +6,7 @@
 #define DUDESERVER_MODE_H
 
 #include "../main.h"
-#define MODE_CHECK_FLAGS_RETURN(val, ci) channelInfo_free(&ci); return val
+#define MODE_CHECK_FLAGS_RETURN(val, ci, users, count) users_free(users, count); channelInfo_free(&ci); return val
 
 typedef struct flagStruct
 {

@@ -69,6 +69,7 @@ void user_free(userInfo *user)
         free(user->username);
         free(user->nickname);
         free(user->password);
+        free(user->role);
     }
 }
 
