@@ -63,7 +63,6 @@ int joinChannel(char* channelName)
     joinChannelByUsername(channelName, currentUser.username);
 }
 
-
 int joinChannelByUsername(char* channelName, char *username)
 {
     if(isUserInChannel(channelName, username) == BOOL_TRUE)

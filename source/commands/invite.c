@@ -1,5 +1,20 @@
 #include "invite.h"
 
+int hostAllowedToInvite(char *channelName)
+{
+    // TODO: Checken of host ook operator is.
+    if (checkChannel(channelName) == BOOL_FALSE)
+    {
+        return BOOL_FALSE;
+    }
+
+    if(isUserInChannel(channelName, currentUser.username) == BOOL_TRUE)
+    {
+        return BOOL_TRUE;
+    }
+    return ERR_NOTONCHANNEL;
+}
+
 int handleInviteCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 2)
@@ -9,7 +24,7 @@ int handleInviteCommand(commandStruct cmd)
 
     char *channelName = cmd.parameters[0], *usernameUserToInvite = cmd.parameters[1];
 
-    int resultCheckChannelHost = checkChannel(currentUser.username);
+    int resultCheckChannelHost = hostAllowedToInvite(channelName);
 
     if (resultCheckChannelHost == BOOL_TRUE)
     {
@@ -18,7 +33,7 @@ int handleInviteCommand(commandStruct cmd)
         {
             joinChannelByUsername(channelName, usernameUserToInvite);
         }
-        return resultCheckChannel;
+        return RPL_INVITING;
     }
     return resultCheckChannelHost;
 }
