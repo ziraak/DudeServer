@@ -13,6 +13,7 @@ void runServer(int USE_FORK, int port)
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+        printf("ACCEPTING MULTIPLE CLIENTS\n");
         for (; ;)
         {
             if(sslAcceptConnection(sock) == SSL_OK)
@@ -24,6 +25,7 @@ void runServer(int USE_FORK, int port)
     }
     else
     {
+        printf("ACCEPTING A SINGLE CLIENT\n");
         if(sslAcceptConnection(sock) == SSL_OK)
         {
             processConnectedClient();
