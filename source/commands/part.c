@@ -6,18 +6,6 @@
  */
 #include "part.h"
 
-void removeChannelFromCurrentUserChannels(const char *channelName)
-{
-    int i;
-    for(i = 0; currentUser.channels[i] != NULL; i++)
-    {
-        if (strcmp(channelName, currentUser.channels[i]) == 0)
-        {
-            strcpy(currentUser.channels[i], "");
-        }
-    }
-}
-
 int handlePartCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
@@ -30,7 +18,6 @@ int handlePartCommand(commandStruct cmd)
     if (checkChannel(channelName) == BOOL_TRUE)
     {
         userLeaveChannel(currentUser.username, channelName);
-        removeChannelFromCurrentUserChannels(channelName);
 
         if (checkIfChannelEmpty(channelName))
         {

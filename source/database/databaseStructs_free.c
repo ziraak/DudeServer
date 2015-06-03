@@ -70,23 +70,6 @@ void channelInfo_free(channelInfo *ci)
         return;
     }
 
-    if(ci->messages != NULL)
-    {
-        int i = 0;
-        for(i; i < DB_MAXMESSAGES; i++)
-        {
-            if(ci->messages[i].body == NULL || ci->messages[i].writer == NULL)
-            {
-                break;
-            }
-
-            messageInfo_free(&ci->messages[i]);
-        }
-        free(ci->messages);
-
-        ci->messages = NULL;
-    }
-
     free(ci->name);
     free(ci->users);
     free(ci->password);
