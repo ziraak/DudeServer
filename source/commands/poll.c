@@ -131,12 +131,14 @@ int handlePollCommand(commandStruct cmd)
 {
     if(cmd.parameterCount == 0)
     {
-        return ERR_NEEDMOREPARAMS;
+//        return ERR_NEEDMOREPARAMS;
     }
+
+    printf("%i TS\n", lastTimestamp);
 
     int channelCount;
     channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
-    pollStruct ps = pollStruct_initialize(channels, channelCount, atoi(cmd.parameters[0]));
+    pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
 
     if(getPollMessages(&ps) == BOOL_TRUE)
     {
@@ -145,5 +147,8 @@ int handlePollCommand(commandStruct cmd)
 
     printf("TEST"); //TODO: Remove this
     pollStruct_free(&ps);
+
+    lastTimestamp = (int)time(NULL);
+
     return RPL_SUCCESS;
 }

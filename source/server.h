@@ -3,6 +3,7 @@
 
 #include "main.h"
 
+int lastTimestamp;
 userInfo currentUser;
 
 void freeCurrentUser();

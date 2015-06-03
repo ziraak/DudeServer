@@ -5,6 +5,7 @@
 
 int main(int argc, char **argv)
 {
+    lastTimestamp = (int)time(NULL);
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
