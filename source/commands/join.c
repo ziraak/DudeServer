@@ -9,8 +9,10 @@
 
 int handleJoinCommand(commandStruct cmd)
 {
+    timeStart
     if(cmd.parameterCount < 1)
     {
+        timeEnd("join.c command");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -29,6 +31,7 @@ int handleJoinCommand(commandStruct cmd)
         channelInfo_free(&channel);
         if(result != BOOL_TRUE)
         {
+            timeEnd("join.c command");
             return result;
         }
     }
@@ -37,11 +40,13 @@ int handleJoinCommand(commandStruct cmd)
     {
         updateChannelUserRole(channelName, currentUser.username, USER_ROLE_OPERATOR);
     }
+    timeEnd("join.c command");
     return joinChannelResult;
 }
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey)
 {
+    timeStart;
     if(strcmp(channel.name, channelName) == 0)
     {
         if(channel.password != NULL && strlen(channel.password) > 0)
@@ -50,23 +55,29 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
             {
                 if(strcmp(channel.password, optionalChannelKey) != 0)
                 {
+                    timeEnd("join/authenticateChannel");
                     return ERR_BADCHANNELKEY;
                 }
             }
             else
             {
+                timeEnd("join/authenticateChannel");
                 return ERR_BADCHANNELKEY;
             }
         }
+        timeEnd("join/authenticateChannel");
         return BOOL_TRUE;
     }
 
+    timeEnd("join/authenticateChannel");
     return ERR_BADCHANMASK;
 }
 
 int joinChannel(char* channelName)
 {
+    timeStart;
     joinChannelByUsername(channelName, currentUser.username);
+    timeEnd("join.c/joinChannelByUsername");
 }
 
 int joinChannelByUsername(char* channelName, char *username)

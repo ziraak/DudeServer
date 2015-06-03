@@ -21,8 +21,10 @@ int hostAllowedToInvite(char *channelName)
 
 int handleInviteCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 2)
     {
+        timeEnd("invite.c");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -37,7 +39,9 @@ int handleInviteCommand(commandStruct cmd)
         {
             joinChannelByUsername(channelName, usernameUserToInvite);
         }
+        timeEnd("invite.c");
         return RPL_INVITING;
     }
+    timeEnd("invite.c");
     return resultCheckChannelHost;
 }

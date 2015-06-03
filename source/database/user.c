@@ -3,6 +3,7 @@
 
 void fillUser(sqlite3_stmt *statement, userInfo *user)
 {
+    timeStart;
     int columnCount = sqlite3_column_count(statement);
     bzero(user, sizeof(userInfo));
 
@@ -14,10 +15,12 @@ void fillUser(sqlite3_stmt *statement, userInfo *user)
         else if(strcmp(sqlite3_column_name(statement, i), "nickname") == 0) { user->nickname = sqlite3_column_string(statement, i); }
         else if(strcmp(sqlite3_column_name(statement, i), "user_privileges") == 0) { user->role = sqlite3_column_string(statement, i); }
     }
+    timeEnd("fillUser");
 }
 
 int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
 {
+    timeStart;
     while(sqlite3_step(statement) == SQLITE_ROW)
     {
         fillUser(statement, user);
@@ -25,11 +28,13 @@ int getUserinfoWithSql(sqlite3_stmt *statement, userInfo *user)
         STMT_RETURN(BOOL_TRUE, statement);
     }
 
+    timeEnd("getUserInfoWithSql");
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
 userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result)
 {
+    timeStart;
     userInfo *users = NULL;
     int i = 0;
     while(sqlite3_step(stmt) == SQLITE_ROW)
@@ -42,11 +47,13 @@ userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result)
     }
 
     *result = i;
+    timeEnd("innerGetUsers");
     STMT_RETURN(users, stmt);
 }
 
 int getUserByName(char *name, userInfo *user)
 {
+    timeStart;
     sqlite3_stmt *statement;
     char *sql = getSelectSQL("users", ALL_COLUMNS, "name=?");
     if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK)
@@ -59,11 +66,13 @@ int getUserByName(char *name, userInfo *user)
         }
     }
     free(sql);
+    timeEnd("getUserByName");
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
 void user_free(userInfo *user)
 {
+    timeStart;
     if(user != NULL)
     {
         free(user->username);
@@ -71,10 +80,12 @@ void user_free(userInfo *user)
         free(user->password);
         free(user->role);
     }
+    timeEnd("user_free");
 }
 
 void users_free(userInfo *users, int amount)
 {
+    timeStart;
     if(users != NULL)
     {
         int i;
@@ -85,24 +96,30 @@ void users_free(userInfo *users, int amount)
 
         free(users);
     }
+    timeEnd("users_free");
 }
 
 int getUser(char *username, userInfo *result)
 {
+    timeStart;
     return getUserByName(username,result);
+    timeEnd("getUser");
 }
 
 char* getUserNickname(char* username)
 {
+    timeStart;
     userInfo info;
     getUserByName(username,&info);
     char* result = malloc(sizeof(info.nickname));
     strcpy(result,info.nickname);
     user_free(&info);
+    timeEnd("getUserNickname");
     return result;
 }
 int checkIfUserExists(char *username)
 {
+    timeStart;
     if(username == NULL || !strcmp(username,"")) return DB_RETURN_NULLPOINTER;
     userInfo user;
     bzero(&user, sizeof(userInfo));
@@ -112,11 +129,13 @@ int checkIfUserExists(char *username)
         return BOOL_TRUE;
     }
     user_free(&user);
+    timeEnd("checkIfUserExists");
     return BOOL_FALSE;
 }
 
 int userJoinChannel(char *username, char *channelName, char *userRole)
 {
+    timeStart;
     if(username == NULL || channelName == NULL || userRole == NULL) return DB_RETURN_NULLPOINTER;
 
     char*values = malloc(strlen(username)+ strlen(channelName) + strlen(userRole)+ 10);
@@ -127,11 +146,13 @@ int userJoinChannel(char *username, char *channelName, char *userRole)
 
     executeStatement(statement);
     free(statement);
+    timeEnd("userJoinChannel");
     return DB_RETURN_SUCCES;
 }
 
 int userLeaveChannel(char* username, char *channelname)
 {
+    timeStart;
     if(username == NULL || channelname == NULL) return DB_RETURN_NULLPOINTER;
 
     char* where = malloc(strlen(username) + strlen(channelname)+ 40);
@@ -143,12 +164,14 @@ int userLeaveChannel(char* username, char *channelname)
     executeStatement(statement);
     free(statement);
 
+    timeEnd("userLeaveChannel");
     return DB_RETURN_SUCCES;
 }
 
 
 int deleteUser(char *username)
 {
+    timeStart;
     if(username == NULL) return DB_RETURN_NULLPOINTER;
 
     char* where = malloc(strlen(username) + 20);
@@ -164,11 +187,13 @@ int deleteUser(char *username)
 
     executeStatement(statement2);
     free(statement2);
+    timeEnd("deleteUser");
     return DB_RETURN_SUCCES;
 }
 
 int changeNickname(char *username, char *newNickname)
 {
+    timeStart;
     if(username == NULL || newNickname == NULL) return DB_RETURN_NULLPOINTER;
     char* where = malloc(strlen(username) + 10);
     sprintf(where,"name = '%s'",username);
@@ -177,11 +202,13 @@ int changeNickname(char *username, char *newNickname)
     free(where);
     executeStatement(statement);
     free(statement);
+    timeEnd("changeNickname");
     return DB_RETURN_SUCCES;
 }
 
 int changePassword(char *username, char *newPassword)
 {
+    timeStart;
     if(username == NULL || newPassword == NULL) return DB_RETURN_NULLPOINTER;
     char* where = malloc(strlen(username) + 10);
     sprintf(where,"name = '%s'",username);
@@ -190,11 +217,14 @@ int changePassword(char *username, char *newPassword)
     free(where);
     executeStatement(statement);
     free(statement);
+    timeEnd("changePassword");
     return DB_RETURN_SUCCES;
 }
 
 int createNewUser(char *username, char *password)
 {
+    timeStart;
+
     if(username == NULL || password == NULL) return DB_RETURN_NULLPOINTER;
 
     char*values = malloc(strlen(username)+ strlen(password) + strlen(username)+10);
@@ -206,5 +236,7 @@ int createNewUser(char *username, char *password)
     executeStatement(statement);
 
     free(statement);
+
+    timeEnd("createNewUser");
     return DB_RETURN_SUCCES;
 }

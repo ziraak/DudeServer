@@ -6,6 +6,7 @@
 #include <string.h>
 #include <arpa/inet.h>
 #include <unistd.h>
+#include "performanceTimer.h"
 #include "ssl/communication.h"
 #include "utils/commandStruct.h"
 #include "utils/utils.h"
@@ -22,16 +23,24 @@
 #include "commands/mode.h"
 #include "database/database.h"
 #include "protocolDefines.h"
-#include "time.h"
+
 #include "server.h"
 #include "commands/invite.h"
 #include "commands/names.h"
 
+
+
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
+
+
+
 
 #define MINIMUM_PASSWORD_LENGTH 6
 
 #define MAXIMUM_MESSAGE_LENGTH 1024
+
+
+
 
 #endif

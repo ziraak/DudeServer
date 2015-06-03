@@ -6,6 +6,7 @@
 
 int find(char *str, char find)
 {
+    timeStart;
     char* e = strchr(str, find);
 
     if(e == NULL)
@@ -14,11 +15,13 @@ int find(char *str, char find)
     }
 
     int index = (int)(e - str);
+    timeEnd("utils/find");
     return index;
 }
 
 char* substringCharacter(char *str, int *result)
 {
+    timeStart;
     if(*str == ':' || *str == '\0')
     {
         *result = -1;
@@ -33,12 +36,16 @@ char* substringCharacter(char *str, int *result)
     str += i;
     while(*str == ' ') { str++; i++; }
 
+
     *result = (int)i;
+    timeEnd("utils/substringCharacter");
     return ret;
+
 }
 
 commandStruct commandStruct_initialize(char *message)
 {
+    timeStart;
     char *command = NULL,
          *trailing = NULL,
          **parameters = MALLOC(sizeof(char *));
@@ -86,11 +93,13 @@ commandStruct commandStruct_initialize(char *message)
     cmd.parameterCount = parameterCount;
     cmd.parameters = parameters;
 
+    timeEnd("commandstruct_initialize");
     return cmd;
 }
 
 void commandStruct_free(commandStruct *cmdStruct)
 {
+    timeStart;
     if(cmdStruct != NULL)
     {
         int j;
@@ -103,10 +112,12 @@ void commandStruct_free(commandStruct *cmdStruct)
         FREE(cmdStruct->command);
         FREE(cmdStruct->trailing);
     }
+    timeEnd("commandstruct free");
 }
 
 void *_malloc(size_t size)
 {
+    timeStart;
     void* result = malloc(size);
     if(result == NULL)
     {
@@ -114,16 +125,20 @@ void *_malloc(size_t size)
         exit(-1);
     }
     bzero(result, size);
+    timeEnd("malloc");
     return result;
 }
 
+
 void *_realloc(void *r, size_t size)
 {
+    timeStart;
     void *result = realloc(r, size);
     if(result == NULL)
     {
         perror("REALLOC failed.");
         exit(-2);
     }
+    timeEnd("realloc");
     return result;
 }
