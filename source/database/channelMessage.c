@@ -55,8 +55,6 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result, in
             return messageInfoStruct;
         }
     }
-
-
     timeEnd("getMessagesOnTime false");
     STMT_RETURN(BOOL_FALSE, statement);
 }

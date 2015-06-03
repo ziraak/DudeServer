@@ -91,7 +91,6 @@ int getChannelUser(char *channelName, char *username, channelUser *cu)
 
 
     FREE(sql);
-
     timeEnd("getChannelUser NULL");
     STMT_RETURN(BOOL_FALSE, stmt);
 }

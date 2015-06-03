@@ -27,4 +27,5 @@ void finalTimer(struct timespec tstart, char *testedFunction);
 #define timeStop(testedFunction) finalTimer(tstart,testedFunction)
 
 
+
 #endif //DUDESERVER_PERFORMANCETIMER_H

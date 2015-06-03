@@ -57,6 +57,7 @@ START_TEST(test_getMessages)
 //        char* body2 = "test321";
 //        messageInfo* messageInfo1;
 //        messageInfo1= getMessages("testChannel", 100);
+
 //        ck_assert_str_eq(messageInfo1[0].body,body);
 //        ck_assert_str_eq(messageInfo1[1].body,body2);
     }
@@ -68,6 +69,7 @@ START_TEST(test_getMessagesOnTime)
         messageInfo* messageInfo1;
         messageInfo1= getMessagesOnTime("testChannel", 10, NULL, 0);
         ck_assert_str_eq(messageInfo1[0].body,body);
+
     }
 END_TEST
 

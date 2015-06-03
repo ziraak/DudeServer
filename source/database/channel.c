@@ -63,6 +63,7 @@ channelInfo *getChannels(char* columns, int *result)
     {
         timeEnd("getChannels");
         FREE(sql);
+        timeEnd("getChannels");
         return _innerGetChannels(stmt, result);
     }
 
@@ -88,8 +89,10 @@ int getChannelByName(char *name, channelInfo *channel)
         }
     }
 
+
     FREE(sql);
     timeEnd("getChannelByName false");
+    STMT_RETURN(BOOL_FALSE, stmt);
 }
 
 channelInfo* getVisibleChannels(char* columns, int *result)
@@ -145,6 +148,7 @@ int deleteChannel(char *channelName)
 {
     timeStart;
     char *channelMessagesDelete = sqlite3_mprintf("DELETE FROM CHANNEL_MESSAGES WHERE channel_name = %Q;", channelName);
+
     executeStatement(channelMessagesDelete);
     sqlite3_free(channelMessagesDelete);
 
@@ -194,27 +198,31 @@ int checkIfChannelHasPassword(char *channelName)
 
 int checkIfChannelIsInviteOnly(char *channelName)
 {
+    timeStart;
     channelInfo ci;
     if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
         int result = ci.inviteOnly == BOOL_TRUE ? BOOL_TRUE : BOOL_FALSE;
         channelInfo_free(&ci);
+        timeEnd("checkIfChannelisInvitrOnly False");
         return result;
     }
-
+    timeEnd("checkIfChannelisInvitrOnly False");
     return BOOL_FALSE;
 }
 
 int checkIfChannelTopicOperatorOnly(char *channelName)
 {
+    timeStart;
     channelInfo ci;
     if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
         int result = ci.topicOperatorOnly == BOOL_TRUE ? BOOL_TRUE : BOOL_FALSE;
         channelInfo_free(&ci);
+        timeEnd("authenticateChannelPassword");
         return result;
     }
-
+    timeEnd("authenticateChannelPassword False");
     return BOOL_FALSE;
 }
 
@@ -237,6 +245,7 @@ void updateChannelPassword(char *channelName, char *newPass)
 {
     timeStart;
     char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = %Q WHERE name = %Q;", newPass, channelName);
+
     executeStatement(stmt);
     sqlite3_free(stmt);
     timeEnd("updateChannelPassword");
@@ -246,6 +255,7 @@ void updateChannelTopic(char *channelName, char *newTopic)
 {
     timeStart;
     char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topic = %Q WHERE name = %Q;", newTopic, channelName);
+
     executeStatement(stmt);
     sqlite3_free(stmt);
     timeEnd("updateChannelTopic");
@@ -277,4 +287,3 @@ void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly)
     sqlite3_free(stmt);
     timeEnd("updateChannelTopicOperatorOnly");
 }
-

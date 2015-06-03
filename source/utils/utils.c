@@ -45,9 +45,11 @@ char* substringCharacter(char *str, int *result)
     str += i;
     while(*str == ' ') { str++; i++; }
 
+
     *result = (int)i;
     timeEnd("utils/substringCharacter");
     return ret;
+
 }
 
 commandStruct commandStruct_initialize(char *message)
@@ -121,6 +123,7 @@ void commandStruct_free(commandStruct *cmdStruct)
         FREE(cmdStruct->trailing);
         timeEnd("commandstruct free");
     }
+    timeEnd("commandstruct free");
 }
 
 void *_malloc(size_t size)
@@ -137,13 +140,16 @@ void *_malloc(size_t size)
     return result;
 }
 
+
 void *_realloc(void *r, size_t size)
 {
+    timeStart;
     void *result = realloc(r, size);
     if(result == NULL)
     {
         perror("REALLOC failed.");
         exit(-2);
     }
+    timeEnd("realloc");
     return result;
 }
