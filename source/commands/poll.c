@@ -1,15 +1,5 @@
 #include "poll.h"
 
-char* copy(char* src)
-{
-    size_t l = strlen(src);
-    char* result = malloc(l + 1);
-    bzero(result, l + 1);
-    strncpy(result, src, l);
-
-    return result;
-}
-
 int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
     if(msg.timestamp == NULL || msg.writer == NULL || msg.body == NULL || channelName == NULL)
@@ -17,16 +7,8 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
         return BOOL_FALSE;
     }
 
-    char *writer = copy(msg.writer),
-            *body = copy(msg.body),
-            *timestamp = copy(msg.timestamp);
-
-    MALLOC(*str, 12 + strlen(channelName) + strlen(writer) + strlen(timestamp) + strlen(body));
-    sprintf(*str, "UNREAD %s %s %s :%s", channelName, writer, timestamp, body);
-
-    free(writer);
-    free(body);
-    free(timestamp);
+    MALLOC(*str, 12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
+    sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
 
     return BOOL_TRUE;
 }
@@ -138,7 +120,7 @@ int handlePollCommand(commandStruct cmd)
 
     int channelCount;
     channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
-    pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
+    pollStruct ps = pollStruct_initialize(channels, channelCount, 0);
 
     if(getPollMessages(&ps) == BOOL_TRUE)
     {
