@@ -74,7 +74,7 @@ void processConnectedClient()
                 authenticated = authenticateClient(cmd);
                 if(authenticated == BOOL_TRUE)
                 {
-                    commandStruct pollCmd = commandStruct_initialize("POLL 0");
+                    commandStruct pollCmd = commandStruct_initialize("POLL");
                     handlePollCommand(pollCmd);
                     commandStruct_free(&pollCmd);
                 }

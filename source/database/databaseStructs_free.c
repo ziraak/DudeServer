@@ -2,34 +2,17 @@
 
 void userInfo_free(userInfo *ui)
 {
-    if(ui == NULL)
-    {
-        return;
-    }
-
-    if(ui->username != NULL)
+    if(ui != NULL)
     {
         free(ui->username);
-    }
-
-    if(ui->password != NULL)
-    {
         free(ui->password);
-    }
-
-    if(ui->channels != NULL)
-    {
-        free(ui->channels);
-    }
-
-    if(ui->nickname != NULL)
-    {
         free(ui->nickname);
-    }
-
-    if (ui->role != NULL)
-    {
         free(ui->role);
+
+        ui->username = NULL;
+        ui->password = NULL;
+        ui->nickname = NULL;
+        ui->role = NULL;
     }
 }
 
@@ -71,12 +54,10 @@ void channelInfo_free(channelInfo *ci)
     }
 
     free(ci->name);
-    free(ci->users);
     free(ci->password);
     free(ci->topic);
 
     ci->name = NULL;
-    ci->users = NULL;
     ci->password = NULL;
     ci->topic = NULL;
 }

@@ -7,7 +7,6 @@ typedef struct userInfo
     char *nickname;
     char *password;
     char *role;
-    char **channels;
 } userInfo;
 
 
@@ -30,9 +29,7 @@ typedef struct channelInfo
     char *name;
     char *topic;
     char *password;
-    char** users;
     int visible;
 } channelInfo;
-
 
 #endif //DUDESERVER_DATABASESTRUCTS_H
