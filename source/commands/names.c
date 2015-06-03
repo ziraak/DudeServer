@@ -33,7 +33,7 @@ int handleNamesCommand(commandStruct cmd)
     bzero(users, mallocUsersLength + mallocRolesLength);
     bzero(roles, mallocRolesLength);
 
-    sprintf(users, "%i", RPL_SUCCESS);
+    sprintf(users, "%i", RPL_NAMREPLY);
     strcat(users, " ");
     strcat(roles, "");
     for (i = 0; i < result; i++)
