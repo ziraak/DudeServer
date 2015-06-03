@@ -92,7 +92,7 @@ void processConnectedClient()
 
             if(msg != RPL_NOREPLY)
             {
-                sslSendInteger(parseMessage(buffer));
+                sslSendInteger(msg);
             }
         }
         bzero(buffer, sizeof(buffer));
