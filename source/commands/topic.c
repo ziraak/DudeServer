@@ -7,6 +7,24 @@
  */
 #include "topic.h"
 
+int sendSuccessMessage(char* channelName, char* topic)
+{
+    size_t len = strlen(topic);
+    if(len > 0)
+    {
+        len += strlen(channelName);
+        char* snd = malloc(3 + len);
+        bzero(snd, len);
+        sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
+        sslSend(snd);
+        free(snd);
+
+        return RPL_NOREPLY;
+    }
+
+    return RPL_NOTOPIC;
+}
+
 int handleTopicCommand(commandStruct cmd)
 {
     //TODO: operator rechten checken (channel +t flag)
@@ -31,27 +49,18 @@ int handleTopicCommand(commandStruct cmd)
     {
         //set
         updateChannelTopic(channelName, topic);
-
-        return RPL_TOPIC;
+        return sendSuccessMessage(channelName, topic);
     }
     else
     {
         //get
         channelInfo channel;
-        if(getChannelByName(channelName, &channel) == DB_RETURN_SUCCES && channel.topic != NULL)
+        if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
         {
-            size_t len = strlen(channel.topic);
-            if(len > 0)
-            {
-                char* snd = malloc(3 + len);
-                sprintf(snd, "%i %s", RPL_TOPIC, channel.topic);
-
-                sslSend(snd);
-                channelInfo_free(&channel);
-                return RPL_TOPIC;
-            }
+            int result = sendSuccessMessage(channel.name, channel.topic);
+            channelInfo_free(&channel);
+            return result;
         }
-        channelInfo_free(&channel);
         return RPL_NOTOPIC;
     }
 }

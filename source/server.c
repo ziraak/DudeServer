@@ -88,7 +88,12 @@ void processConnectedClient()
         }
         else
         {
-            sslSendInteger(parseMessage(buffer));
+            int msg = parseMessage(buffer);
+
+            if(msg != RPL_NOREPLY)
+            {
+                sslSendInteger(parseMessage(buffer));
+            }
         }
         bzero(buffer, sizeof(buffer));
     }
@@ -170,6 +175,7 @@ int parseMessage(char *message)
         result = handleNamesCommand(cmd);
     }
     commandStruct_free(&cmd);
+
     return result;
 }
 void flushStdout()
