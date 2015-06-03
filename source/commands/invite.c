@@ -2,8 +2,10 @@
 
 int handleInviteCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 2)
     {
+        timeEnd("invite.c");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -18,7 +20,9 @@ int handleInviteCommand(commandStruct cmd)
         {
             joinChannelByUsername(channelName, usernameUserToInvite);
         }
+        timeEnd("invite.c");
         return resultCheckChannel;
     }
+    timeEnd("invite.c");
     return resultCheckChannelHost;
 }

@@ -2,13 +2,16 @@
 
 void executeStatement(char* stmt)
 {
+    timeStart;
     char* err;
 
     if(sqlite3_exec(db, stmt, NULL, NULL, &err) != SQLITE_OK)
     {
         printf("ERROR: %s\nIN STATEMENT: %s\n", err, stmt);
         sqlite3_free(err);
+        timeEnd("executeStatementErr");
     }
+    timeEnd("executeStatement");
 }
 
 void firstTimeSetup()
@@ -86,6 +89,7 @@ int tableExists(char* name)
 
 char* sqlite3_column_string(sqlite3_stmt *stmt, int id)
 {
+    timeStart;
     char *stmt_res = (char*)sqlite3_column_text(stmt, id);
 
     if(stmt_res == NULL)
@@ -97,11 +101,13 @@ char* sqlite3_column_string(sqlite3_stmt *stmt, int id)
     char *func_return = malloc(l + 1);
     bzero(func_return, l + 1);
     strncpy(func_return, stmt_res, l);
+    timeEnd("sqlite3_column_string");
     return func_return;
 }
 
 char* getSelectSQL(char* table, char* columns, char* where)
 {
+    timeStart;
     if(columns == NULL || strlen(columns) == 0)
     {
         columns = ALL_COLUMNS;
@@ -111,27 +117,32 @@ char* getSelectSQL(char* table, char* columns, char* where)
     {
         char* result = malloc(strlen(columns) + strlen(table) + 15);
         sprintf(result, "SELECT %s FROM %s", columns, table);
+        timeEnd("selectSQL");
         return result;
     }
     else
     {
         char* result = malloc(strlen(columns) + strlen(where) + strlen(table) + 20);
         sprintf(result, "SELECT %s FROM %s WHERE %s", columns, table, where);
+        timeEnd("selectSQL");
         return result;
     }
 }
 
 char* getInsertSQL(char* table,char* valueNames ,char* values)
 {
+    timeStart;
     if(table == NULL||valueNames == NULL || values == NULL) return NULL;
 
     char* statement = malloc(strlen(table)+ strlen(valueNames) + strlen(values)+ 30);
     sprintf(statement,"INSERT INTO %s (%s) VALUES (%s);",table,valueNames,values);
+    timeEnd("getInsertSQL");
     return statement;
 }
 
 char* getDeleteSQL(char* table, char* where)
 {
+    timeStart;
     if(table == NULL || where == NULL)
     {
         return NULL;
@@ -139,16 +150,19 @@ char* getDeleteSQL(char* table, char* where)
 
     char* statement = malloc(strlen(table)+ strlen(where) + 30);
     sprintf(statement,"DELETE FROM %s WHERE %s;",table,where);
+    timeEnd("getDeleteSQL");
     return statement;
 }
 
 char* getUpdateSQL(char* table, char* where, char* valueName, char* newValue)
 {
+    timeStart;
     if(table == NULL || where== NULL || valueName== NULL || newValue == NULL)
     {
         return NULL;
     }
     char* statement = malloc(strlen(table)+ strlen(where)+ strlen(valueName)+strlen(newValue)  + 26);
     sprintf(statement,"UPDATE %s SET %s = '%s' WHERE %s;",table,valueName,newValue, where);
+    timeEnd("getUpdateSQL");
     return statement;
 }

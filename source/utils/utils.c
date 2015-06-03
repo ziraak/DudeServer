@@ -6,6 +6,7 @@
 
 int find(char *str, char find)
 {
+    timeStart;
     char* e = strchr(str, find);
 
     if(e == NULL)
@@ -14,11 +15,13 @@ int find(char *str, char find)
     }
 
     int index = (int)(e - str);
+    timeEnd("utils/find");
     return index;
 }
 
 int substringCharacter(char *str, char **result)
 {
+    timeStart;
     if(*str == ':' || *str == '\0')
     {
         return -1;
@@ -32,11 +35,13 @@ int substringCharacter(char *str, char **result)
     str += i;
     while(*str == ' ') { str++; i++; }
 
+    timeEnd("utils/substringCharacter");
     return (int) i;
 }
 
 commandStruct commandStruct_initialize(char *message)
 {
+    timeStart;
     char *command = NULL,
          *trailing = NULL,
          **parameters = NULL;
@@ -77,11 +82,13 @@ commandStruct commandStruct_initialize(char *message)
 
     commandStruct cmd = { .parameterCount = parameterCount, .command = command, .trailing = trailing, .parameters = parameters };
 
+    timeEnd("commandstruct_initialize");
     return cmd;
 }
 
 void commandStruct_free(commandStruct *cmdStruct)
 {
+    timeStart;
     if(cmdStruct != NULL)
     {
         int j;
@@ -99,5 +106,6 @@ void commandStruct_free(commandStruct *cmdStruct)
         cmdStruct->command = NULL;
         cmdStruct->trailing = NULL;
     }
+    timeEnd("commandstruct free");
 
 }

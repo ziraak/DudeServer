@@ -9,8 +9,10 @@
 
 int handleLoginCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
+        timeEnd("login.c");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -28,21 +30,25 @@ int handleLoginCommand(commandStruct cmd)
     {
         // TODO: doe iets met nickname op cmd.parameters[1]
     }
-
+    timeEnd("login.c");
     return userAuthenticated;
 }
 
 int authenticateUser(char *username, char *password, userInfo *result)
 {
+    timeStart;
     if (getUser(username, result) != DB_RETURN_SUCCES)
     {
+        timeEnd("login/authenticateUser");
         return ERR_NOLOGIN;
     }
 
     if (strcmp(result->username, username) == 0 && strcmp(result->password, password) == 0)
     {
+        timeEnd("login/authenticateUser");
         return RPL_LOGIN;
     }
 
+    timeEnd("login/authenticateUser");
     return ERR_NOLOGIN;
 }

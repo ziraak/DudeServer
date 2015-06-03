@@ -144,23 +144,23 @@ Suite *user_suite(void)
 
     tc_user_core = tcase_create("core");
 
-    tcase_add_test(tc_user_core, checkUser_test_NULL);
-    tcase_add_test(tc_user_core, checkUser_test_false);
-    tcase_add_test(tc_user_core, checkUser_test_true);
+//    tcase_add_test(tc_user_core, checkUser_test_NULL);
+//    tcase_add_test(tc_user_core, checkUser_test_false);
+//    tcase_add_test(tc_user_core, checkUser_test_true);
 
 //    tcase_add_test(tc_user_core, createUser_test_alreadyExists);
-    tcase_add_test(tc_user_core, createUser_test_NULL);
-    tcase_add_test(tc_user_core, createUser_test_CORRECT);
+//    tcase_add_test(tc_user_core, createUser_test_NULL);
+//    tcase_add_test(tc_user_core, createUser_test_CORRECT);
 
-    tcase_add_test(tc_user_core, userJoinChannel_test_correct);
+//    tcase_add_test(tc_user_core, userJoinChannel_test_correct);
 //    tcase_add_test(tc_user_core, userJoinChannel_test_wrongChannel);
 //    tcase_add_test(tc_user_core, userJoinChannel_test_wrongUser);
 
-    tcase_add_test(tc_user_core, test_deleteUser_correct);
+//    tcase_add_test(tc_user_core, test_deleteUser_correct);
 
-    tcase_add_test(tc_user_core, test_all);
+    tcase_add_loop_test(tc_user_core, test_all,0,100);
 
-    tcase_add_test(tc_user_core, test_getUsrNickname);
+//    tcase_add_test(tc_user_core, test_getUsrNickname);
 
     suite_add_tcase(s, tc_user_core);
 

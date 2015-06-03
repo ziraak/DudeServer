@@ -8,8 +8,10 @@
 
 int handleCreateUserCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
+        timeEnd("create_user.c");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -18,6 +20,7 @@ int handleCreateUserCommand(commandStruct cmd)
 
     if (checkIfUserExists(username) == BOOL_TRUE)
     {
+        timeEnd("create_user.c");
         return ERR_USERNAMEINUSE;
     }
     else
@@ -25,11 +28,14 @@ int handleCreateUserCommand(commandStruct cmd)
         if (strlen(password) >= MINIMUM_PASSWORD_LENGTH)
         {
             createNewUser(username, password);
+            timeEnd("create_user.c");
             return RPL_SUCCESS;
         }
         else
         {
+            timeEnd("create_user.c");
             return ERR_PASSWORDTOOSHORT;
         }
     }
+    timeEnd("create_user.c");
 }
