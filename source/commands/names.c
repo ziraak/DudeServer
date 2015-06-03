@@ -3,14 +3,17 @@
 
 int handleNamesCommand(commandStruct cmd)
 {
+    timeStart;
     char *channelName = cmd.parameters[0];
 
     if (cmd.parameterCount < 1)
     {
+        timeEnd("handleNamesCommand");
         return ERR_NEEDMOREPARAMS;
     }
     if (checkChannel(channelName) == BOOL_FALSE)
     {
+        timeEnd("handleNamesCommand");
         return ERR_NOSUCHCHANNEL;
     }
 
@@ -52,5 +55,6 @@ int handleNamesCommand(commandStruct cmd)
     FREE(users);
     FREE(roles);
     userInfos_free(userInfoStruct, result);
+    timeEnd("handleNamesCommand");
     return RPL_NOREPLY;
 }

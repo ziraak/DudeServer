@@ -3,6 +3,7 @@
 int main(int argc, char **argv)
 {
     lastTimestamp = 0;
+
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
