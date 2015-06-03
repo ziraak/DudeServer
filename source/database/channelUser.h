@@ -16,5 +16,6 @@ int isUserInChannel(char *channelName, char *username);
 char *getChannelUserRole(char *channelName, char *username);
 int updateChannelUserRole(char *channelName, char *username, char *newRole);
 int checkIfChannelEmpty(char *channelName);
+int userIsOperatorInChannel(char *channelName, char *username);
 
 #endif //DUDESERVER_CHANNELUSERS_H

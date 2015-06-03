@@ -126,6 +126,11 @@ char *getChannelUserRole(char *channelName, char *username)
     return result;
 }
 
+int userIsOperatorInChannel(char *channelName, char *username)
+{
+    return strcmp(getChannelUserRole(channelName, username), "o") == 0 ? BOOL_TRUE : BOOL_FALSE;
+}
+
 int checkIfChannelEmpty(char *channelName)
 {
     sqlite3_stmt *stmt;
