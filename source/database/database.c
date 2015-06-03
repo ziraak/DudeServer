@@ -16,8 +16,8 @@ void firstTimeSetup()
     printf("-- PERFORMING FIRST TIME SETUP --\n\n");
 
     executeStatement("CREATE TABLE CHANNELS (name TEXT PRIMARY KEY, password TEXT,topic TEXT, visible INT NOT NULL);");
-    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('batcave','because im awesome','open sesame', 1);");
-    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('eigendunk','erg bekend bij ...', NULL, 0);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('batcave','open sesame','because im awesome', 1);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('eigendunk', NULL,'erg bekend bij ...', 0);");
 
     executeStatement("CREATE TABLE USERS (name TEXT PRIMARY KEY, password TEXT NOT NULL, nickname TEXT);");
     executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('fatih', 'nub', 'fatihawesome');");

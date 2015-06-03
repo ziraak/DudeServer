@@ -17,12 +17,11 @@ int handleJoinCommand(commandStruct cmd)
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
 
     channelInfo channel;
-    int resultGetChannel = getChannelByName(channelName, &channel);
-    if(resultGetChannel == DB_RETURN_DOESNOTEXIST)
+    if(getChannelByName(channelName, &channel) == BOOL_FALSE)
     {
         insertChannel(channelName, NULL, NULL, BOOL_TRUE);
     }
-    else if (resultGetChannel == DB_RETURN_SUCCES)
+    else
     {
         int result = authenticateChannel(channel, channelName, optionalChannelKey);
         if(result != BOOL_TRUE)
@@ -31,11 +30,6 @@ int handleJoinCommand(commandStruct cmd)
             return result;
         }
     }
-    else
-    {
-        return resultGetChannel;
-    }
-    channelInfo_free(&channel);
     return joinChannel(channelName);
 }
 
@@ -57,7 +51,6 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
                 return ERR_BADCHANNELKEY;
             }
         }
-
         return BOOL_TRUE;
     }
 
