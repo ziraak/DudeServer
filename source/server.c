@@ -7,34 +7,27 @@ void runServer(int USE_FORK, int port)
     flushStdout();
     int sock = getListeningSocket(SERVER_IP, SERVER_PORT);
     exitIfError(sock, "Couldn't create a socket to listen to.");
+
+    if(USE_FORK == BOOL_TRUE)
+    {
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-//    for (; ;)
-//    {
-//        if(sslAcceptConnection(sock) == SSL_OK)
-//        {
-//            if(USE_FORK == BOOL_TRUE)
-//            {
-//                processConnectedClientWithFork();
-//            }
-//            else
-//            {
-//                processConnectedClient();
-//            }
-//        }
-//    }
+        for (; ;)
+        {
+            if(sslAcceptConnection(sock) == SSL_OK)
+            {
+                processConnectedClientWithFork();
+            }
+        }
 #pragma clang diagnostic pop
-    if(sslAcceptConnection(sock) == SSL_OK)
+    }
+    else
     {
-        processConnectedClient();
-//        if(USE_FORK == BOOL_TRUE)
-//        {
-//            processConnectedClientWithFork();
-//        }
-//        else
-//        {
-//        }
+        if(sslAcceptConnection(sock) == SSL_OK)
+        {
+            processConnectedClient();
+        }
     }
     sslDestroy();
 }
