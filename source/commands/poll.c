@@ -3,7 +3,7 @@
 char* copy(char* src)
 {
     size_t l = strlen(src);
-    char* result = malloc(l + 1);
+    char* result = malloc(l + 100000);
     bzero(result, l + 1);
     strncpy(result, src, l);
 
@@ -143,6 +143,7 @@ int handlePollCommand(commandStruct cmd)
         sendPollMessages(&ps);
     }
 
+    printf("TEST"); //TODO: Remove this
     pollStruct_free(&ps);
     return RPL_SUCCESS;
 }
