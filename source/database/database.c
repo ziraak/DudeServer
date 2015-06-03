@@ -41,11 +41,11 @@ void firstTimeSetup()
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360990, 'im batman');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360991, 'im batman');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360992, 'im batman');");
-    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'batcave', 1433360988, 'im batman');");
-    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'batcave', 1433360989, 'im batman');");
-    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'batcave', 1433360990, 'im batman');");
-    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'batcave', 1433360991, 'im batman');");
-    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'batcave', 1433360992, 'im batman');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360988, 'im batman');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360989, 'im batman');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360990, 'im batman');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360991, 'im batman');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360992, 'im batman');");
 
     printf("\n-- FIRST TIME SETUP COMPLETED --\n");
 }
