@@ -3,6 +3,7 @@
 int main(int argc, char **argv)
 {
     lastTimestamp = 0;
+
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return EXIT_FAILURE;
@@ -29,6 +30,5 @@ int main(int argc, char **argv)
 
     runServer(fork, port);
     stopDatabase();
-
     return EXIT_SUCCESS;
 }

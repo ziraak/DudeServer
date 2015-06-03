@@ -8,8 +8,10 @@
 
 int handlePartCommand(commandStruct cmd)
 {
+    timeStart;
     if(cmd.parameterCount < 1)
     {
+        timeEnd("part.c");
         return ERR_NEEDMOREPARAMS;
     }
 
@@ -23,7 +25,9 @@ int handlePartCommand(commandStruct cmd)
         {
             deleteChannel(channelName);
         }
+        timeEnd("part.c");
         return RPL_SUCCESS;
     }
+    timeEnd("part.c");
     return ERR_NOSUCHCHANNEL;
 }

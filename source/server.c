@@ -4,6 +4,7 @@ int authenticated = BOOL_FALSE;
 
 void runServer(int USE_FORK, int port)
 {
+
     flushStdout();
     int sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
@@ -32,10 +33,12 @@ void runServer(int USE_FORK, int port)
         }
     }
     sslDestroy();
+
 }
 
 int authenticateClient(commandStruct cmd)
 {
+    timeStart;
     authenticated = BOOL_FALSE;
     if (commandEquals(cmd, "LOGIN"))
     {
@@ -50,6 +53,7 @@ int authenticateClient(commandStruct cmd)
     {
         sslSendInteger(ERR_NOLOGIN);
     }
+    timeEnd("authenticate Client");
     return authenticated;
 }
 void processConnectedClient()
@@ -116,6 +120,7 @@ void processConnectedClientWithFork()
 
 int parseMessage(char *message)
 {
+    timeStart;
     commandStruct cmd = commandStruct_initialize(message);
     int result = ERR_UNKNOWNCOMMAND;
     if (commandEquals(cmd, "LOGIN"))
@@ -168,7 +173,7 @@ int parseMessage(char *message)
         result = handleNamesCommand(cmd);
     }
     commandStruct_free(&cmd);
-
+    timeEnd("parseMessage");
     return result;
 }
 void flushStdout()
