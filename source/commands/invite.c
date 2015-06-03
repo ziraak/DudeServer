@@ -2,10 +2,14 @@
 
 int hostAllowedToInvite(char *channelName)
 {
-    // TODO: Checken of host ook operator is.
     if (checkChannel(channelName) == BOOL_FALSE)
     {
-        return BOOL_FALSE;
+        return ERR_NOSUCHCHANNEL;
+    }
+
+    if (userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_CHANOPPRIVSNEEDED;
     }
 
     if(isUserInChannel(channelName, currentUser.username) == BOOL_TRUE)

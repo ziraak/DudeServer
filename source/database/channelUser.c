@@ -128,7 +128,10 @@ char *getChannelUserRole(char *channelName, char *username)
 
 int userIsOperatorInChannel(char *channelName, char *username)
 {
-    return strcmp(getChannelUserRole(channelName, username), "o") == 0 ? BOOL_TRUE : BOOL_FALSE;
+    char *resultUserRole = getChannelUserRole(channelName, username);
+    int resultUserIsOperator = strcmp(resultUserRole, "o") == 0 ? BOOL_TRUE : BOOL_FALSE;
+    FREE(resultUserRole);
+    return resultUserIsOperator;
 }
 
 int checkIfChannelEmpty(char *channelName)
