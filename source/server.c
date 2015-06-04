@@ -167,6 +167,10 @@ int parseMessage(char *message)
     {
         result = handleNamesCommand(cmd);
     }
+    else if (commandEquals(cmd, "KICK"))
+    {
+        result = handleKickCommand(cmd);
+    }
     commandStruct_free(&cmd);
 
     return result;

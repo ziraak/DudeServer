@@ -26,6 +26,7 @@
 #include "server.h"
 #include "commands/invite.h"
 #include "commands/names.h"
+#include "commands/kick.h"
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
