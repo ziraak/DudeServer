@@ -111,6 +111,7 @@ END_TEST
 
 START_TEST(test_all)
     {
+        timeStart;
         createNewUser("awesome","awesome");
         checkIfUserExists("awesome");
         userInfo result;
@@ -128,6 +129,7 @@ START_TEST(test_all)
 
         userLeaveChannel("awesome","eigendunk");
         deleteUser("awesome");
+        timeStop("test_All");
     }
 END_TEST
 

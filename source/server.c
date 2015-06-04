@@ -67,6 +67,7 @@ void processConnectedClient()
     {
         if (authenticated == BOOL_FALSE)
         {
+            timeStart;
             commandStruct cmd = commandStruct_initialize(buffer);
             if (commandEquals(cmd, "CREATE_USER"))
             {
@@ -83,6 +84,7 @@ void processConnectedClient()
                     commandStruct_free(&pollCmd);
                 }
             }
+            timeStop(cmd.command);
             commandStruct_free(&cmd);
         }
         else
@@ -174,8 +176,8 @@ int parseMessage(char *message)
     {
         result = handleNamesCommand(cmd);
     }
+    timeStop(cmd.command);
     commandStruct_free(&cmd);
-    timeEnd("parseMessage");
     return result;
 }
 void flushStdout()
