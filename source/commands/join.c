@@ -20,7 +20,6 @@ int handleJoinCommand(commandStruct cmd)
     if(getChannelByName(channelName, &channel) == BOOL_FALSE)
     {
         insertChannel(channelName, NULL, NULL, BOOL_TRUE);
-        channelInfo_free(&channel);
     }
     else
     {
