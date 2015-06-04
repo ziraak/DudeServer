@@ -120,7 +120,7 @@ int parseMessage(char *message)
 {
     commandStruct cmd = commandStruct_initialize(message);
     int result = ERR_UNKNOWNCOMMAND;
-    if (commandEquals(cmd, "LOGIM"))
+    if (commandEquals(cmd, "LOGIN"))
     {
         result = ERR_ALREADY_LOGGED_IN;
     }
