@@ -2,7 +2,6 @@
 
 int main()
 {
-    timeStart;
     setupDatabaseConnection();
     int numberOfFailedTests = 0;
     numberOfFailedTests += unitTests();
@@ -13,8 +12,6 @@ int main()
 
     stopDatabase();
     remove("dude@chat.db");
-    timeStop;
-
     return (numberOfFailedTests > 0) ? EXIT_FAILURE : EXIT_SUCCESS;
 }
 
