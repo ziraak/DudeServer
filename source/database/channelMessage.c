@@ -56,7 +56,7 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result, in
 int insertMessage(messageInfo message, char *channelName)
 {
     int timestamp = (int)time(NULL);
-    char*statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('%s', '%s', %i, '%s');", message.writer, channelName, timestamp, message.body);
+    char*statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES (%Q, %Q, %i, %Q);", message.writer, channelName, timestamp, message.body);
     executeStatement(statement);
     sqlite3_free(statement);
 
@@ -65,4 +65,6 @@ int insertMessage(messageInfo message, char *channelName)
     result = resultMessageInfo != NULL ? BOOL_TRUE : BOOL_FALSE;
     messageInfos_free(resultMessageInfo, resultMessageInfos);
     return result;
+
+
 }

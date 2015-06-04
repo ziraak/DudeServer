@@ -98,7 +98,7 @@ int updateChannelUserRole(char *channelName, char *username, char *newRole)
 {
     if(isUserInChannel(channelName, username) == BOOL_TRUE)
     {
-        char *sql = sqlite3_mprintf("UPDATE CHANNEL_USERS SET user_privileges = '%s' WHERE channel_name = '%s' AND user_name = '%s';", newRole, channelName, username);
+        char *sql = sqlite3_mprintf("UPDATE CHANNEL_USERS SET user_privileges = %Q WHERE channel_name = %Q AND user_name = %Q;", newRole, channelName, username);
         executeStatement(sql);
         sqlite3_free(sql);
 

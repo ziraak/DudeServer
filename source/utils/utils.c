@@ -4,6 +4,15 @@
 
 #include "utils.h"
 
+void toUppercase(char *str)
+{
+    while(*str != '\0')
+    {
+        *str = (char)toupper(*str);
+        str++;
+    }
+}
+
 int find(char *str, char find)
 {
     char* e = strchr(str, find);
@@ -45,6 +54,7 @@ commandStruct commandStruct_initialize(char *message)
 
     int offset;
     command = substringCharacter(message, &offset);
+    toUppercase(command);
     message += offset;
 
     int parameterCount = 0;

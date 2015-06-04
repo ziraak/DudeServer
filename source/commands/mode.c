@@ -105,6 +105,22 @@ void handleKFlag(char *channelName, flagStruct flag)
     }
 }
 
+void handleTFlag(char *channelName, flagStruct flag)
+{
+    if(flag.flag == 't')
+    {
+        updateChannelTopicOperatorOnly(channelName, flag.set);
+    }
+}
+
+void handleIFlag(char *channelName, flagStruct flag)
+{
+    if(toupper(flag.flag) == 'i')
+    {
+        updateChannelInviteOnly(channelName, flag.set);
+    }
+}
+
 void handleFlags(modeStruct ms)
 {
     int i;
@@ -122,6 +138,14 @@ void handleFlags(modeStruct ms)
 
             case 'k':
                 handleKFlag(ms.channelName, ms.flags[i]);
+                break;
+
+            case 't':
+                handleTFlag(ms.channelName, ms.flags[i]);
+                break;
+
+            case 'i':
+                handleIFlag(ms.channelName, ms.flags[i]);
                 break;
 
             default:
@@ -172,7 +196,6 @@ int checkFlags(modeStruct ms)
             case 'l':
             case 'b':
             case 'v':
-            case 'k':
                 break;
 
             default:

@@ -109,6 +109,7 @@ void processConnectedClientWithFork()
     if (childpid == 0)
     {
         processConnectedClient();
+        printf("CLOSED FORKED CLIENT\n");
         exit(0);
     }
     exitIfError(childpid, "Error forking child");

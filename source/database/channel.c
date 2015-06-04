@@ -14,6 +14,8 @@ void _fillChannel(sqlite3_stmt *stmt, channelInfo *channel)
 
             // flags
         else if(strcmp(sqlite3_column_name(stmt, i), "visible") == 0) { channel->visible = sqlite3_column_int(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "inviteOnly") == 0) { channel->inviteOnly = sqlite3_column_int(stmt, i); }
+        else if(strcmp(sqlite3_column_name(stmt, i), "topicOperatorOnly") == 0) { channel->topicOperatorOnly = sqlite3_column_int(stmt, i); }
     }
 }
 
@@ -122,15 +124,15 @@ int checkChannel(char *channelName)
 
 int deleteChannel(char *channelName)
 {
-    char *channelMessagesDelete = sqlite3_mprintf("DELETE FROM CHANNEL_MESSAGES WHERE channel_name = '%s';", channelName);
+    char *channelMessagesDelete = sqlite3_mprintf("DELETE FROM CHANNEL_MESSAGES WHERE channel_name = %Q;", channelName);
     executeStatement(channelMessagesDelete);
     sqlite3_free(channelMessagesDelete);
 
-    char *channelUsersDelete = sqlite3_mprintf("DELETE FROM CHANNEL_USERS WHERE channel_name = '%s';", channelName);
+    char *channelUsersDelete = sqlite3_mprintf("DELETE FROM CHANNEL_USERS WHERE channel_name = %Q;", channelName);
     executeStatement(channelUsersDelete);
     sqlite3_free(channelUsersDelete);
 
-    char *channelDelete = sqlite3_mprintf("DELETE FROM CHANNELS WHERE name = '%s';", channelName);
+    char *channelDelete = sqlite3_mprintf("DELETE FROM CHANNELS WHERE name = %Q;", channelName);
     executeStatement(channelDelete);
     sqlite3_free(channelDelete);
 
@@ -144,17 +146,17 @@ int insertChannel(char *channelName, char *password, char *topic, int visible)
         return BOOL_FALSE;
     }
 
-    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES ('%s', '%s', '%s', '%i');", channelName, password, topic, visible);
+    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES (%Q, %Q, %Q, %i);", channelName, password, topic, visible);
     executeStatement(stmt);
     sqlite3_free(stmt);
 
     return checkChannel(channelName);
 }
 
-int checkIfChannelHasPassword(char *channelname)
+int checkIfChannelHasPassword(char *channelName)
 {
     channelInfo ci;
-    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
         int result = ci.password != NULL ? BOOL_TRUE : BOOL_FALSE;
         channelInfo_free(&ci);
@@ -164,10 +166,36 @@ int checkIfChannelHasPassword(char *channelname)
     return BOOL_FALSE;
 }
 
-int authenticateChannelPassword(char *channelname, char *password)
+int checkIfChannelIsInviteOnly(char *channelName)
 {
     channelInfo ci;
-    if(getChannelByName(channelname, &ci) == BOOL_TRUE)
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
+    {
+        int result = ci.inviteOnly == BOOL_TRUE ? BOOL_TRUE : BOOL_FALSE;
+        channelInfo_free(&ci);
+        return result;
+    }
+
+    return BOOL_FALSE;
+}
+
+int checkIfChannelTopicOperatorOnly(char *channelName)
+{
+    channelInfo ci;
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
+    {
+        int result = ci.topicOperatorOnly == BOOL_TRUE ? BOOL_TRUE : BOOL_FALSE;
+        channelInfo_free(&ci);
+        return result;
+    }
+
+    return BOOL_FALSE;
+}
+
+int authenticateChannelPassword(char *channelName, char *password)
+{
+    channelInfo ci;
+    if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
         int result = (strcmp(password, ci.password) == 0);
         channelInfo_free(&ci);
@@ -179,21 +207,35 @@ int authenticateChannelPassword(char *channelname, char *password)
 
 void updateChannelPassword(char *channelName, char *newPass)
 {
-    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = '%s' WHERE name = '%s';", newPass, channelName);
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = %Q WHERE name = %Q;", newPass, channelName);
     executeStatement(stmt);
     sqlite3_free(stmt);
 }
 
 void updateChannelTopic(char *channelName, char *newTopic)
 {
-    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topic = '%s' WHERE name = '%s';", newTopic, channelName);
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topic = %Q WHERE name = %Q;", newTopic, channelName);
     executeStatement(stmt);
     sqlite3_free(stmt);
 }
 
 void updateChannelVisibility(char *channelName, int visible)
 {
-    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET visible = %i WHERE name = '%s';", visible, channelName);
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET visible = %i WHERE name = %Q;", visible, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+}
+
+void updateChannelInviteOnly(char *channelName, int inviteOnly)
+{
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET inviteOnly = %i WHERE name = %Q;", inviteOnly, channelName);
+    executeStatement(stmt);
+    sqlite3_free(stmt);
+}
+
+void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly)
+{
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET topicOperatorOnly = %i WHERE name = %Q;", topicOperatorOnly, channelName);
     executeStatement(stmt);
     sqlite3_free(stmt);
 }

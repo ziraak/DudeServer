@@ -25,6 +25,12 @@ int handleJoinCommand(commandStruct cmd)
     }
     else
     {
+        if(channel.inviteOnly == BOOL_TRUE)
+        {
+            channelInfo_free(&channel);
+            return ERR_INVITEONLYCHAN;
+        }
+
         int result = authenticateChannel(channel, channelName, optionalChannelKey);
         channelInfo_free(&channel);
         if(result != BOOL_TRUE)

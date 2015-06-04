@@ -2,6 +2,7 @@
 #define DUDESERVER_SERVER_H
 
 #include "main.h"
+#include "ctype.h"
 
 int lastTimestamp;
 userInfo currentUser;

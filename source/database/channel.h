@@ -24,20 +24,22 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result, in
 
 int insertChannel(char *channelName, char *password, char *topic, int visible);
 
-int checkIfChannelHasPassword(char* channelname);
+int checkIfChannelHasPassword(char*channelName);
 
 int deleteChannel(char *channelName);
 
-int authenticateChannelPassword(char* channelname,char* password);
-
-void updateChannelPassword(char *channelname, char *newPass);
-
-void updateChannelTopic(char *channelname, char *newTopic);
+int authenticateChannelPassword(char*channelName,char* password);
 
 int checkIfChannelVisible(char* channelName);
+int checkIfChannelInviteOnly(char *channelName);
+int checkIfChannelTopicOperatorOnly(char *channelName);
 
 char*getChannelUserRole(char *channelName, char *username);
 
+void updateChannelTopic(char *channelname, char *newTopic);
+void updateChannelPassword(char *channelname, char *newPass);
 void updateChannelVisibility(char *channelName, int visible);
+void updateChannelInviteOnly(char *channelName, int inviteOnly);
+void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly);
 
 #endif 

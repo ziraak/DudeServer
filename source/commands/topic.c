@@ -47,6 +47,11 @@ int handleTopicCommand(commandStruct cmd)
 
     if(topic != NULL)
     {
+        if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+        {
+            return ERR_CHANOPPRIVSNEEDED;
+        }
+
         //set
         updateChannelTopic(channelName, topic);
         return sendSuccessMessage(channelName, topic);

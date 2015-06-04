@@ -32,6 +32,8 @@ typedef struct channelInfo
 
     // flags
     int visible;
+    int inviteOnly;
+    int topicOperatorOnly;
 } channelInfo;
 
 #endif //DUDESERVER_DATABASESTRUCTS_H
