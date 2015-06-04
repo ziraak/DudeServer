@@ -129,7 +129,7 @@ char *getChannelUserRole(char *channelName, char *username)
 int userIsOperatorInChannel(char *channelName, char *username)
 {
     char *resultUserRole = getChannelUserRole(channelName, username);
-    int resultUserIsOperator = strcmp(resultUserRole, "o") == 0 ? BOOL_TRUE : BOOL_FALSE;
+    int resultUserIsOperator = strcmp(resultUserRole, USER_ROLE_OPERATOR) == 0 ? BOOL_TRUE : BOOL_FALSE;
     FREE(resultUserRole);
     return resultUserIsOperator;
 }
