@@ -179,7 +179,6 @@ int parseMessage(char *message)
     {
         result = handleKickCommand(cmd);
     }
-
     timeStop(cmd.command);
     commandStruct_free(&cmd);
     return result;

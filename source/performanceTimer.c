@@ -31,7 +31,6 @@ void printTime(struct timespec tstart,char* functionName)
     printf("it took   %.3f    miliseconds to complete function    %s \n", timeDif ,functionName);
 #endif //printOnlyFinal
 
-
     if(timeDif > longestTime)
     {
         longestTime = timeDif;
@@ -40,7 +39,6 @@ void printTime(struct timespec tstart,char* functionName)
 }
 
 void finalTimer(struct timespec tstart, char *testedFunction)
-
 {
     printf("the slowest function is %s with %.3f miliseconds\n",slowestFunction,longestTime);
 
@@ -51,5 +49,4 @@ void finalTimer(struct timespec tstart, char *testedFunction)
 
     printf("it took a total of %.6f seconds to complete %s \n\n", timeDif,testedFunction);
     longestTime = 0;
-
 }

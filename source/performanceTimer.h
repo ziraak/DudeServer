@@ -25,7 +25,10 @@ void finalTimer(struct timespec tstart, char *testedFunction);
 #define timeStart struct timespec tstart={0,0};clock_gettime(CLOCK_MONOTONIC, &tstart);
 #define timeEnd(functionName) printTime(tstart,functionName)
 #define timeStop(testedFunction) finalTimer(tstart,testedFunction)
+<<<<<<< HEAD
 
+=======
+>>>>>>> final adjustments to timing
 
 
 #endif //DUDESERVER_PERFORMANCETIMER_H
