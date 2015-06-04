@@ -15,6 +15,12 @@ int handlePrivateMessageCommand(commandStruct cmd)
 
     char *channel = cmd.parameters[0],
             *msgToSend = cmd.trailing;
+
+    if (isUserInChannel(channel, currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_NOTONCHANNEL;
+    }
+
     writeMessageToDB(msgToSend, channel);
 
     return RPL_AWAY;
