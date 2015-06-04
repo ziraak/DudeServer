@@ -16,14 +16,15 @@ double longestTime;
 char* slowestFunction;
 
 void printTime(struct timespec tstart,char* functionName);
-void finalTimer(struct timespec tstart);
+void finalTimer(struct timespec tstart, char *testedFunction);
 
 
-#define minTime 0
+//#define minimumTime 0
 //#define functionFilter "aaa"
+//#define printOnlyFinal
 #define timeStart struct timespec tstart={0,0};clock_gettime(CLOCK_MONOTONIC, &tstart);
 #define timeEnd(functionName) printTime(tstart,functionName)
-#define timeStop finalTimer(tstart)
+#define timeStop(testedFunction) finalTimer(tstart,testedFunction)
 
 
 #endif //DUDESERVER_PERFORMANCETIMER_H

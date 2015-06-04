@@ -18,13 +18,18 @@ void printTime(struct timespec tstart,char* functionName)
     clock_gettime(CLOCK_MONOTONIC, &tend);
 
     double timeDif = (((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec)) * 1000;
+
+#ifdef minimumTime
     if(timeDif < minTime) return;
+#endif //mintime
+
 #ifdef functionFilter
     if(strcmp(functionName,functionFilter)) return;
-#endif
+#endif //functionFilter
 
-
+#ifndef printOnlyFinal
     printf("it took   %.3f    miliseconds to complete function    %s \n", timeDif ,functionName);
+#endif //printOnlyFinal
 
     if(timeDif > longestTime)
     {
@@ -33,7 +38,7 @@ void printTime(struct timespec tstart,char* functionName)
     }
 }
 
-void finalTimer(struct timespec tstart)
+void finalTimer(struct timespec tstart, char *testedFunction)
 {
     printf("the slowest function is %s with %.3f miliseconds\n",slowestFunction,longestTime);
 
@@ -42,5 +47,6 @@ void finalTimer(struct timespec tstart)
 
     double timeDif = (((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
-    printf("it took a total of %.6f seconds \n", timeDif);
+    printf("it took a total of %.6f seconds to complete %s \n\n", timeDif,testedFunction);
+    longestTime = 0;
 }
