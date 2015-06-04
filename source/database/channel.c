@@ -82,11 +82,9 @@ int getChannelByName(char *name, channelInfo *channel)
         {
             FREE(sql);
             timeEnd("getChannelByName");
-
             return _innerGetChannel(stmt, channel);
         }
     }
-
 
     FREE(sql);
     timeEnd("getChannelByName false");

@@ -36,7 +36,6 @@ char* substringCharacter(char *str, int *result)
     str += i;
     while(*str == ' ') { str++; i++; }
 
-
     *result = (int)i;
     timeEnd("utils/substringCharacter");
     return ret;
@@ -128,6 +127,7 @@ void *_malloc(size_t size)
     timeEnd("malloc");
     return result;
 }
+
 
 
 void *_realloc(void *r, size_t size)

@@ -88,6 +88,7 @@ void handleSFlag(char *channelName, flagStruct flag)
 void handleOFlag(char *channelName, flagStruct flag)
 {
     timeStart;
+
     if(flag.flag == 'o')
     {
         updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
@@ -111,7 +112,6 @@ void handleKFlag(char *channelName, flagStruct flag)
     }
 
     timeEnd("handleKFlag");
-
 }
 
 void handleFlags(modeStruct ms)
@@ -256,7 +256,6 @@ int handleModeCommand(commandStruct cmd)
 
 void modeStruct_free(modeStruct *ms)
 {
-
     // ms->flags[#].parameter is uit de commandStruct gehaald en wordt van daaruit gefree()'d, zelfde geldt voor ms->channelName
     timeStart;
 

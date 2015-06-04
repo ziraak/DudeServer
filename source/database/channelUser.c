@@ -84,7 +84,6 @@ int getChannelUser(char *channelName, char *username, channelUser *cu)
         if(sqlite3_bind_text(stmt, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK && sqlite3_bind_text(stmt, 2, username, -1, SQLITE_STATIC) == SQLITE_OK)
         {
             FREE(sql);
-
             timeEnd("getChannelUser");
             return _innerGetChannelUser(stmt, cu);
         }

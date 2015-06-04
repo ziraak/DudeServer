@@ -22,7 +22,6 @@ int handlePrivateMessageCommand(commandStruct cmd)
     {
         return ERR_NOTONCHANNEL;
     }
-
     writeMessageToDB(msgToSend, channel);
     timeEnd("privmsg.c");
     return RPL_AWAY;

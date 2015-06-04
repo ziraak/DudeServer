@@ -58,4 +58,5 @@ int handleNamesCommand(commandStruct cmd)
 
     timeEnd("handleNamesCommand");
     return RPL_NOREPLY;
+
 }
