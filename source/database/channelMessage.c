@@ -32,26 +32,24 @@ messageInfo *_getChannelMessages(sqlite3_stmt *stmt, int *result)
 
 messageInfo *getMessages(char *channelName, int *result)
 {
-    return getMessagesOnTime(channelName, 0, result);
+    return getMessagesOnTime(channelName, 0, result, 0);
 }
 
-messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result)
+messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result, int amountOfMessages)
 {
     sqlite3_stmt *statement;
     messageInfo *messageInfoStruct;
-    char *sql = getSelectSQL("CHANNEL_MESSAGES", ALL_COLUMNS, "channel_name=? AND timestamp >= ?");
+    char *sql = "SELECT * FROM CHANNEL_MESSAGES WHERE message_id IN (SELECT message_id FROM CHANNEL_MESSAGES WHERE channel_name = ? AND timestamp >= ? ORDER BY timestamp DESC LIMIT ?) ORDER BY timestamp ASC;";
 
     if(sqlite3_prepare_v2(db, sql, -1, &statement, NULL) == SQLITE_OK)
     {
-        if(sqlite3_bind_text(statement, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK && sqlite3_bind_int(statement, 2, timestamp) == SQLITE_OK)
+        if(sqlite3_bind_text(statement, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK && sqlite3_bind_int(statement, 2, timestamp) == SQLITE_OK && sqlite3_bind_int(statement, 3, amountOfMessages) == SQLITE_OK)
         {
-            FREE(sql);
             messageInfoStruct = _getChannelMessages(statement, result);
             return messageInfoStruct;
         }
     }
 
-    FREE(sql);
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
@@ -63,7 +61,7 @@ int insertMessage(messageInfo message, char *channelName)
     sqlite3_free(statement);
 
     int result, resultMessageInfos;
-    messageInfo *resultMessageInfo = getMessagesOnTime(channelName, timestamp, &resultMessageInfos);
+    messageInfo *resultMessageInfo = getMessagesOnTime(channelName, timestamp, &resultMessageInfos, 0);
     result = resultMessageInfo != NULL ? BOOL_TRUE : BOOL_FALSE;
     messageInfos_free(resultMessageInfo, resultMessageInfos);
     return result;

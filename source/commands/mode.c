@@ -3,15 +3,9 @@
  * MODE <channel> {[+|-]}|o|p|s|i|t|n|b|v} [<limit>] [<user>] [<ban mask>]
  *
  * o: verander channel operator rechter (geef/haal weg)
- * p: privé channel flag
  * s: geheim channel flag (invisibility)
  * i: invite-only channel flag
  * t: onderwerp kan alleen door channel operator veranderd worden
- * n: geen messages aan channel van clients buiten de channel
- * m: gemodereerde channel
- * l: set een limiet op het aan users in de channel
- * b: set een ban mask om users buiten te houden
- * v: verander of users in een moderated channel mogen praten (geef/ haal weg)
  * k: set een channel key (password)
  */
 #include "mode.h"
@@ -45,13 +39,16 @@ modeStruct getFlags(commandStruct cmd)
         }
         else if(flag == 'k')
         {
-            if(cmd.trailing == NULL)
+            if(set == BOOL_TRUE)
             {
-                error = ERR_NEEDMOREPARAMS;
-                break;
-            }
+                if(cmd.trailing == NULL)
+                {
+                    error = ERR_NEEDMOREPARAMS;
+                    break;
+                }
 
-            parameter = cmd.trailing;
+                parameter = cmd.trailing;
+            }
         }
         else
         {
@@ -87,12 +84,25 @@ void handleSFlag(char *channelName, flagStruct flag)
 
 void handleOFlag(char *channelName, flagStruct flag)
 {
-    if(flag.flag != 'o')
+    if(flag.flag == 'o')
     {
-        return;
+        updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
     }
+}
 
-    updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+void handleKFlag(char *channelName, flagStruct flag)
+{
+    if(flag.flag == 'k')
+    {
+        if(flag.set == BOOL_TRUE)
+        {
+            updateChannelPassword(channelName, flag.parameter);
+        }
+        else
+        {
+            updateChannelPassword(channelName, NULL);
+        }
+    }
 }
 
 void handleFlags(modeStruct ms)
@@ -108,6 +118,10 @@ void handleFlags(modeStruct ms)
 
             case 'o':
                 handleOFlag(ms.channelName, ms.flags[i]);
+                break;
+
+            case 'k':
+                handleKFlag(ms.channelName, ms.flags[i]);
                 break;
 
             default:

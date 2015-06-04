@@ -8,7 +8,7 @@ set(LIB_SOURCES utils/utils.c ssl/communication.c server.h
     commands/poll.c)
 
 # all header files
-set(HEADER_SOURCES main.h
+set(HEADER_SOURCES main.h protocolDefines.h utils/commandStruct.h
     utils/utils.h ssl/communication.h ssl/communicationStructs.h server.c
     commands/names.h commands/login.h commands/join.h commands/privmsg.h commands/part.h commands/create_user.h commands/delete_user.h commands/update_password.h commands/update_nickname.h commands/topic.h commands/mode.h
     database/database.h database/channel.h database/user.h database/databaseStructs.h database/dbDefines.h

@@ -13,7 +13,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     return BOOL_TRUE;
 }
 
-channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
+channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp, int amountOfMessages)
 {
     if(channel.name == NULL)
     {
@@ -22,7 +22,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     }
 
     int getMessagesOnTimeResult;
-    messageInfo *messageInfos = getMessagesOnTime(channel.name, timestamp, &getMessagesOnTimeResult);
+    messageInfo *messageInfos = getMessagesOnTime(channel.name, timestamp, &getMessagesOnTimeResult, amountOfMessages);
 
     char **messages = MALLOC(sizeof(char*) * getMessagesOnTimeResult);
     int messageCount = 0,
@@ -46,7 +46,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     return result;
 }
 
-int getPollMessages(pollStruct *ps)
+int getPollMessages(pollStruct *ps, int amountOfMessages)
 {
     if(ps->channelCount == 0)
     {
@@ -57,7 +57,7 @@ int getPollMessages(pollStruct *ps)
     ps->channelMessages = MALLOC(sizeof(channelMessagesStruct) * ps->channelCount);
     for(i = 0; i < ps->channelCount; i++)
     {
-        ps->channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
+        ps->channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp, amountOfMessages);
     }
 
     return BOOL_TRUE;
@@ -109,7 +109,7 @@ void pollStruct_free(pollStruct *ps)
     }
 }
 
-int handlePollCommand(commandStruct cmd)
+int handlePollCommand(commandStruct cmd, int amountOfMessages)
 {
     if(cmd.parameterCount == 0)
     {
@@ -120,7 +120,7 @@ int handlePollCommand(commandStruct cmd)
     channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
     pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
 
-    if(getPollMessages(&ps) == BOOL_TRUE)
+    if(getPollMessages(&ps, amountOfMessages) == BOOL_TRUE)
     {
         sendPollMessages(&ps);
     }

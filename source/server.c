@@ -75,7 +75,7 @@ void processConnectedClient()
                 if(authenticated == BOOL_TRUE)
                 {
                     commandStruct pollCmd = commandStruct_initialize("POLL");
-                    handlePollCommand(pollCmd);
+                    handlePollCommand(pollCmd, 100);
                     commandStruct_free(&pollCmd);
                 }
             }
@@ -157,7 +157,7 @@ int parseMessage(char *message)
     }
     else if (commandEquals(cmd, "POLL"))
     {
-        result = handlePollCommand(cmd);
+        result = handlePollCommand(cmd, 9999);
     }
     else if (commandEquals(cmd, "INVITE"))
     {

@@ -29,6 +29,8 @@ typedef struct channelInfo
     char *name;
     char *topic;
     char *password;
+
+    // flags
     int visible;
 } channelInfo;
 

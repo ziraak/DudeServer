@@ -20,7 +20,7 @@ int checkChannel(char *channelName);
 
 int checkIfChannelEmpty(char* channelName);
 
-messageInfo* getMessagesOnTime(char *channelName, int timestamp, int *result);
+messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result, int amountOfMessages);
 
 int insertChannel(char *channelName, char *password, char *topic, int visible);
 

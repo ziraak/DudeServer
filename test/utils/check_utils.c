@@ -5,7 +5,7 @@ int test_utils_substringCharacter_inner(char *incoming, char *expected_result, i
     char *cmd = NULL;
     int offset = 0;
 
-    offset = substringCharacter(incoming, &cmd);
+    cmd = substringCharacter(incoming, &offset);
 
     ck_assert_int_eq(offset, expected_offset);
     ck_assert_str_eq(cmd, expected_result);
