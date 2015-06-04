@@ -15,12 +15,13 @@ int handleJoinCommand(commandStruct cmd)
     }
 
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
-
+    int joinChannelResult;
+    int boolUserNeedsToBeOperator = BOOL_FALSE;
     channelInfo channel;
     if(getChannelByName(channelName, &channel) == BOOL_FALSE)
     {
         insertChannel(channelName, NULL, NULL, BOOL_TRUE);
-        channelInfo_free(&channel);
+        boolUserNeedsToBeOperator = BOOL_TRUE;
     }
     else
     {
@@ -31,7 +32,12 @@ int handleJoinCommand(commandStruct cmd)
             return result;
         }
     }
-    return joinChannel(channelName);
+    joinChannelResult = joinChannel(channelName);
+    if (boolUserNeedsToBeOperator == BOOL_TRUE)
+    {
+        updateChannelUserRole(channelName, currentUser.username, USER_ROLE_OPERATOR);
+    }
+    return joinChannelResult;
 }
 
 int authenticateChannel(channelInfo channel, char *channelName, char *optionalChannelKey)
