@@ -5,7 +5,7 @@ int authenticated = BOOL_FALSE;
 void runServer(int USE_FORK, int port)
 {
     flushStdout();
-    int sock = getListeningSocket(SERVER_IP, SERVER_PORT);
+    int sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
 
     if(USE_FORK == BOOL_TRUE)
@@ -13,7 +13,7 @@ void runServer(int USE_FORK, int port)
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-        printf("ACCEPTING MULTIPLE CLIENTS\n");
+        printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
         for (; ;)
         {
             if(sslAcceptConnection(sock) == SSL_OK)
@@ -25,7 +25,7 @@ void runServer(int USE_FORK, int port)
     }
     else
     {
-        printf("ACCEPTING A SINGLE CLIENT\n");
+        printf("ACCEPTING A SINGLE CLIENT ON PORT %i\n", port);
         if(sslAcceptConnection(sock) == SSL_OK)
         {
             processConnectedClient();
@@ -100,9 +100,7 @@ void processConnectedClient()
 
 void freeCurrentUser()
 {
-    free(currentUser.username);
-    free(currentUser.nickname);
-    free(currentUser.password);
+    userInfo_free(&currentUser);
 }
 
 void processConnectedClientWithFork()

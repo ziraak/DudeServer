@@ -1,8 +1,5 @@
 #include "main.h"
 
-#define PRINT_CHANNEL(c) printf("%s: %s | %s | %i\n", c.name, c.password, c.topic, c.visible)
-#define PRINT_USER(u) printf("%s: %s | %s\n", u.username, u.password, u.nickname)
-
 int main(int argc, char **argv)
 {
     lastTimestamp = 0;
@@ -12,15 +9,25 @@ int main(int argc, char **argv)
     }
 
     int fork = BOOL_FALSE;
-    if(argc > 1)
+    int port = SERVER_PORT;
+    int i;
+    for(i = 1; i < argc; i++)
     {
-        if(strcmp(argv[1], "FORK") == 0 || strcmp(argv[1], "fork") == 0 || strcmp(argv[1], "-f") == 0)
+        if(strcmp(argv[i], "FORK") == 0 || strcmp(argv[i], "fork") == 0 || strcmp(argv[i], "-f") == 0)
         {
             fork = BOOL_TRUE;
         }
+        if(strcmp(argv[i], "PORT") == 0 || strcmp(argv[i], "port") == 0 || strcmp(argv[i], "-p") == 0)
+        {
+            if(argc >= i + 1)
+            {
+                port = atoi(argv[i + 1]);
+                i++;
+            }
+        }
     }
 
-    runServer(fork, SERVER_PORT);
+    runServer(fork, port);
     stopDatabase();
 
     return EXIT_SUCCESS;

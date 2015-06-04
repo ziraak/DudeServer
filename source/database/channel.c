@@ -33,7 +33,7 @@ channelInfo *_innerGetChannels(sqlite3_stmt *stmt, int *result)
     int i = 0;
     while(sqlite3_step(stmt) == SQLITE_ROW)
     {
-        channels = realloc(channels, (i + 1) * sizeof(channelInfo));
+        REALLOC(channels, sizeof(channelInfo) * (i + 1));
         channelInfo cs;
         _fillChannel(stmt, &cs);
         channels[i] = cs;
@@ -51,11 +51,11 @@ channelInfo *getChannels(char* columns, int *result)
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
-        free(sql);
+        FREE(sql);
         return _innerGetChannels(stmt, result);
     }
 
-    free(sql);
+    FREE(sql);
     *result = BOOL_FALSE;
     STMT_RETURN(NULL, stmt);
 }
@@ -69,12 +69,12 @@ int getChannelByName(char *name, channelInfo *channel)
     {
         if(sqlite3_bind_text(stmt, 1, name, -1, SQLITE_STATIC) == SQLITE_OK)
         {
-            free(sql);
+            FREE(sql);
             return _innerGetChannel(stmt, channel);
         }
     }
 
-    free(sql);
+    FREE(sql);
     STMT_RETURN(BOOL_FALSE, stmt);
 }
 
@@ -85,11 +85,11 @@ channelInfo* getVisibleChannels(char* columns, int *result)
 
     if(sqlite3_prepare_v2(db, sql, -1, &stmt, NULL) == SQLITE_OK)
     {
-        free(sql);
+        FREE(sql);
         return _innerGetChannels(stmt, result);
     }
 
-    free(sql);
+    FREE(sql);
     *result = BOOL_FALSE;
     STMT_RETURN(NULL, stmt);
 }

@@ -13,11 +13,11 @@ int sendSuccessMessage(char* channelName, char* topic)
     if(len > 0)
     {
         len += strlen(channelName) + 7;
-        char* snd = malloc(len);
+        char* snd = MALLOC(len);
         bzero(snd, len);
         sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
         sslSend(snd);
-        free(snd);
+        FREE(snd);
 
         return RPL_NOREPLY;
     }

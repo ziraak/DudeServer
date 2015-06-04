@@ -34,7 +34,7 @@ userInfo *_innerGetUsers(sqlite3_stmt *stmt, int *result)
     int i = 0;
     while(sqlite3_step(stmt) == SQLITE_ROW)
     {
-        users = realloc(users, (i + 1) * sizeof(userInfo));
+        REALLOC(users, (i + 1) * sizeof(userInfo));
         userInfo ui;
         fillUser(stmt, &ui);
         users[i] = ui;

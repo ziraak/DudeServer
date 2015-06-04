@@ -73,12 +73,12 @@ int getChannelUser(char *channelName, char *username, channelUser *cu)
     {
         if(sqlite3_bind_text(stmt, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK && sqlite3_bind_text(stmt, 2, username, -1, SQLITE_STATIC) == SQLITE_OK)
         {
-            free(sql);
+            FREE(sql);
             return _innerGetChannelUser(stmt, cu);
         }
     }
 
-    free(sql);
+    FREE(sql);
     STMT_RETURN(BOOL_FALSE, stmt);
 }
 
@@ -104,7 +104,7 @@ int updateChannelUserRole(char *channelName, char *username, char *newRole)
 
         char* role = getChannelUserRole(channelName, username);
         int result = (strcmp(role, newRole) == 0) ? BOOL_TRUE : BOOL_FALSE;
-        free(role);
+        FREE(role);
         return result;
     }
 
@@ -118,7 +118,7 @@ char *getChannelUserRole(char *channelName, char *username)
     if(getChannelUser(channelName, username, &cu) == BOOL_TRUE)
     {
         size_t length = strlen(cu.role) + 1;
-        result = calloc(1, length);
+        result = MALLOC(length);
         result = strncpy(result, cu.role, length);
         channelUser_free(&cu);
     }
