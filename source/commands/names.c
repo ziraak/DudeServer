@@ -4,7 +4,6 @@
 int handleNamesCommand(commandStruct cmd)
 {
     char *channelName = cmd.parameters[0];
-    channelUser *channelUserStruct;
 
     if (cmd.parameterCount < 1)
     {
@@ -28,8 +27,8 @@ int handleNamesCommand(commandStruct cmd)
         mallocRolesLength += strlen(userInfoStruct[i].role) + 1; // 1 = ","
     }
 
-    char *users = malloc(mallocUsersLength + mallocRolesLength);
-    char *roles = malloc(mallocRolesLength);
+    char *users = MALLOC(mallocUsersLength + mallocRolesLength);
+    char *roles = MALLOC(mallocRolesLength);
     bzero(users, mallocUsersLength + mallocRolesLength);
     bzero(roles, mallocRolesLength);
 
@@ -50,8 +49,8 @@ int handleNamesCommand(commandStruct cmd)
     strcat(users, " ");
     strcat(users, roles);
     sslSend(users);
-    free(users);
-    free(roles);
+    FREE(users);
+    FREE(roles);
     userInfos_free(userInfoStruct, result);
     return RPL_NOREPLY;
 }

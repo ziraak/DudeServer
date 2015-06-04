@@ -23,11 +23,12 @@ modeStruct getFlags(commandStruct cmd)
         getParameter, getParameterCount = 1,
         error = BOOL_FALSE;
 
-    flagStruct *fs = malloc(sizeof(flagStruct));
+    flagStruct *fs = MALLOC(sizeof(flagStruct));
 
     int i;
     for(i = 0; (flag = flags[i + 1]) != '\0'; i++)
     {
+        REALLOC(fs, sizeof(flagStruct) * (i + 1));
         getParameter = (flag == 'o' || flag == 'b' || flag == 'l') ? BOOL_TRUE : BOOL_FALSE;
 
         if(getParameter == BOOL_TRUE)
@@ -192,13 +193,10 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NOTONCHANNEL;
     }
 
-    char* role = getChannelUserRole(channelName, currentUser.username);
-    if(role == NULL || strcmp(role, USER_ROLE_OPERATOR) != 0)
+    if(userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
     {
-        free(role);
         return ERR_CHANOPPRIVSNEEDED;
     }
-    free(role);
 
     int result;
     modeStruct ms = getFlags(cmd);
@@ -223,14 +221,14 @@ int handleModeCommand(commandStruct cmd)
 
 void modeStruct_free(modeStruct *ms)
 {
+    // ms->flags[#].parameter is uit de commandStruct gehaald en wordt van daaruit gefree()'d, zelfde geldt voor ms->channelName
+
     int j;
     for(j = 0; j < ms->flagCount; j++)
     {
         ms->flags[j].parameter = NULL;
     }
 
-    free(ms->flags);
-
-    ms->flags = NULL;
+    FREE(ms->flags);
     ms->channelName = NULL;
 }

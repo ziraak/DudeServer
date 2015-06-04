@@ -50,7 +50,7 @@ commandStruct commandStruct_initialize(char *message)
     int parameterCount = 0;
     for(; ; parameterCount++)
     {
-        parameters = realloc(parameters, sizeof(char *) * (parameterCount + 1));
+        REALLOC(parameters, sizeof(char *) * (parameterCount + 1));
         int off = find(message, ' '), semicolon = find(message, ':');
 
         if((semicolon != -1 && semicolon < off) && off > 1)
@@ -105,14 +105,25 @@ void commandStruct_free(commandStruct *cmdStruct)
     }
 }
 
-void *MALLOC(size_t size)
+void *_malloc(size_t size)
 {
     void* result = malloc(size);
     if(result == NULL)
     {
         perror("MALLOC failed.");
-        exit(0);
+        exit(-1);
     }
     bzero(result, size);
+    return result;
+}
+
+void *_realloc(void *r, size_t size)
+{
+    void *result = realloc(r, size);
+    if(result == NULL)
+    {
+        perror("REALLOC failed.");
+        exit(-2);
+    }
     return result;
 }

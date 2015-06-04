@@ -19,7 +19,7 @@ messageInfo *_getChannelMessages(sqlite3_stmt *stmt, int *result)
     int i = 0;
     while(sqlite3_step(stmt) == SQLITE_ROW)
     {
-        messageInfoStruct = realloc(messageInfoStruct, (i + 1) * sizeof(messageInfo));
+        REALLOC(messageInfoStruct, (i + 1) * sizeof(messageInfo));
         messageInfo ms;
         _fillChannelMessage(stmt, &ms);
         messageInfoStruct[i] = ms;
@@ -45,13 +45,13 @@ messageInfo *getMessagesOnTime(char *channelName, int timestamp, int *result)
     {
         if(sqlite3_bind_text(statement, 1, channelName, -1, SQLITE_STATIC) == SQLITE_OK && sqlite3_bind_int(statement, 2, timestamp) == SQLITE_OK)
         {
-            free(sql);
+            FREE(sql);
             messageInfoStruct = _getChannelMessages(statement, result);
             return messageInfoStruct;
         }
     }
 
-    free(sql);
+    FREE(sql);
     STMT_RETURN(BOOL_FALSE, statement);
 }
 

@@ -103,8 +103,7 @@ char* sqlite3_column_string(sqlite3_stmt *stmt, int id)
     }
 
     size_t l = strlen(stmt_res);
-    char *func_return = malloc(l + 1);
-    bzero(func_return, l + 1);
+    char *func_return = MALLOC(l + 1);
     strncpy(func_return, stmt_res, l);
     return func_return;
 }
@@ -118,13 +117,13 @@ char* getSelectSQL(char* table, char* columns, char* where)
 
     if(where == NULL || strlen(where) == 0)
     {
-        char* result = malloc(strlen(columns) + strlen(table) + 15);
+        char* result = MALLOC(strlen(columns) + strlen(table) + 15);
         sprintf(result, "SELECT %s FROM %s;", columns, table);
         return result;
     }
     else
     {
-        char* result = malloc(strlen(columns) + strlen(where) + strlen(table) + 22);
+        char* result = MALLOC(strlen(columns) + strlen(where) + strlen(table) + 22);
         sprintf(result, "SELECT %s FROM %s WHERE %s;", columns, table, where);
         return result;
     }
@@ -134,7 +133,7 @@ char* getInsertSQL(char* table,char* valueNames ,char* values)
 {
     if(table == NULL||valueNames == NULL || values == NULL) return NULL;
 
-    char* statement = malloc(strlen(table)+ strlen(valueNames) + strlen(values)+ 27);
+    char* statement = MALLOC(strlen(table)+ strlen(valueNames) + strlen(values)+ 27);
     sprintf(statement,"INSERT INTO %s (%s) VALUES (%s);",table,valueNames,values);
     return statement;
 }
@@ -146,7 +145,7 @@ char* getDeleteSQL(char* table, char* where)
         return NULL;
     }
 
-    char* statement = malloc(strlen(table)+ strlen(where) + 21);
+    char* statement = MALLOC(strlen(table)+ strlen(where) + 21);
     sprintf(statement,"DELETE FROM %s WHERE %s;",table,where);
     return statement;
 }
@@ -157,7 +156,7 @@ char* getUpdateSQL(char* table, char* where, char* valueName, char* newValue)
     {
         return NULL;
     }
-    char* statement = malloc(strlen(table)+ strlen(where)+ strlen(valueName)+strlen(newValue) + 26);
+    char* statement = MALLOC(strlen(table)+ strlen(where)+ strlen(valueName)+strlen(newValue) + 26);
     sprintf(statement,"UPDATE %s SET %s = '%s' WHERE %s;",table,valueName,newValue, where);
     return statement;
 }
