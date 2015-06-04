@@ -7,7 +7,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
         return BOOL_FALSE;
     }
 
-    MALLOC(*str, 12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
+    *str = MALLOC(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
     sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
 
     return BOOL_TRUE;
@@ -24,7 +24,7 @@ channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp)
     int getMessagesOnTimeResult;
     messageInfo *messageInfos = getMessagesOnTime(channel.name, timestamp, &getMessagesOnTimeResult);
 
-    char **messages = malloc(sizeof(char*) * getMessagesOnTimeResult);
+    char **messages = MALLOC(sizeof(char*) * getMessagesOnTimeResult);
     int messageCount = 0,
         resultCount = 0;
     while(messageCount < getMessagesOnTimeResult)
@@ -54,7 +54,7 @@ int getPollMessages(pollStruct *ps)
     }
 
     int i;
-    ps->channelMessages = malloc(sizeof(channelMessagesStruct) * ps->channelCount);
+    ps->channelMessages = MALLOC(sizeof(channelMessagesStruct) * ps->channelCount);
     for(i = 0; i < ps->channelCount; i++)
     {
         ps->channelMessages[i] = getChannelMessages(ps->channels[i], ps->timestamp);
@@ -98,13 +98,13 @@ void pollStruct_free(pollStruct *ps)
             int j;
             for(j = 0; j < ps->channelMessages[i].messageCount; j++)
             {
-                free(ps->channelMessages[i].messages[j]);
+                FREE(ps->channelMessages[i].messages[j]);
             }
 
-            free(ps->channelMessages[i].messages);
+            FREE(ps->channelMessages[i].messages);
         }
 
-        free(ps->channelMessages);
+        FREE(ps->channelMessages);
         channelInfos_free(ps->channels, ps->channelCount);
     }
 }
@@ -118,7 +118,7 @@ int handlePollCommand(commandStruct cmd)
 
     int channelCount;
     channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
-    pollStruct ps = pollStruct_initialize(channels, channelCount, 0);
+    pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
 
     if(getPollMessages(&ps) == BOOL_TRUE)
     {

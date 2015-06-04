@@ -6,7 +6,6 @@
 #define UTILS_H
 
 #define FREE(v) free(v); v = NULL
-#define MALLOC(v, size) v = malloc(size); if(v == NULL) { exit(-1); } bzero(v, size)
 
 #include <glob.h>
 #include <string.h>
@@ -17,5 +16,7 @@ char* substringCharacter(char *str, int *result);
 
 commandStruct commandStruct_initialize(char *message);
 void commandStruct_free(commandStruct *cmdStruct);
+
+void *MALLOC(size_t size);
 
 #endif

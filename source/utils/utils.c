@@ -25,10 +25,9 @@ char* substringCharacter(char *str, int *result)
         return NULL;
     }
 
-    char* ret;
 
     size_t i = strcspn(str, " ");
-    MALLOC(ret, i + 1);
+    char* ret = MALLOC(i + 1);
     strncpy(ret, str, i);
 
     str += i;
@@ -42,8 +41,7 @@ commandStruct commandStruct_initialize(char *message)
 {
     char *command = NULL,
          *trailing = NULL,
-         **parameters = NULL;
-    MALLOC(parameters, sizeof(char *));
+         **parameters = MALLOC(sizeof(char *));
 
     int offset;
     command = substringCharacter(message, &offset);
@@ -52,6 +50,7 @@ commandStruct commandStruct_initialize(char *message)
     int parameterCount = 0;
     for(; ; parameterCount++)
     {
+        parameters = realloc(parameters, sizeof(char *) * (parameterCount + 1));
         int off = find(message, ' '), semicolon = find(message, ':');
 
         if((semicolon != -1 && semicolon < off) && off > 1)
@@ -71,7 +70,7 @@ commandStruct commandStruct_initialize(char *message)
 
     if(find(message, ':') != -1)
     {
-        MALLOC(trailing, strlen(message) + 1);
+        trailing = MALLOC(strlen(message) + 1);
         strncpy(trailing, ++message, strlen(message));
     }
     else
@@ -104,4 +103,16 @@ void commandStruct_free(commandStruct *cmdStruct)
         FREE(cmdStruct->command);
         FREE(cmdStruct->trailing);
     }
+}
+
+void *MALLOC(size_t size)
+{
+    void* result = malloc(size);
+    if(result == NULL)
+    {
+        perror("MALLOC failed.");
+        exit(0);
+    }
+    bzero(result, size);
+    return result;
 }
