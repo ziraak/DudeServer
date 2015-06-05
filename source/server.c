@@ -56,7 +56,7 @@ void processConnectedClient()
 {
     printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     sslSendInteger(RPL_CONNECTED);
-    int bufferLength = 256, result;
+    int bufferLength = 1024, result;
     char buffer[bufferLength];
     bzero(buffer, (size_t)bufferLength);
     while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
