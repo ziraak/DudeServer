@@ -101,7 +101,7 @@ int sslAcceptConnection(int listenSocket)
         return SSL_NO_TCP_ACCEPT;
     }
 
-    SSL_CTX *sslContext = SSL_CTX_new(TLSv1_2_server_method());
+    SSL_CTX *sslContext = SSL_CTX_new(TLSv1_server_method());
     if(sslContext == NULL)
     {
         SSL_ERROR_RETURN(SSL_NO_SSL_CONTEXT);
