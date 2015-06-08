@@ -139,14 +139,14 @@ int deleteChannel(char *channelName)
     return checkChannel(channelName) == BOOL_FALSE;
 }
 
-int insertChannel(char *channelName, char *password, char *topic, int visible)
+int insertChannel(char *channelName, char *password, char *topic, int visible, int inviteOnly, int topicOperatorOnly)
 {
     if(checkChannel(channelName) == BOOL_TRUE)
     {
         return BOOL_FALSE;
     }
 
-    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible) VALUES (%Q, %Q, %Q, %i);", channelName, password, topic, visible);
+    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES (%Q, %Q, %Q, %i, %i, %i);", channelName, password, topic, visible, inviteOnly, topicOperatorOnly);
     executeStatement(stmt);
     sqlite3_free(stmt);
 

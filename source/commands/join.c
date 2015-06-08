@@ -20,7 +20,7 @@ int handleJoinCommand(commandStruct cmd)
     channelInfo channel;
     if(getChannelByName(channelName, &channel) == BOOL_FALSE)
     {
-        insertChannel(channelName, NULL, NULL, BOOL_TRUE);
+        insertChannel(channelName, NULL, NULL, BOOL_TRUE, 0, 0);
         boolUserNeedsToBeOperator = BOOL_TRUE;
     }
     else
