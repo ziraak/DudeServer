@@ -55,6 +55,8 @@ int handleNamesCommand(commandStruct cmd)
     FREE(users);
     FREE(roles);
     userInfos_free(userInfoStruct, result);
+
     timeEnd("handleNamesCommand");
     return RPL_NOREPLY;
+
 }

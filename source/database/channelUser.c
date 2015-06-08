@@ -122,6 +122,7 @@ int updateChannelUserRole(char *channelName, char *username, char *newRole)
         char* role = getChannelUserRole(channelName, username);
         int result = (strcmp(role, newRole) == 0) ? BOOL_TRUE : BOOL_FALSE;
         FREE(role);
+
         timeEnd("updateChannelUserRole");
         return result;
     }

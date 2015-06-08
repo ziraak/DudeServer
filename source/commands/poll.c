@@ -131,6 +131,7 @@ int handlePollCommand(commandStruct cmd, int amountOfMessages)
 //        return ERR_NEEDMOREPARAMS;
 
         timeEnd("handlePollCommand");
+
     }
 
     int channelCount;

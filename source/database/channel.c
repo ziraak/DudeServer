@@ -287,3 +287,4 @@ void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly)
     sqlite3_free(stmt);
     timeEnd("updateChannelTopicOperatorOnly");
 }
+

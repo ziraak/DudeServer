@@ -64,6 +64,7 @@ int insertMessage(messageInfo message, char *channelName)
     timeStart;
     int timestamp = (int)time(NULL);
     char*statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES (%Q, %Q, %i, %Q);", message.writer, channelName, timestamp, message.body);
+
     executeStatement(statement);
     sqlite3_free(statement);
 
