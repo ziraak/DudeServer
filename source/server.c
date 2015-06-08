@@ -61,7 +61,7 @@ void processConnectedClient()
     bzero(buffer, (size_t)bufferLength);
     while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
     {
-        printf("BUFFER ONTVANGEN BERICHT: %s", buffer);
+        printf("BUFFER ONTVANGEN BERICHT: %s\n", buffer);
         if (authenticated == BOOL_FALSE)
         {
             commandStruct cmd = commandStruct_initialize(buffer);
