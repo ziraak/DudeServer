@@ -21,16 +21,16 @@ int handlePrivateMessageCommand(commandStruct cmd)
         return ERR_NOTONCHANNEL;
     }
 
-    writeMessageToDB(msgToSend, channel);
+    writeMessageToDB(msgToSend, channel, currentUser.username);
 
     return RPL_AWAY;
 }
 
-int writeMessageToDB(char *msgToSend, char *channel)
+int writeMessageToDB(char *msgToSend, char *channel, char *username)
 {
     messageInfo message;
     message.body = msgToSend;
-    message.writer = currentUser.username;
+    message.writer = username;
     insertMessage(message, channel);
     return DB_RETURN_SUCCES;
 }

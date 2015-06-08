@@ -32,11 +32,12 @@ int handleInviteCommand(commandStruct cmd)
 
     if (resultCheckChannelHost == BOOL_TRUE)
     {
-        int resultCheckChannel = checkChannel(channelName);
-        if (resultCheckChannel == BOOL_TRUE)
-        {
-            joinChannelByUsername(channelName, usernameUserToInvite);
-        }
+        joinChannelByUsername(channelName, usernameUserToInvite);
+        char *joinedChanMsg = " has joined the channel!!";
+        char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameUserToInvite) + strlen(joinedChanMsg));
+        sprintf(stringToSend, "%s%s", usernameUserToInvite, joinedChanMsg);
+        writeMessageToDB(stringToSend, channelName, "IRC_Server");
+        FREE(stringToSend);
         return RPL_INVITING;
     }
     return resultCheckChannelHost;
