@@ -172,6 +172,10 @@ int parseMessage(char *message)
     {
         result = handleKickCommand(cmd);
     }
+    else if (commandEquals(cmd, "UPDATE_CHANNEL_PASSWORD"))
+    {
+        result = handleUpdateChannelPasswordCommand(cmd);
+    }
     commandStruct_free(&cmd);
 
     return result;
