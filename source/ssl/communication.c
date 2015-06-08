@@ -3,6 +3,7 @@
 //
 
 #include "communication.h"
+#include "communicationStructs.h"
 
 void sslInitialize()
 {
@@ -164,6 +165,7 @@ int sslSend(char* snd)
     {
         return SSL_NO_CONNECTION;
     }
+
 
     char* buffer = MALLOC(sizeof(char) * (bufferLength + 3));
     sprintf(buffer, "%s\r\n", snd);
