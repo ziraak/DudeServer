@@ -85,7 +85,7 @@ int sendPollMessages(pollStruct *ps)
         }
     }
     timeEnd("sendPollMsgs");
-    return BOOL_TRUE;//TODO: altijd true?
+    return BOOL_TRUE;
 }
 
 pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int timestamp)

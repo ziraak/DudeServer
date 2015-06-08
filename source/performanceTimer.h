@@ -19,7 +19,7 @@ void printTime(struct timespec tstart,char* functionName);
 void finalTimer(struct timespec tstart, char *testedFunction);
 
 
-//#define minimumTime 0
+#define minimumTime 6
 //#define functionFilter "aaa"
 //#define printOnlyFinal
 #define timeStart struct timespec tstart={0,0};clock_gettime(CLOCK_MONOTONIC, &tstart);

@@ -5,6 +5,16 @@
 #include "performanceTimer.h"
 
 
+FILE* openFile(char* filename)
+{
+    FILE *fp;
+    fp = fopen(filename, "a");
+    if (!fp)
+    {
+        fp = stdout;
+    }
+    return fp;
+}
 
 void printTime(struct timespec tstart,char* functionName)
 {
@@ -20,7 +30,7 @@ void printTime(struct timespec tstart,char* functionName)
     double timeDif = (((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec)) * 1000;
 
 #ifdef minimumTime
-    if(timeDif < minTime) return;
+    if(timeDif < minimumTime) return;
 #endif //mintime
 
 #ifdef functionFilter
@@ -28,7 +38,10 @@ void printTime(struct timespec tstart,char* functionName)
 #endif //functionFilter
 
 #ifndef printOnlyFinal
-    printf("it took   %.3f    miliseconds to complete function    %s \n", timeDif ,functionName);
+    FILE *fp = openFile("functionTimes.txt");
+    fprintf(fp,"%.3f miliseconds for %s \n", timeDif ,functionName);
+    fclose(fp);
+
 #endif //printOnlyFinal
 
     if(timeDif > longestTime)
@@ -38,15 +51,24 @@ void printTime(struct timespec tstart,char* functionName)
     }
 }
 
+
+
+
 void finalTimer(struct timespec tstart, char *testedFunction)
 {
-    printf("the slowest function is %s with %.3f miliseconds\n",slowestFunction,longestTime);
-
+    FILE *fp = openFile("finalTimes.txt");
+    if(longestTime != 0)
+    {
+        fprintf(fp, "the slowest function is %s with %.3f miliseconds\n", slowestFunction, longestTime);
+    }
     struct timespec tend={0,0};
     clock_gettime(CLOCK_MONOTONIC, &tend);
 
     double timeDif = (((double)tend.tv_sec + 1.0e-9*tend.tv_nsec) - ((double)tstart.tv_sec + 1.0e-9*tstart.tv_nsec));
 
-    printf("it took a total of %.6f seconds to complete %s \n\n", timeDif,testedFunction);
+    fprintf(fp,"%.6f seconds needed for section: %s \n\n", timeDif,testedFunction);
     longestTime = 0;
+    slowestFunction = "NoSlowFunctions";
+
+    fclose(fp);
 }
