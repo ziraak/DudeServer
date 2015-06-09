@@ -45,6 +45,7 @@ void firstTimeSetup()
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360990, 'im batman3');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360991, 'im batman4');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360992, 'im batman5');");
+
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360988, 'im batman1');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360989, 'im batman2');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360990, 'im batman3');");

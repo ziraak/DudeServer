@@ -87,11 +87,23 @@ void handleOFlag(char *channelName, flagStruct flag)
     if(flag.flag == 'o')
     {
         updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
-        char *msg = " is now operator!!";
-        char *stringToSend = MALLOC(sizeof(char *) + strlen(flag.parameter) + strlen(msg));
-        sprintf(stringToSend, "%s%s", flag.parameter, msg);
-        sendSystemMessageToChannel(stringToSend, channelName);
-        FREE(stringToSend);
+
+        if (flag.set == BOOL_TRUE)
+        {
+            char *msg = " is now operator!!";
+            char *stringToSend = MALLOC(sizeof(char *) + strlen(flag.parameter) + strlen(msg));
+            sprintf(stringToSend, "%s%s", flag.parameter, msg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+        }
+        else
+        {
+            char *msg = " is no longer an operator!!";
+            char *stringToSend = MALLOC(sizeof(char *) + strlen(flag.parameter) + strlen(msg));
+            sprintf(stringToSend, "%s%s", flag.parameter, msg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+        }
     }
 }
 
