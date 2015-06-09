@@ -187,15 +187,16 @@ int checkFlags(modeStruct ms)
                 }
                 break;
 
-            case 'p':
+            case 'k':
+                if (strlen(ms.flags[i].parameter) < MINIMUM_PASSWORD_LENGTH)
+                {
+                    MODE_CHECK_FLAGS_RETURN(ERR_PASSWORDTOOSHORT, ci, users, userCount);
+                }
+                break;
+
             case 's':
             case 'i':
             case 't':
-            case 'n':
-            case 'm':
-            case 'l':
-            case 'b':
-            case 'v':
                 break;
 
             default:
@@ -218,6 +219,11 @@ int handleModeCommand(commandStruct cmd)
     if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
         return ERR_NEEDMOREPARAMS;
+    }
+
+    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_USERNAME_NOT_KNOWN;
     }
 
     if(checkChannel(channelName) != BOOL_TRUE)
