@@ -87,6 +87,11 @@ void handleOFlag(char *channelName, flagStruct flag)
     if(flag.flag == 'o')
     {
         updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
+        char *msg = " is now operator!!";
+        char *stringToSend = MALLOC(sizeof(char *) + strlen(flag.parameter) + strlen(msg));
+        sprintf(stringToSend, "%s%s", flag.parameter, msg);
+        sendSystemMessageToChannel(stringToSend, channelName);
+        FREE(stringToSend);
     }
 }
 
@@ -223,6 +228,11 @@ int handleModeCommand(commandStruct cmd)
     if(checkChannel(channelName) != BOOL_TRUE)
     {
         return ERR_NOSUCHCHANNEL;
+    }
+
+    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_USERNAME_NOT_KNOWN;
     }
 
     if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)

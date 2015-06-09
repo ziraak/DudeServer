@@ -23,6 +23,14 @@ int handlePartCommand(commandStruct cmd)
         {
             deleteChannel(channelName);
         }
+        else
+        {
+            char *kickChanMsg = " has left the channel!!";
+            char *stringToSend = MALLOC(sizeof(char *) + strlen(currentUser.username) + strlen(kickChanMsg));
+            sprintf(stringToSend, "%s%s", currentUser.username, kickChanMsg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+        }
         return RPL_SUCCESS;
     }
     return ERR_NOSUCHCHANNEL;
