@@ -25,6 +25,6 @@ typedef struct modeStruct
 
 int handleModeCommand(commandStruct cmd);
 
-void modeStruct_free(modeStruct *ms);;
+void modeStruct_free(modeStruct *ms);
 
 #endif //DUDESERVER_MODE_H

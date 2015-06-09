@@ -21,7 +21,6 @@ void firstTimeSetup()
     executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('testChan', NULL,'Test channel', 0, 0, 1);");
 
     executeStatement("CREATE TABLE USERS (name TEXT PRIMARY KEY, password TEXT NOT NULL, nickname TEXT);");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('IRC_Server', 'nub', 'IRC_Server');");
     executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('fatih', 'nub', 'fatihawesome');");
     executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('sjuul', 'hahaha', 'khlox');");
     executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('harmen', 'ziraak', 'angutar');");
