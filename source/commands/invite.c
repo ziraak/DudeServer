@@ -28,7 +28,7 @@ int handleInviteCommand(commandStruct cmd)
 
     char *channelName = cmd.parameters[0], *usernameUserToInvite = cmd.parameters[1];
 
-    if (checkIfUserExists(usernameUserToInvite))
+    if (checkIfUserExists(usernameUserToInvite) == BOOL_FALSE)
     {
         return ERR_USERNAME_NOT_KNOWN;
     }
