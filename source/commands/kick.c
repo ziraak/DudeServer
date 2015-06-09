@@ -19,19 +19,20 @@ int handleKickCommand(commandStruct cmd)
     {
         userLeaveChannel(usernameToKick, channelName);
 
-        char *kickChanMsg = " was kicked out of the channel!!";
-        char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameToKick) + strlen(kickChanMsg));
-        sprintf(stringToSend, "%s%s", usernameToKick, kickChanMsg);
-        sendSystemMessageToChannel(stringToSend, channelName);
-        FREE(stringToSend);
+        if (checkIfChannelEmpty(channelName))
+        {
+            deleteChannel(channelName);
+        }
+        else
+        {
+            char *kickChanMsg = " was kicked out of the channel!!";
+            char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameToKick) + strlen(kickChanMsg));
+            sprintf(stringToSend, "%s%s", usernameToKick, kickChanMsg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+        }
 
         return RPL_SUCCESS;
     }
-
-    if (checkIfChannelEmpty(channelName))
-    {
-        deleteChannel(channelName);
-    }
-
     return ERR_NOTONCHANNEL;
 }
