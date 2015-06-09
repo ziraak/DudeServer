@@ -53,7 +53,7 @@ void firstTimeSetup()
 
 int setupDatabaseConnection()
 {
-    int rc = sqlite3_open16("dude@chat.db", &db);
+    int rc = sqlite3_open("dude@chat.db", &db);
 
     if(rc != SQLITE_OK)
     {

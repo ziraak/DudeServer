@@ -36,7 +36,7 @@ int handleInviteCommand(commandStruct cmd)
         char *joinedChanMsg = " has joined the channel!!";
         char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameUserToInvite) + strlen(joinedChanMsg));
         sprintf(stringToSend, "%s%s", usernameUserToInvite, joinedChanMsg);
-        writeMessageToDB(stringToSend, channelName, "IRC_Server");
+        sendSystemMessageToChannel(stringToSend, channelName);
         FREE(stringToSend);
         return RPL_INVITING;
     }

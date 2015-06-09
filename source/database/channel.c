@@ -239,3 +239,8 @@ void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly)
     executeStatement(stmt);
     sqlite3_free(stmt);
 }
+
+void sendSystemMessageToChannel(char *msgToSend, char *channelName)
+{
+    writeMessageToDB(msgToSend, channelName, USERNAME_SERVER);
+}
