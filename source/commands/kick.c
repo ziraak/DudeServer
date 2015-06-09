@@ -27,5 +27,11 @@ int handleKickCommand(commandStruct cmd)
 
         return RPL_SUCCESS;
     }
+
+    if (checkIfChannelEmpty(channelName))
+    {
+        deleteChannel(channelName);
+    }
+
     return ERR_NOTONCHANNEL;
 }
