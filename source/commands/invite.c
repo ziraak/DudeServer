@@ -28,6 +28,11 @@ int handleInviteCommand(commandStruct cmd)
 
     char *channelName = cmd.parameters[0], *usernameUserToInvite = cmd.parameters[1];
 
+    if (checkIfUserExists(usernameUserToInvite))
+    {
+        return ERR_USERNAME_NOT_KNOWN;
+    }
+
     int resultCheckChannelHost = hostAllowedToInvite(channelName);
 
     if (resultCheckChannelHost == BOOL_TRUE)
