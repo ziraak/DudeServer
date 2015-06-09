@@ -33,11 +33,6 @@ int handleInviteCommand(commandStruct cmd)
     if (resultCheckChannelHost == BOOL_TRUE)
     {
         joinChannelByUsername(channelName, usernameUserToInvite);
-        char *joinedChanMsg = " has joined the channel!!";
-        char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameUserToInvite) + strlen(joinedChanMsg));
-        sprintf(stringToSend, "%s%s", usernameUserToInvite, joinedChanMsg);
-        sendSystemMessageToChannel(stringToSend, channelName);
-        FREE(stringToSend);
         return RPL_INVITING;
     }
     return resultCheckChannelHost;

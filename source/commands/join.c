@@ -87,5 +87,11 @@ int joinChannelByUsername(char* channelName, char *username)
         return ERR_BADCHANMASK;
     }
 
+    char *joinedChanMsg = " has joined the channel!!";
+    char *stringToSend = MALLOC(sizeof(char *) + strlen(username) + strlen(joinedChanMsg));
+    sprintf(stringToSend, "%s%s", username, joinedChanMsg);
+    sendSystemMessageToChannel(stringToSend, channelName);
+    FREE(stringToSend);
+
     return RPL_TOPIC;
 }

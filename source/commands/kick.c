@@ -18,6 +18,13 @@ int handleKickCommand(commandStruct cmd)
     if(isUserInChannel(channelName, currentUser.username) == BOOL_TRUE)
     {
         userLeaveChannel(usernameToKick, channelName);
+
+        char *kickChanMsg = " was kicked out of the channel!!";
+        char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameToKick) + strlen(kickChanMsg));
+        sprintf(stringToSend, "%s%s", usernameToKick, kickChanMsg);
+        sendSystemMessageToChannel(stringToSend, channelName);
+        FREE(stringToSend);
+
         return RPL_SUCCESS;
     }
     return ERR_NOTONCHANNEL;
