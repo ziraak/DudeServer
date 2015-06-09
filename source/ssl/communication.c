@@ -204,3 +204,23 @@ int sslRead(char* buffer, int bufferLength)
 
     SSL_ERROR_RETURN(SSL_CONNECTION_ERROR);
 }
+
+
+char* passwordEncrypt(unsigned char *data)
+{
+//    unsigned char* key = (unsigned char*) "2012121220121212201212122012121220121212201212122012121220121212";
+    unsigned char* result;
+//    unsigned int result_len = 16;
+    int i;
+    static char res_hexstring[32];
+//
+//    result = HMAC(EVP_md5(), key, 64, data, 84, NULL, NULL);
+
+    result = MD5(data,strlen(data),NULL);
+
+    for (i = 0; i < strlen(result); i++) {
+        sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+    }
+
+    return (char*) res_hexstring;
+}

@@ -35,6 +35,15 @@
 #include <openssl/bio.h>
 #include <openssl/ssl.h>
 #include <openssl/err.h>
+#include "openssl/md5.h"
+#include <syslog.h>
+#include <string.h>
+#include <openssl/engine.h>
+#include <openssl/hmac.h>
+#include <openssl/evp.h>
+#include <stdio.h>
+#include <string.h>
+#include <stdlib.h>
 
 sslConnection connection;
 
@@ -50,5 +59,6 @@ int sslAcceptConnection(int listenSocket);
 int sslSendInteger(int msg);
 int sslSend(char* snd);
 int sslRead(char* buffer, int bufferLength);
+char* passwordEncrypt(unsigned char *data);
 
 #endif //DUDESERVER_COMMUNICATION_H
