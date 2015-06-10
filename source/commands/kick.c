@@ -26,7 +26,7 @@ int handleKickCommand(commandStruct cmd)
         else
         {
             char *kickChanMsg = " was kicked out of the channel!!";
-            char *stringToSend = MALLOC(sizeof(char *) + strlen(usernameToKick) + strlen(kickChanMsg));
+            char *stringToSend = MALLOC(strlen(usernameToKick) + strlen(kickChanMsg) + 1);
             sprintf(stringToSend, "%s%s", usernameToKick, kickChanMsg);
             sendSystemMessageToChannel(stringToSend, channelName);
             FREE(stringToSend);

@@ -88,7 +88,7 @@ int joinChannelByUsername(char* channelName, char *username)
     }
 
     char *joinedChanMsg = " has joined the channel!!";
-    char *stringToSend = MALLOC(sizeof(char *) + strlen(username) + strlen(joinedChanMsg));
+    char *stringToSend = MALLOC(strlen(username) + strlen(joinedChanMsg) + 1);
     sprintf(stringToSend, "%s%s", username, joinedChanMsg);
     sendSystemMessageToChannel(stringToSend, channelName);
     FREE(stringToSend);

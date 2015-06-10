@@ -96,7 +96,7 @@ void handleOFlag(char *channelName, flagStruct flag)
         {
             msg = " is no longer an operator!!";
         }
-        char *stringToSend = MALLOC(sizeof(char *) + strlen(flag.parameter) + strlen(msg));
+        char *stringToSend = MALLOC(strlen(flag.parameter) + strlen(msg) + 1);
         sprintf(stringToSend, "%s%s", flag.parameter, msg);
         sendSystemMessageToChannel(stringToSend, channelName);
         FREE(stringToSend);
