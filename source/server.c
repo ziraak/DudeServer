@@ -183,8 +183,8 @@ int parseMessage(char *message)
     {
         result = handleUpdateChannelPasswordCommand(cmd);
     }
-    commandStruct_free(&cmd);
     timeStop(cmd.command);
+    commandStruct_free(&cmd);
     return result;
 }
 void flushStdout()
