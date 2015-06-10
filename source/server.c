@@ -1,6 +1,8 @@
 #include "server.h"
 
 int authenticated = BOOL_FALSE;
+int listenPipe[2];
+int broadcastPipe[2];
 
 void runServer(int USE_FORK, int port)
 {
@@ -8,19 +10,45 @@ void runServer(int USE_FORK, int port)
     int sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
 
+    size_t pipeBufferMaxLength = 1024;
+    char pipeBuffer[pipeBufferMaxLength];
+    bzero(pipeBuffer, pipeBufferMaxLength);
+
+    pipe(listenPipe);
+    pipe(broadcastPipe);
+
+
     if(USE_FORK == BOOL_TRUE)
     {
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
-        printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
-        for (; ;)
+        int childpid = fork();
+
+        if (childpid == 0)
         {
-            if(sslAcceptConnection(sock) == SSL_OK)
+            printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
+            for (; ;)
             {
-                processConnectedClientWithFork();
+                if(sslAcceptConnection(sock) == SSL_OK)
+                {
+                    processConnectedClientWithFork();
+                }
             }
         }
+        else
+        {
+            close(listenPipe[1]);
+            for (; ;)
+            {
+                if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
+                {
+                    printf("Final boss received a message: %s\n", pipeBuffer);
+                    bzero(pipeBuffer, pipeBufferMaxLength);
+                }
+            }
+        }
+
 #pragma clang diagnostic pop
     }
     else
@@ -59,8 +87,24 @@ void processConnectedClient()
     int bufferLength = 1024, result;
     char buffer[bufferLength];
     bzero(buffer, (size_t)bufferLength);
+    char newBuffer[bufferLength];
+    bzero(newBuffer, bufferLength);
     while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
     {
+        if (currentUser.username != NULL)
+        {
+            bzero(newBuffer, bufferLength);
+            strcat(newBuffer, "#");
+            strcat(newBuffer, currentUser.username);
+            strcat(newBuffer, " ");
+            strcat(newBuffer, buffer);
+
+            write(listenPipe[1], newBuffer, bufferLength);
+        }
+        else
+        {
+            write(listenPipe[1], buffer, bufferLength);
+        }
         if (authenticated == BOOL_FALSE)
         {
             commandStruct cmd = commandStruct_initialize(buffer);
@@ -108,6 +152,7 @@ void processConnectedClientWithFork()
     int childpid = fork();
     if (childpid == 0)
     {
+        close(listenPipe[0]);
         processConnectedClient();
         printf("CLOSED FORKED CLIENT\n");
         exit(0);
