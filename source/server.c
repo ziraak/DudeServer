@@ -1,8 +1,8 @@
 #include "server.h"
 
 int authenticated = BOOL_FALSE;
-int pipeFd[2];
-
+int listenPipe[2];
+int broadcastPipe[2];
 
 void runServer(int USE_FORK, int port)
 {
@@ -14,7 +14,8 @@ void runServer(int USE_FORK, int port)
     char pipeBuffer[pipeBufferMaxLength];
     bzero(pipeBuffer, pipeBufferMaxLength);
 
-    pipe(pipeFd);
+    pipe(listenPipe);
+    pipe(broadcastPipe);
 
 
     if(USE_FORK == BOOL_TRUE)
@@ -37,10 +38,10 @@ void runServer(int USE_FORK, int port)
         }
         else
         {
-            close(pipeFd[1]);
+            close(listenPipe[1]);
             for (; ;)
             {
-                if (read(pipeFd[0], pipeBuffer, pipeBufferMaxLength) > 0)
+                if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
                 {
                     printf("Final boss received a message: %s\n", pipeBuffer);
                     bzero(pipeBuffer, pipeBufferMaxLength);
@@ -98,11 +99,11 @@ void processConnectedClient()
             strcat(newBuffer, " ");
             strcat(newBuffer, buffer);
 
-            write(pipeFd[1], newBuffer, bufferLength);
+            write(listenPipe[1], newBuffer, bufferLength);
         }
         else
         {
-            write(pipeFd[1], buffer, bufferLength);
+            write(listenPipe[1], buffer, bufferLength);
         }
         if (authenticated == BOOL_FALSE)
         {
@@ -151,7 +152,7 @@ void processConnectedClientWithFork()
     int childpid = fork();
     if (childpid == 0)
     {
-        close(pipeFd[0]);
+        close(listenPipe[0]);
         processConnectedClient();
         printf("CLOSED FORKED CLIENT\n");
         exit(0);

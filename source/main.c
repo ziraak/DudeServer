@@ -31,21 +31,21 @@ int main(int argc, char **argv)
     stopDatabase();
     /*
 
-    int pipeFd[2], pipeFd2[2];
+    int listenPipe[2], pipeFd2[2];
     int maxLengthBuffer = 10;
     char buffer[maxLengthBuffer];
 
     bzero(buffer, 10);
-    pipe(pipeFd);
+    pipe(listenPipe);
     pipe(pipeFd2);
 
     int childpid = fork();
     if (childpid == 0)
     {
-        write(pipeFd[1], "test", 4);
+        write(listenPipe[1], "test", 4);
         read(pipeFd2[0], buffer, maxLengthBuffer);
-        write(pipeFd[1], "whatsup", 7);
-        write(pipeFd[1], "hey", 3);
+        write(listenPipe[1], "whatsup", 7);
+        write(listenPipe[1], "hey", 3);
         printf("Child1 read message: %s \n", buffer);
         exit(0);
     }
@@ -53,7 +53,7 @@ int main(int argc, char **argv)
     write(pipeFd2[1], "Received", 8);
 
 
-    while (read(pipeFd[0], buffer, maxLengthBuffer) > 0 && buffer[0] != '\0')
+    while (read(listenPipe[0], buffer, maxLengthBuffer) > 0 && buffer[0] != '\0')
     {
         printf("Final boss read message: %s \n", buffer);
         bzero(buffer, maxLengthBuffer);
