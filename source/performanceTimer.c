@@ -65,8 +65,4 @@ void finalTimer(struct timespec tstart, char *testedFunction)
     slowestFunction = "NoSlowFunctions";
     fclose(fp);
 
-    FILE *fp2 = openFile("functionTimes.txt");
-    fprintf(fp2,"--------end of section----------\n");
-    fclose(fp2);
-
 }
