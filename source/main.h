@@ -28,6 +28,7 @@
 #include "commands/invite.h"
 #include "commands/names.h"
 #include "commands/kick.h"
+#include "commands/update_channel_password.h"
 
 
 
@@ -38,9 +39,7 @@
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
 
-
-
-
+#define USERNAME_SERVER "IRC_Server"
 #define MINIMUM_PASSWORD_LENGTH 6
 
 #define MAXIMUM_MESSAGE_LENGTH 1024

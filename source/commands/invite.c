@@ -30,15 +30,19 @@ int handleInviteCommand(commandStruct cmd)
 
     char *channelName = cmd.parameters[0], *usernameUserToInvite = cmd.parameters[1];
 
+    if (checkIfUserExists(usernameUserToInvite) == BOOL_FALSE)
+    {
+        return ERR_USERNAME_NOT_KNOWN;
+    }
+
     int resultCheckChannelHost = hostAllowedToInvite(channelName);
 
     if (resultCheckChannelHost == BOOL_TRUE)
     {
-        int resultCheckChannel = checkChannel(channelName);
-        if (resultCheckChannel == BOOL_TRUE)
-        {
-            joinChannelByUsername(channelName, usernameUserToInvite);
-        }
+
+
+
+        joinChannelByUsername(channelName, usernameUserToInvite);
         timeEnd("invite.c");
         return RPL_INVITING;
     }

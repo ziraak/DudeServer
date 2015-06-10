@@ -7,6 +7,6 @@
 
 int handlePrivateMessageCommand(commandStruct cmd);
 
-int writeMessageToDB(char *msgToSend, char *channel);
+int writeMessageToDB(char *msgToSend, char *channel, char *username);
 
 #endif

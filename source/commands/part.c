@@ -6,6 +6,25 @@
  */
 #include "part.h"
 
+void makeTheLastPersonOperatorIfThereIsOnlyOnePersonLeftInChannel(char *channelName)
+{
+    int userCount;
+    userInfo *users = getChannelUsers(channelName, &userCount);
+    if (userCount == 1)
+    {
+        if (userIsOperatorInChannel(channelName, users->username) == BOOL_FALSE)
+        {
+            updateChannelUserRole(channelName, users->username, USER_ROLE_OPERATOR);
+            char *msg = ", because you are the last person in the channel. You are now the operator in this channel!!";
+            char *stringToSend = MALLOC(strlen(users->username) + strlen(msg) + 1);
+            sprintf(stringToSend, "%s%s", users->username, msg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+        }
+    }
+    userInfos_free(users, userCount);
+}
+
 int handlePartCommand(commandStruct cmd)
 {
     timeStart;
@@ -21,10 +40,21 @@ int handlePartCommand(commandStruct cmd)
     {
         userLeaveChannel(currentUser.username, channelName);
 
-        if (checkIfChannelEmpty(channelName))
+        if (checkIfChannelEmpty(channelName) == BOOL_TRUE)
         {
             deleteChannel(channelName);
         }
+        else
+        {
+            char *msg = " has left the channel!!";
+            char *stringToSend = MALLOC(strlen(currentUser.username) + strlen(msg) + 1);
+            sprintf(stringToSend, "%s%s", currentUser.username, msg);
+            sendSystemMessageToChannel(stringToSend, channelName);
+            FREE(stringToSend);
+
+            makeTheLastPersonOperatorIfThereIsOnlyOnePersonLeftInChannel(channelName);
+        }
+
         timeEnd("part.c");
         return RPL_SUCCESS;
     }

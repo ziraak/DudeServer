@@ -19,24 +19,28 @@ void firstTimeSetup()
     printf("-- PERFORMING FIRST TIME SETUP --\n\n");
 
     executeStatement("CREATE TABLE CHANNELS (name TEXT PRIMARY KEY, password TEXT,topic TEXT, visible INT NOT NULL, inviteOnly INT NOT NULL, topicOperatorOnly INT NOT NULL);");
-    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('batcave','open sesame','because im awesome', 1, 1, 0);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('batcave','6cf1b6a13610021ea4c3e3e461cf997e','because im awesome', 1, 1, 0);");
     executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('eigendunk', NULL,'erg bekend bij ...', 0, 0, 1);");
+    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('testChan', NULL,'Test channel', 0, 0, 1);");
 
     executeStatement("CREATE TABLE USERS (name TEXT PRIMARY KEY, password TEXT NOT NULL, nickname TEXT);");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('fatih', 'nub', 'fatihawesome');");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('sjuul', 'hahaha', 'khlox');");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('harmen', 'ziraak', 'angutar');");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('ferdi', 'hohohaha', '[FaZe] Lord Chin Chin');");
-    executeStatement("INSERT INTO USERS (name, password, nickname) VALUES ('desmond', 'moonbear', 'des');");
+    createNewUser("fatih","nub");
+    createNewUser("desmond","nub");
+    createNewUser("sjuul","nub");
+    createNewUser("harmen","nub");
+    createNewUser("ferdi","nub");
+    createNewUser("testUser","wachtwoord");
+
 
     executeStatement("CREATE TABLE CHANNEL_USERS (user_name TEXT NOT NULL, channel_name TEXT NOT NULL, user_privileges TEXT NOT NULL, PRIMARY KEY(user_name, channel_name), FOREIGN KEY(user_name) REFERENCES USERS(name), FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
-    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'batcave', 'o');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'batcave', 'u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('desmond','batcave', 'u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('sjuul',  'batcave', 'u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('harmen', 'batcave', 'o');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('ferdi',  'batcave', 'u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('fatih',  'eigendunk','u');");
     executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('sjuul',  'eigendunk','o');");
+    executeStatement("INSERT INTO CHANNEL_USERS (user_name, channel_name, user_privileges) VALUES ('testUser',  'testChan','o');");
 
     executeStatement("CREATE TABLE CHANNEL_MESSAGES (message_id INTEGER PRIMARY KEY, user_name TEXT NOT NULL, channel_name TEXT NOT NULL, timestamp INTEGER NOT NULL, body TEXT, FOREIGN KEY(channel_name) REFERENCES CHANNELS(name));");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360988, 'im batman1');");
@@ -44,11 +48,13 @@ void firstTimeSetup()
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360990, 'im batman3');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360991, 'im batman4');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('fatih', 'batcave', 1433360992, 'im batman5');");
+
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360988, 'im batman1');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360989, 'im batman2');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360990, 'im batman3');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360991, 'im batman4');");
     executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('sjuul', 'eigendunk', 1433360992, 'im batman5');");
+    executeStatement("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES ('testUser', 'testChan', 1433360992, 'Dit is een test channel!');");
 
     printf("\n-- FIRST TIME SETUP COMPLETED --\n");
 }
@@ -68,6 +74,8 @@ int setupDatabaseConnection()
     {
         firstTimeSetup();
     }
+
+
 
     return DB_RETURN_SUCCES;
 }

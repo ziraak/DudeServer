@@ -3,6 +3,7 @@
 //
 
 #include "communication.h"
+#include "communicationStructs.h"
 
 void sslInitialize()
 {
@@ -165,6 +166,7 @@ int sslSend(char* snd)
         return SSL_NO_CONNECTION;
     }
 
+
     char* buffer = MALLOC(sizeof(char) * (bufferLength + 3));
     sprintf(buffer, "%s\r\n", snd);
     int written = SSL_write(connection.ssl_handle, buffer, (int)(bufferLength + 3));
@@ -201,4 +203,23 @@ int sslRead(char* buffer, int bufferLength)
     }
 
     SSL_ERROR_RETURN(SSL_CONNECTION_ERROR);
+}
+
+
+char* passwordEncrypt(unsigned char *data)
+{
+    timeStart;
+    unsigned char* result;
+
+    int i;
+    static char res_hexstring[32];
+
+    result = MD5(data,strlen(data),NULL);
+
+    for (i = 0; i < strlen(result); i++) {
+        sprintf(&(res_hexstring[i * 2]), "%02x", result[i]);
+    }
+
+    timeEnd("passwordEncrypt");
+    return (char*) res_hexstring;
 }

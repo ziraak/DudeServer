@@ -1,8 +1,0 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<channels>
-    <channel visible="y">eigendunk</channel>
-    <channel visible="n">batcave</channel>
-    <channel visible="y">fatihs head</channel>
-    <channel visible="n">rovers</channel>
-    <channel visible="y">testChannel</channel>
-</channels>

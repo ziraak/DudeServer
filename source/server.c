@@ -179,8 +179,12 @@ int parseMessage(char *message)
     {
         result = handleKickCommand(cmd);
     }
-    timeStop(cmd.command);
+    else if (commandEquals(cmd, "UPDATE_CHANNEL_PASSWORD"))
+    {
+        result = handleUpdateChannelPasswordCommand(cmd);
+    }
     commandStruct_free(&cmd);
+    timeStop(cmd.command);
     return result;
 }
 void flushStdout()

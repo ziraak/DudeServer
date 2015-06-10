@@ -213,7 +213,7 @@ int changePassword(char *username, char *newPassword)
     char* where = malloc(strlen(username) + 10);
     sprintf(where,"name = '%s'",username);
 
-    char*statement = getUpdateSQL("USERS",where,"password",newPassword);
+    char*statement = getUpdateSQL("USERS",where,"password", passwordEncrypt(newPassword));
     free(where);
     executeStatement(statement);
     free(statement);
@@ -226,6 +226,7 @@ int createNewUser(char *username, char *password)
     timeStart;
 
     if(username == NULL || password == NULL) return DB_RETURN_NULLPOINTER;
+    password = passwordEncrypt(password);
 
     char*values = malloc(strlen(username)+ strlen(password) + strlen(username)+10);
     sprintf(values,"'%s','%s','%s'",username,password,username);

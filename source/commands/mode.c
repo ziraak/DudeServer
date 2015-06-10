@@ -92,7 +92,19 @@ void handleOFlag(char *channelName, flagStruct flag)
     if(flag.flag == 'o')
     {
         updateChannelUserRole(channelName, flag.parameter, (flag.set == BOOL_TRUE) ? USER_ROLE_OPERATOR : USER_ROLE_USER);
-
+        char *msg;
+        if (flag.set == BOOL_TRUE)
+        {
+            msg = " is now operator!!";
+        }
+        else
+        {
+            msg = " is no longer an operator!!";
+        }
+        char *stringToSend = MALLOC(strlen(flag.parameter) + strlen(msg) + 1);
+        sprintf(stringToSend, "%s%s", flag.parameter, msg);
+        sendSystemMessageToChannel(stringToSend, channelName);
+        FREE(stringToSend);
     }
     timeEnd("handleOFlag");
 }
@@ -208,15 +220,16 @@ int checkFlags(modeStruct ms)
                 }
                 break;
 
-            case 'p':
+            case 'k':
+                if (strlen(ms.flags[i].parameter) < MINIMUM_PASSWORD_LENGTH)
+                {
+                    MODE_CHECK_FLAGS_RETURN(ERR_PASSWORDTOOSHORT, ci, users, userCount);
+                }
+                break;
+
             case 's':
             case 'i':
             case 't':
-            case 'n':
-            case 'm':
-            case 'l':
-            case 'b':
-            case 'v':
                 break;
 
             default:
@@ -245,10 +258,20 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
+    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_USERNAME_NOT_KNOWN;
+    }
+
     if(checkChannel(channelName) != BOOL_TRUE)
     {
         timeEnd("handleModeCommand");
         return ERR_NOSUCHCHANNEL;
+    }
+
+    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
+    {
+        return ERR_USERNAME_NOT_KNOWN;
     }
 
     if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)

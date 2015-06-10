@@ -10,6 +10,7 @@
 #include "channel.h"
 #include "channelUser.h"
 #include "channelMessage.h"
+#include "../ssl/communication.h"
 
 sqlite3 *db;
 

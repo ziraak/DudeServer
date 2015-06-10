@@ -22,17 +22,19 @@ int handlePrivateMessageCommand(commandStruct cmd)
     {
         return ERR_NOTONCHANNEL;
     }
-    writeMessageToDB(msgToSend, channel);
+
+    writeMessageToDB(msgToSend, channel, currentUser.username);
+
     timeEnd("privmsg.c");
     return RPL_AWAY;
 }
 
-int writeMessageToDB(char *msgToSend, char *channel)
+int writeMessageToDB(char *msgToSend, char *channel, char *username)
 {
     timeStart;
     messageInfo message;
     message.body = msgToSend;
-    message.writer = currentUser.username;
+    message.writer = username;
     insertMessage(message, channel);
     timeEnd("privmsg.c/writeMsgToDB");
     return DB_RETURN_SUCCES;

@@ -41,5 +41,6 @@ void updateChannelPassword(char *channelname, char *newPass);
 void updateChannelVisibility(char *channelName, int visible);
 void updateChannelInviteOnly(char *channelName, int inviteOnly);
 void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly);
+void sendSystemMessageToChannel(char *msgToSend, char *channelName);
 
 #endif 

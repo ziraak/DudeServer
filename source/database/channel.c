@@ -173,7 +173,7 @@ int insertChannel(char *channelName, char *password, char *topic, int visible, i
         return BOOL_FALSE;
     }
 
-    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES (%Q, %Q, %Q, %i, %i, %i);", channelName, password, topic, visible, inviteOnly, topicOperatorOnly);
+    char* stmt = sqlite3_mprintf("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES (%Q, %Q, %Q, %i, %i, %i);", channelName, passwordEncrypt(password) , topic, visible, inviteOnly, topicOperatorOnly);
     executeStatement(stmt);
     sqlite3_free(stmt);
 
@@ -232,7 +232,7 @@ int authenticateChannelPassword(char *channelName, char *password)
     channelInfo ci;
     if(getChannelByName(channelName, &ci) == BOOL_TRUE)
     {
-        int result = (strcmp(password, ci.password) == 0);
+        int result = (strcmp(passwordEncrypt(password) , ci.password) == 0);
         channelInfo_free(&ci);
         timeEnd("authenticateChannelPassword");
         return result;
@@ -244,8 +244,8 @@ int authenticateChannelPassword(char *channelName, char *password)
 void updateChannelPassword(char *channelName, char *newPass)
 {
     timeStart;
-    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = %Q WHERE name = %Q;", newPass, channelName);
 
+    char* stmt = sqlite3_mprintf("UPDATE CHANNELS SET password = %Q WHERE name = %Q;", passwordEncrypt(newPass), channelName);
     executeStatement(stmt);
     sqlite3_free(stmt);
     timeEnd("updateChannelPassword");
@@ -286,5 +286,10 @@ void updateChannelTopicOperatorOnly(char *channelName, int topicOperatorOnly)
     executeStatement(stmt);
     sqlite3_free(stmt);
     timeEnd("updateChannelTopicOperatorOnly");
+}
+
+void sendSystemMessageToChannel(char *msgToSend, char *channelName)
+{
+    writeMessageToDB(msgToSend, channelName, USERNAME_SERVER);
 }
 

@@ -60,6 +60,13 @@ int handleTopicCommand(commandStruct cmd)
 
         //set
         updateChannelTopic(channelName, topic);
+
+        char *msg = "Channel topic has changed to: ";
+        char *stringToSend = MALLOC(strlen(topic) + strlen(msg) + 1);
+        sprintf(stringToSend, "%s%s", msg, topic);
+        sendSystemMessageToChannel(stringToSend, channelName);
+        FREE(stringToSend);
+
         timeEnd("handleTopicCommand");
         return sendSuccessMessage(channelName, topic);
     }
