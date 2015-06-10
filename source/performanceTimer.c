@@ -18,12 +18,6 @@ FILE* openFile(char* filename)
 
 void printTime(struct timespec tstart,char* functionName)
 {
-//    struct timeb end_time;
-//    ftime(&end_time);
-//    int time = (int) ((end_time.time - start_time.time) * 1000) + (end_time.millitm - start_time.millitm);
-//    printf("function %s took %i miliseconds to complete\n",functionName ,time);
-
-
     struct timespec tend={0,0};
     clock_gettime(CLOCK_MONOTONIC, &tend);
 
@@ -70,4 +64,9 @@ void finalTimer(struct timespec tstart, char *testedFunction)
     longestTime = 0;
     slowestFunction = "NoSlowFunctions";
     fclose(fp);
+
+    FILE *fp2 = openFile("functionTimes.txt");
+    fprintf(fp2,"--------end of section----------\n");
+    fclose(fp2);
+
 }
