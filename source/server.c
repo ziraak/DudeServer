@@ -10,7 +10,7 @@ void runServer(int USE_FORK, int port)
 
     if(USE_FORK == BOOL_TRUE)
     {
-// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
+// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
         printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
