@@ -40,7 +40,6 @@ int authenticateUser(char *username, char *password, userInfo *result)
     }
 
     password = passwordEncrypt(password);
-    printf("password\n%s\n%s\n",password,result->password);
     if (strcmp(result->username, username) == 0 && strcmp(result->password, password) == 0)
     {
         return RPL_LOGIN;
