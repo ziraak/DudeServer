@@ -1,4 +1,14 @@
 #include "main.h"
+#include "pthread.h"
+
+int test = 0;
+
+void testSlet()
+{
+    printf("I slutted. You slut! Don' t steal other peoples things. Fuck mother.");
+    test = 5;
+    pthread_exit(NULL);
+}
 
 int main(int argc, char **argv)
 {
@@ -29,37 +39,79 @@ int main(int argc, char **argv)
 
     runServer(fork, port);
     stopDatabase();
-    /*
 
-    int listenPipe[2], pipeFd2[2];
+    /*
     int maxLengthBuffer = 10;
     char buffer[maxLengthBuffer];
+    bzero(buffer, maxLengthBuffer);
 
-    bzero(buffer, 10);
-    pipe(listenPipe);
-    pipe(pipeFd2);
+    int pipeFd[2];
+    pipe(pipeFd);
+    int i = 0;
 
-    int childpid = fork();
-    if (childpid == 0)
+    for (i = 0; i < 10; i++)
     {
-        write(listenPipe[1], "test", 4);
-        read(pipeFd2[0], buffer, maxLengthBuffer);
-        write(listenPipe[1], "whatsup", 7);
-        write(listenPipe[1], "hey", 3);
-        printf("Child1 read message: %s \n", buffer);
-        exit(0);
+        int childpid = fork();
+        if (childpid == 0)
+        {
+            read(pipeFd[0], buffer, maxLengthBuffer);
+            printf("Child read message: %s \n", buffer);
+            write(pipeFd[1], buffer, maxLengthBuffer);
+            bzero(buffer, maxLengthBuffer);
+            exit(0);
+        }
     }
 
-    write(pipeFd2[1], "Received", 8);
+    write(pipeFd[1], "Broadcast", 9);
 
-
-    while (read(listenPipe[0], buffer, maxLengthBuffer) > 0 && buffer[0] != '\0')
+    if ()
     {
-        printf("Final boss read message: %s \n", buffer);
-        bzero(buffer, maxLengthBuffer);
+
+    }
+    //write(pipeFd[1], "test", 4);
+    printf("Parent done.\n");
+
+
+     /*
+    size_t maxLengthBuffer = 10;
+    char buffer[maxLengthBuffer];
+    bzero(buffer, maxLengthBuffer);
+
+    int aantalChilderen = 0;
+    int *childPipeFd[2];
+    int i = 0;
+
+    for (i = 0; i < 3; i++)
+    {
+        childPipeFd[aantalChilderen] = malloc(20);
+        pipe(childPipeFd[aantalChilderen]);
+        int childpid = fork();
+        if (childpid == 0)
+        {
+            close(childPipeFd[aantalChilderen][1]);
+            read(childPipeFd[aantalChilderen][0], buffer, maxLengthBuffer);
+            printf("Child read message: %s \n", buffer);
+            bzero(buffer, maxLengthBuffer);
+
+            free(childPipeFd[aantalChilderen]);
+            exit(0);
+        }
+
+        char buffer1[maxLengthBuffer];
+        bzero(buffer1, maxLengthBuffer);
+        sprintf(buffer1, "test %i", i);
+
+        close(childPipeFd[aantalChilderen][0]);
+        write(childPipeFd[aantalChilderen][1], buffer1, 6);
+
+        aantalChilderen++;
     }
 
-    */
+    pthread_t tid;
+    pthread_create(&tid, NULL, (void *) &testSlet, NULL);
+
+    printf("%i \n", test);
+     */
 
     return EXIT_SUCCESS;
 }

@@ -1,8 +1,30 @@
+#include <pthread.h>
 #include "server.h"
 
 int authenticated = BOOL_FALSE;
 int listenPipe[2];
-int broadcastPipe[2];
+int aantalChilderen = 0;
+int *childPipeFd[2];
+#define THREAD(tid, function) pthread_create(&tid, NULL, (void *) &function, NULL);
+#define EXIT_THREAD pthread_exit(NULL);
+
+void listenParentPipe()
+{
+    size_t pipeBufferMaxLength = 1024;
+    char pipeBuffer[pipeBufferMaxLength];
+    bzero(pipeBuffer, pipeBufferMaxLength);
+
+    for (; ;)
+    {
+        if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
+        {
+            printf("Final boss received a message: %s\n", pipeBuffer);
+            bzero(pipeBuffer, pipeBufferMaxLength);
+        }
+    }
+
+    EXIT_THREAD;
+}
 
 void runServer(int USE_FORK, int port)
 {
@@ -10,19 +32,16 @@ void runServer(int USE_FORK, int port)
     int sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
 
-    size_t pipeBufferMaxLength = 1024;
-    char pipeBuffer[pipeBufferMaxLength];
-    bzero(pipeBuffer, pipeBufferMaxLength);
-
     pipe(listenPipe);
-    pipe(broadcastPipe);
-
 
     if(USE_FORK == BOOL_TRUE)
     {
 // Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wmissing-noreturn"
+
+
+
         int childpid = fork();
 
         if (childpid == 0)
@@ -34,21 +53,18 @@ void runServer(int USE_FORK, int port)
                 {
                     processConnectedClientWithFork();
                 }
+
+                close(childPipeFd[aantalChilderen][0]);
+                write(childPipeFd[aantalChilderen][0], "msg from parent", 15);
+                aantalChilderen++;
             }
         }
         else
         {
             close(listenPipe[1]);
-            for (; ;)
-            {
-                if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
-                {
-                    printf("Final boss received a message: %s\n", pipeBuffer);
-                    bzero(pipeBuffer, pipeBufferMaxLength);
-                }
-            }
+            pthread_t ptid;
+            THREAD(ptid, listenParentPipe);
         }
-
 #pragma clang diagnostic pop
     }
     else
@@ -80,11 +96,10 @@ int authenticateClient(commandStruct cmd)
     }
     return authenticated;
 }
-void processConnectedClient()
+
+void communicateWithClientAndSendMessageToParent()
 {
-    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
-    sslSendInteger(RPL_CONNECTED);
-    int bufferLength = 1024, result;
+    int bufferLength = 1024;
     char buffer[bufferLength];
     bzero(buffer, (size_t)bufferLength);
     char newBuffer[bufferLength];
@@ -105,6 +120,38 @@ void processConnectedClient()
         {
             write(listenPipe[1], buffer, bufferLength);
         }
+        bzero(buffer, sizeof(buffer));
+    }
+
+    EXIT_THREAD;
+}
+
+void processConnectedClient()
+{
+    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
+    sslSendInteger(RPL_CONNECTED);
+    int result;
+    int bufferLength = 1024;
+    char buffer[bufferLength];
+
+    pthread_t tid;
+    THREAD(tid, communicateWithClientAndSendMessageToParent);
+
+    for (;;) // TODO: infinite loop vervangen door while tid niet null ofso
+    {
+        if(read(childPipeFd[aantalChilderen][0], buffer, bufferLength) > 0)
+        {
+            printf("Message reeived: %s\n", buffer);
+            bzero(buffer, bufferLength);
+        }
+    }
+
+    printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
+    authenticated = BOOL_FALSE;
+    freeCurrentUser();
+    sslClose();
+
+        /*
         if (authenticated == BOOL_FALSE)
         {
             commandStruct cmd = commandStruct_initialize(buffer);
@@ -134,12 +181,7 @@ void processConnectedClient()
                 sslSendInteger(msg);
             }
         }
-        bzero(buffer, sizeof(buffer));
-    }
-    printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
-    authenticated = BOOL_FALSE;
-    freeCurrentUser();
-    sslClose();
+         */
 }
 
 void freeCurrentUser()
@@ -149,6 +191,10 @@ void freeCurrentUser()
 
 void processConnectedClientWithFork()
 {
+    childPipeFd[aantalChilderen] = malloc(10);
+    pipe(childPipeFd[aantalChilderen]);
+    close(childPipeFd[aantalChilderen][1]);
+
     int childpid = fork();
     if (childpid == 0)
     {

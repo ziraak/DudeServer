@@ -23,7 +23,7 @@ target_link_libraries(DudeServerLib ${CMAKE_DL_LIBS})
 
 # create the executable and link the library
 add_executable(DudeServer ${HEADERS} ${MAIN_SOURCES})
-target_link_libraries(DudeServer DudeServerLib)
+target_link_libraries(DudeServer DudeServerLib pthread)
 
 # remove all older database files
 add_custom_command(TARGET DudeServer PRE_BUILD
