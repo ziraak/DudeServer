@@ -72,7 +72,7 @@ int setupDatabaseConnection()
         firstTimeSetup();
     }
 
-
+    sqlite3_free(db);
 
     return DB_RETURN_SUCCES;
 }

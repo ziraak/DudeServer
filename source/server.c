@@ -8,6 +8,7 @@ int *childPipeFd[2];
 int sock, serverPort;
 #define THREAD(tid, function) pthread_create(&tid, NULL, (void *) &function, NULL);
 #define EXIT_THREAD pthread_exit(NULL);
+#define JOIN_THREAD(tid) pthread_join(tid, NULL);
 int communicateWithClientThreadRunning = BOOL_TRUE;
 
 void acceptIncomingConnections()
@@ -23,6 +24,8 @@ void acceptIncomingConnections()
         }
         close(childPipeFd[aantalChilderen][0]);
         aantalChilderen++;
+
+        EXIT_THREAD;
     }
 }
 
@@ -43,11 +46,20 @@ void runServer(int USE_FORK, int port)
     char pipeBuffer[pipeBufferMaxLength];
     bzero(pipeBuffer, pipeBufferMaxLength);
 
-    for (; ;)
+    int j = 0;
+    for (;;)
     {
         if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
         {
             printf("Final boss received a message: %s\n", pipeBuffer);
+
+            if (strcmp(pipeBuffer, "KILL_CHILD_PIPE 0") == 0)
+            {
+                free(childPipeFd[0]);
+                childPipeFd[0] = NULL;
+                JOIN_THREAD(ptid);
+                break;
+            }
 
             int i;
             for (i = 0; i < aantalChilderen; i++)
@@ -58,15 +70,10 @@ void runServer(int USE_FORK, int port)
                 }
             }
 
-            if (strcmp(pipeBuffer, "KILL_CHILD_PIPE 0") == 0)
-            {
-                free(childPipeFd[0]);
-                childPipeFd[0] = NULL;
-            }
-
             bzero(pipeBuffer, pipeBufferMaxLength);
         }
     }
+
     sslDestroy();
 }
 
@@ -153,7 +160,7 @@ void processConnectedClient()
     authenticated = BOOL_FALSE;
     freeCurrentUser();
     sslClose();
-    pthread_join(tid, NULL);
+    JOIN_THREAD(tid);
 
         /*
         if (authenticated == BOOL_FALSE)

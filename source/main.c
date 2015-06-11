@@ -28,7 +28,7 @@ int main(int argc, char **argv)
         }
     }
 
-    runServer(fork, port);
+    //runServer(fork, port);
     stopDatabase();
 
     return EXIT_SUCCESS;
