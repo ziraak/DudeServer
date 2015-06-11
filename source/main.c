@@ -29,37 +29,6 @@ int main(int argc, char **argv)
 
     runServer(fork, port);
     stopDatabase();
-    /*
-
-    int listenPipe[2], pipeFd2[2];
-    int maxLengthBuffer = 10;
-    char buffer[maxLengthBuffer];
-
-    bzero(buffer, 10);
-    pipe(listenPipe);
-    pipe(pipeFd2);
-
-    int childpid = fork();
-    if (childpid == 0)
-    {
-        write(listenPipe[1], "test", 4);
-        read(pipeFd2[0], buffer, maxLengthBuffer);
-        write(listenPipe[1], "whatsup", 7);
-        write(listenPipe[1], "hey", 3);
-        printf("Child1 read message: %s \n", buffer);
-        exit(0);
-    }
-
-    write(pipeFd2[1], "Received", 8);
-
-
-    while (read(listenPipe[0], buffer, maxLengthBuffer) > 0 && buffer[0] != '\0')
-    {
-        printf("Final boss read message: %s \n", buffer);
-        bzero(buffer, maxLengthBuffer);
-    }
-
-    */
 
     return EXIT_SUCCESS;
 }
