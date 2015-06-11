@@ -8,24 +8,7 @@ int *childPipeFd[2];
 int sock, serverPort;
 #define THREAD(tid, function) pthread_create(&tid, NULL, (void *) &function, NULL);
 #define EXIT_THREAD pthread_exit(NULL);
-
-void listenParentPipe()
-{
-    size_t pipeBufferMaxLength = 1024;
-    char pipeBuffer[pipeBufferMaxLength];
-    bzero(pipeBuffer, pipeBufferMaxLength);
-
-    for (; ;)
-    {
-        if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
-        {
-            printf("Final boss received a message: %s\n", pipeBuffer);
-            bzero(pipeBuffer, pipeBufferMaxLength);
-        }
-    }
-
-    EXIT_THREAD;
-}
+int communicateWithClientThreadRunning = BOOL_TRUE;
 
 void acceptIncomingConnections()
 {
@@ -65,13 +48,23 @@ void runServer(int USE_FORK, int port)
         if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
         {
             printf("Final boss received a message: %s\n", pipeBuffer);
-            bzero(pipeBuffer, pipeBufferMaxLength);
 
             int i;
             for (i = 0; i < aantalChilderen; i++)
             {
-                write(childPipeFd[i][1], "Broadcast!!", 11);
+                if (childPipeFd[i] != NULL)
+                {
+                    write(childPipeFd[i][1], "Broadcast!!", 11);
+                }
             }
+
+            if (strcmp(pipeBuffer, "KILL_CHILD_PIPE 0") == 0)
+            {
+                free(childPipeFd[0]);
+                childPipeFd[0] = NULL;
+            }
+
+            bzero(pipeBuffer, pipeBufferMaxLength);
         }
     }
     sslDestroy();
@@ -96,13 +89,45 @@ int authenticateClient(commandStruct cmd)
     return authenticated;
 }
 
-void communicateWithClientAndSendMessageToParent()
+void readMessageFromParent()
 {
+    int bufferLength = 1024;
+    char buffer[bufferLength];
+    bzero(buffer, bufferLength);
+
+    while (communicateWithClientThreadRunning == BOOL_TRUE)
+    {
+        if(read(childPipeFd[aantalChilderen][0], buffer, bufferLength) > 0)
+        {
+            printf("Child %i received message: %s\n", aantalChilderen, buffer);
+            bzero(buffer, bufferLength);
+        }
+    }
+
+    char *msgToParent = malloc(20);
+    sprintf(msgToParent, "KILL_CHILD_PIPE %i", aantalChilderen);
+    write(listenPipe[1], msgToParent, strlen(msgToParent));
+    free(msgToParent);
+    //free(childPipeFd[aantalChilderen]);
+    printf("Exit thread in child.\n");
+    EXIT_THREAD;
+}
+
+void processConnectedClient()
+{
+    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
+    sslSendInteger(RPL_CONNECTED);
+    int result;
+
+    pthread_t tid;
+    THREAD(tid, readMessageFromParent);
+
     int bufferLength = 1024;
     char buffer[bufferLength];
     bzero(buffer, (size_t)bufferLength);
     char newBuffer[bufferLength];
     bzero(newBuffer, bufferLength);
+
     while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
     {
         if (currentUser.username != NULL)
@@ -122,34 +147,13 @@ void communicateWithClientAndSendMessageToParent()
         bzero(buffer, sizeof(buffer));
     }
 
-    EXIT_THREAD;
-}
-
-void processConnectedClient()
-{
-    printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
-    sslSendInteger(RPL_CONNECTED);
-    int result;
-    int bufferLength = 1024;
-    char buffer[bufferLength];
-    bzero(buffer, bufferLength);
-
-    pthread_t tid;
-    THREAD(tid, communicateWithClientAndSendMessageToParent);
-
-    for (;;) // TODO: infinite loop vervangen door while tid niet null ofso
-    {
-        if(read(childPipeFd[aantalChilderen][0], buffer, bufferLength) > 0)
-        {
-            printf("Child %i received message: %s\n", aantalChilderen, buffer);
-            bzero(buffer, bufferLength);
-        }
-    }
-
+    communicateWithClientThreadRunning = BOOL_FALSE;
+    write(childPipeFd[aantalChilderen][1], "CLEAN_THREAD_UP", 15);
     printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     authenticated = BOOL_FALSE;
     freeCurrentUser();
     sslClose();
+    pthread_join(tid, NULL);
 
         /*
         if (authenticated == BOOL_FALSE)
@@ -194,7 +198,7 @@ void processConnectedClientWithFork()
     int childpid = fork();
     if (childpid == 0)
     {
-        close(childPipeFd[aantalChilderen][1]);
+        //close(childPipeFd[aantalChilderen][1]);
         close(listenPipe[0]);
         processConnectedClient();
         printf("CLOSED FORKED CLIENT\n");
