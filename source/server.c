@@ -5,6 +5,7 @@ int authenticated = BOOL_FALSE;
 int listenPipe[2];
 int aantalChilderen = 0;
 int *childPipeFd[2];
+int sock, serverPort;
 #define THREAD(tid, function) pthread_create(&tid, NULL, (void *) &function, NULL);
 #define EXIT_THREAD pthread_exit(NULL);
 
@@ -26,53 +27,51 @@ void listenParentPipe()
     EXIT_THREAD;
 }
 
+void acceptIncomingConnections()
+{
+    printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", serverPort);
+    for (; ;)
+    {
+        childPipeFd[aantalChilderen] = malloc(10);
+        pipe(childPipeFd[aantalChilderen]);
+        if(sslAcceptConnection(sock) == SSL_OK)
+        {
+            processConnectedClientWithFork();
+        }
+        close(childPipeFd[aantalChilderen][0]);
+        aantalChilderen++;
+    }
+}
+
 void runServer(int USE_FORK, int port)
 {
     flushStdout();
-    int sock = getListeningSocket(SERVER_IP, port);
+    sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
+
+    serverPort = port;
 
     pipe(listenPipe);
 
-    if(USE_FORK == BOOL_TRUE)
+    pthread_t ptid;
+    THREAD(ptid, acceptIncomingConnections);
+
+    size_t pipeBufferMaxLength = 1024;
+    char pipeBuffer[pipeBufferMaxLength];
+    bzero(pipeBuffer, pipeBufferMaxLength);
+
+    for (; ;)
     {
-// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben.
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-
-
-
-        int childpid = fork();
-
-        if (childpid == 0)
+        if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
         {
-            printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
-            for (; ;)
+            printf("Final boss received a message: %s\n", pipeBuffer);
+            bzero(pipeBuffer, pipeBufferMaxLength);
+
+            int i;
+            for (i = 0; i < aantalChilderen; i++)
             {
-                if(sslAcceptConnection(sock) == SSL_OK)
-                {
-                    processConnectedClientWithFork();
-                }
-
-                close(childPipeFd[aantalChilderen][0]);
-                write(childPipeFd[aantalChilderen][0], "msg from parent", 15);
-                aantalChilderen++;
+                write(childPipeFd[i][1], "Broadcast!!", 11);
             }
-        }
-        else
-        {
-            close(listenPipe[1]);
-            pthread_t ptid;
-            THREAD(ptid, listenParentPipe);
-        }
-#pragma clang diagnostic pop
-    }
-    else
-    {
-        printf("ACCEPTING A SINGLE CLIENT ON PORT %i\n", port);
-        if(sslAcceptConnection(sock) == SSL_OK)
-        {
-            processConnectedClient();
         }
     }
     sslDestroy();
@@ -133,6 +132,7 @@ void processConnectedClient()
     int result;
     int bufferLength = 1024;
     char buffer[bufferLength];
+    bzero(buffer, bufferLength);
 
     pthread_t tid;
     THREAD(tid, communicateWithClientAndSendMessageToParent);
@@ -141,7 +141,7 @@ void processConnectedClient()
     {
         if(read(childPipeFd[aantalChilderen][0], buffer, bufferLength) > 0)
         {
-            printf("Message reeived: %s\n", buffer);
+            printf("Child %i received message: %s\n", aantalChilderen, buffer);
             bzero(buffer, bufferLength);
         }
     }
@@ -191,13 +191,10 @@ void freeCurrentUser()
 
 void processConnectedClientWithFork()
 {
-    childPipeFd[aantalChilderen] = malloc(10);
-    pipe(childPipeFd[aantalChilderen]);
-    close(childPipeFd[aantalChilderen][1]);
-
     int childpid = fork();
     if (childpid == 0)
     {
+        close(childPipeFd[aantalChilderen][1]);
         close(listenPipe[0]);
         processConnectedClient();
         printf("CLOSED FORKED CLIENT\n");
