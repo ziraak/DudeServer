@@ -13,7 +13,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     return BOOL_TRUE;
 }
 
-channelMessagesStruct getChannelMessages(channelInfo channel, int timestamp, int amountOfMessages)
+channelMessagesStruct getChannelMessages(channelInfo channel, time_t timestamp, int amountOfMessages)
 {
     if(channel.name == NULL)
     {
@@ -77,7 +77,7 @@ int sendPollMessages(pollStruct *ps)
     return BOOL_TRUE;
 }
 
-pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int timestamp)
+pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, time_t timestamp)
 {
     pollStruct ps = {
         .channels = channels,
@@ -126,6 +126,9 @@ int handlePollCommand(commandStruct cmd, int amountOfMessages)
     }
 
     pollStruct_free(&ps);
-    lastTimestamp = (int)time(NULL);
+
+    struct timeb timestamp;
+    ftime(&timestamp);
+    lastTimestamp = timestamp.time * 1000 + timestamp.millitm;
     return RPL_SUCCESS;
 }

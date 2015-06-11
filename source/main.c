@@ -8,7 +8,7 @@ int main(int argc, char **argv)
         return EXIT_FAILURE;
     }
 
-    int fork = BOOL_TRUE;
+    int fork = BOOL_FALSE;
     int port = SERVER_PORT;
     int i;
     for(i = 1; i < argc; i++)

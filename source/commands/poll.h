@@ -14,14 +14,14 @@ typedef struct channelMessagesStruct
 
 typedef struct pollStruct
 {
-    int timestamp;
+    time_t timestamp;
 
     channelInfo *channels;
     channelMessagesStruct* channelMessages;
     int channelCount;
 } pollStruct;
 
-pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, int timestamp);
+pollStruct pollStruct_initialize(channelInfo *channels, int channelCount, time_t timestamp);
 void pollStruct_free(pollStruct *ps);
 
 int handlePollCommand(commandStruct cmd, int amountOfMessages);

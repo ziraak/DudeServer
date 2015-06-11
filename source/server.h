@@ -4,7 +4,7 @@
 #include "main.h"
 #include "ctype.h"
 
-int lastTimestamp;
+time_t lastTimestamp;
 userInfo currentUser;
 
 void freeCurrentUser();

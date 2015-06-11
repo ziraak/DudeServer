@@ -28,6 +28,7 @@
 #include "commands/names.h"
 #include "commands/kick.h"
 #include "commands/update_channel_password.h"
+#include <sys/timeb.h>
 
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
