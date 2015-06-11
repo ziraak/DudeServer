@@ -16,7 +16,11 @@ void firstTimeSetup()
     printf("-- PERFORMING FIRST TIME SETUP --\n\n");
 
     executeStatement("CREATE TABLE CHANNELS (name TEXT PRIMARY KEY, password TEXT,topic TEXT, visible INT NOT NULL, inviteOnly INT NOT NULL, topicOperatorOnly INT NOT NULL);");
-    executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('batcave','6cf1b6a13610021ea4c3e3e461cf997e','because im awesome', 1, 1, 0);");
+    char *passwordBatcave = passwordEncrypt("open sesame");
+    char *insertBatcaveStatement = malloc(200);
+    sprintf(insertBatcaveStatement, "INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('batcave', '%s','because im awesome', 1, 0, 0);", passwordBatcave);
+    executeStatement(insertBatcaveStatement);
+    free(insertBatcaveStatement);
     executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('eigendunk', NULL,'erg bekend bij ...', 0, 0, 1);");
     executeStatement("INSERT INTO CHANNELS (name, password, topic, visible, inviteOnly, topicOperatorOnly) VALUES ('testChan', NULL,'Test channel', 0, 0, 1);");
 

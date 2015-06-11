@@ -1,22 +1,12 @@
 #include "server.h"
 
 int authenticated = BOOL_FALSE;
-int listenPipe[2];
-int broadcastPipe[2];
 
 void runServer(int USE_FORK, int port)
 {
     flushStdout();
     int sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
-
-    size_t pipeBufferMaxLength = 1024;
-    char pipeBuffer[pipeBufferMaxLength];
-    bzero(pipeBuffer, pipeBufferMaxLength);
-
-    pipe(listenPipe);
-    pipe(broadcastPipe);
-
 
     if(USE_FORK == BOOL_TRUE)
     {
@@ -33,18 +23,6 @@ void runServer(int USE_FORK, int port)
                 if(sslAcceptConnection(sock) == SSL_OK)
                 {
                     processConnectedClientWithFork();
-                }
-            }
-        }
-        else
-        {
-            close(listenPipe[1]);
-            for (; ;)
-            {
-                if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
-                {
-                    printf("Final boss received a message: %s\n", pipeBuffer);
-                    bzero(pipeBuffer, pipeBufferMaxLength);
                 }
             }
         }
@@ -91,20 +69,6 @@ void processConnectedClient()
     bzero(newBuffer, bufferLength);
     while(sslRead(buffer, bufferLength) == SSL_OK && buffer[0] != '\0')
     {
-        if (currentUser.username != NULL)
-        {
-            bzero(newBuffer, bufferLength);
-            strcat(newBuffer, "#");
-            strcat(newBuffer, currentUser.username);
-            strcat(newBuffer, " ");
-            strcat(newBuffer, buffer);
-
-            write(listenPipe[1], newBuffer, bufferLength);
-        }
-        else
-        {
-            write(listenPipe[1], buffer, bufferLength);
-        }
         if (authenticated == BOOL_FALSE)
         {
             commandStruct cmd = commandStruct_initialize(buffer);
@@ -152,7 +116,6 @@ void processConnectedClientWithFork()
     int childpid = fork();
     if (childpid == 0)
     {
-        close(listenPipe[0]);
         processConnectedClient();
         printf("CLOSED FORKED CLIENT\n");
         exit(0);
