@@ -208,6 +208,10 @@ int sslRead(char* buffer, int bufferLength)
 
 char* passwordEncrypt(unsigned char *data)
 {
+    if (data == NULL)
+    {
+        return NULL;
+    }
     unsigned char* result;
     int i;
     static char res_hexstring[32];
