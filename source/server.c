@@ -127,6 +127,8 @@ void handleUnauthorizedClient(commandStruct cmd)
         }
         sendToAllClients(buffer);
         FREE(buffer);
+
+        handlePoll(cmd.sender, 100);
     }
     else
     {
@@ -242,7 +244,12 @@ void sendToClient(int client, char *message)
         return;
     }
 
-    write(record.clients[client].write, message, strlen(message));
+    char *msg = MALLOC(strlen(message) + 3);
+    sprintf(msg, "%s\r\n", message);
+
+    write(record.clients[client].write, msg, strlen(msg));
+
+    FREE(msg);
 }
 
 void sendToAllClients(char *message)

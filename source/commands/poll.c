@@ -63,7 +63,7 @@ int getPollMessages(pollStruct *ps, int amountOfMessages)
     return BOOL_TRUE;
 }
 
-int sendPollMessages(pollStruct *ps)
+int sendPollMessages(pollStruct *ps, int client)
 {
     int i, j;
 
@@ -71,7 +71,7 @@ int sendPollMessages(pollStruct *ps)
     {
         for(j = 0; j < ps->channelMessages[i].messageCount; j++)
         {
-            sslSend(ps->channelMessages[i].messages[j]);
+            sendToClient(client, ps->channelMessages[i].messages[j]);
         }
     }
     return BOOL_TRUE;
@@ -109,20 +109,16 @@ void pollStruct_free(pollStruct *ps)
     }
 }
 
-int handlePollCommand(commandStruct cmd, int amountOfMessages)
+int handlePoll(int client, int amountOfMessages)
 {
-    if(cmd.parameterCount == 0)
-    {
-//        return ERR_NEEDMOREPARAMS;
-    }
-
     int channelCount;
-    channelInfo *channels = getUserChannels(currentUser.username, &channelCount);
+    userInfo user = getClient(client)->user;
+    channelInfo *channels = getUserChannels(user.username, &channelCount);
     pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
 
     if(getPollMessages(&ps, amountOfMessages) == BOOL_TRUE)
     {
-        sendPollMessages(&ps);
+        sendPollMessages(&ps, client);
     }
 
     pollStruct_free(&ps);
