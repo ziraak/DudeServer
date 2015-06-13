@@ -6,7 +6,7 @@
 #define DUDESERVER_COMMUNICATION_H
 
 #define SERVER_IP "127.0.0.1"
-#define SERVER_PORT 9094
+#define SERVER_PORT 9092
 #define SSL_CERTIFICATE_LOCATION "certificates/certificate.pem"
 #define SSL_PRIVATE_KEY_LOCATION "certificates/private/private_key.pem"
 
@@ -54,7 +54,7 @@ void sslClose();
 int getListeningSocket(char *ip, uint16_t port);
 
 int sslLoadCertificate(SSL_CTX *ssl_context, char* location);
-int sslAcceptConnection(int listenSocket);
+int sslAcceptConnection(int clientSocket, struct sockaddr_in clientAddress);
 
 int sslSendInteger(int msg);
 int sslSend(char* snd);

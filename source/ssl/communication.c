@@ -43,7 +43,6 @@ struct sockaddr_in getSocketAddress(char* ip, uint16_t port)
 
 int getListeningSocket(char *ip, uint16_t port)
 {
-    sslInitialize();
     int sock = socket(AF_INET, SOCK_STREAM, 0);
 
     if(sock < 0)
@@ -91,8 +90,9 @@ int sslLoadCertificate(SSL_CTX *ssl_context, char* location)
     return SSL_OK;
 }
 
-int sslAcceptConnection(int listenSocket)
+int sslAcceptConnection(int clientSocket, struct sockaddr_in clientAddress)
 {
+    /*
     struct sockaddr_in clientAddress;
     socklen_t client_address_size = sizeof(clientAddress);
     int clientSocket = accept(listenSocket, (struct sockaddr *)&clientAddress, &client_address_size);
@@ -101,7 +101,7 @@ int sslAcceptConnection(int listenSocket)
     {
         return SSL_NO_TCP_ACCEPT;
     }
-
+    */
     SSL_CTX *sslContext = SSL_CTX_new(TLSv1_server_method());
     if(sslContext == NULL)
     {

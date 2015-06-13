@@ -15,7 +15,7 @@ void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
 
 void processConnectedClient();
 
-void processConnectedClientWithFork();
+void processConnectedClientWithFork(int clientSocket, struct sockaddr_in clientAddress);
 
 void flushStdout();
 

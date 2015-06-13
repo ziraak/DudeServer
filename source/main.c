@@ -1,14 +1,10 @@
 #include "main.h"
-#include "pthread.h"
 
 int main(int argc, char **argv)
 {
     lastTimestamp = 0;
-    if(setupDatabaseConnection() != DB_RETURN_SUCCES)
-    {
-        return EXIT_FAILURE;
-    }
 
+    /*
     int fork = BOOL_TRUE;
     int port = SERVER_PORT;
     int i;
@@ -27,8 +23,9 @@ int main(int argc, char **argv)
             }
         }
     }
+     */
 
-    //runServer(fork, port);
+    runServer(BOOL_TRUE, SERVER_PORT);
     stopDatabase();
 
     return EXIT_SUCCESS;

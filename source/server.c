@@ -5,7 +5,7 @@ int authenticated = BOOL_FALSE;
 int listenPipe[2];
 int aantalChilderen = 0;
 int *childPipeFd[2];
-int sock, serverPort;
+int sock;
 #define THREAD(tid, function) pthread_create(&tid, NULL, (void *) &function, NULL);
 #define EXIT_THREAD pthread_exit(NULL);
 #define JOIN_THREAD(tid) pthread_join(tid, NULL);
@@ -13,56 +13,73 @@ int communicateWithClientThreadRunning = BOOL_TRUE;
 
 void acceptIncomingConnections()
 {
-    printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", serverPort);
+    sslInitialize();
+
+    printf("ACCEPTING MULTIPLE CLIENTS ON PORT\n");
     for (; ;)
     {
         childPipeFd[aantalChilderen] = malloc(10);
         pipe(childPipeFd[aantalChilderen]);
-        if(sslAcceptConnection(sock) == SSL_OK)
+
+        struct sockaddr_in clientAddress;
+        socklen_t client_address_size = sizeof(clientAddress);
+        int clientSocket;
+        if((clientSocket = accept(sock, (struct sockaddr *)&clientAddress, &client_address_size)) > -1)
         {
-            processConnectedClientWithFork();
+            processConnectedClientWithFork(clientSocket, clientAddress);
         }
-        close(childPipeFd[aantalChilderen][0]);
+        else
+        {
+            exit(EXIT_FAILURE);
+        }
         aantalChilderen++;
 
-        EXIT_THREAD;
+        sslClose();
+
+        size_t pipeBufferMaxLength = 1024;
+        char pipeBuffer[pipeBufferMaxLength];
+        bzero(pipeBuffer, pipeBufferMaxLength);
     }
+
+    sslDestroy();
+    EXIT_THREAD;
 }
 
 void runServer(int USE_FORK, int port)
 {
+    pthread_t acceptThread;
+
     flushStdout();
     sock = getListeningSocket(SERVER_IP, port);
     exitIfError(sock, "Couldn't create a socket to listen to.");
 
-    serverPort = port;
-
     pipe(listenPipe);
 
-    pthread_t ptid;
-    THREAD(ptid, acceptIncomingConnections);
+    THREAD(acceptThread, acceptIncomingConnections);
+
+    if(setupDatabaseConnection() != DB_RETURN_SUCCES)
+    {
+        exit(EXIT_FAILURE);
+    }
 
     size_t pipeBufferMaxLength = 1024;
     char pipeBuffer[pipeBufferMaxLength];
     bzero(pipeBuffer, pipeBufferMaxLength);
-
-    int j = 0;
     for (;;)
     {
         if (read(listenPipe[0], pipeBuffer, pipeBufferMaxLength) > 0)
         {
             printf("Final boss received a message: %s\n", pipeBuffer);
 
-            if (strcmp(pipeBuffer, "KILL_CHILD_PIPE 0") == 0)
+            if (strncmp(pipeBuffer, "KILL_CHILD_PIPE", 15) == 0)
             {
-                free(childPipeFd[0]);
-                childPipeFd[0] = NULL;
-                JOIN_THREAD(ptid);
-                break;
+                free(childPipeFd[pipeBuffer[17]]);
+                childPipeFd[pipeBuffer[17]] = NULL;
+                printf("Parent: free'd child %i\n", pipeBuffer[17]);
             }
 
             int i;
-            for (i = 0; i < aantalChilderen; i++)
+            for (i = 0; i < aantalChilderen + 1; i++)
             {
                 if (childPipeFd[i] != NULL)
                 {
@@ -73,8 +90,7 @@ void runServer(int USE_FORK, int port)
             bzero(pipeBuffer, pipeBufferMaxLength);
         }
     }
-
-    sslDestroy();
+    JOIN_THREAD(acceptThread);
 }
 
 int authenticateClient(commandStruct cmd)
@@ -110,21 +126,32 @@ void readMessageFromParent()
             bzero(buffer, bufferLength);
         }
     }
-
-    char *msgToParent = malloc(20);
-    sprintf(msgToParent, "KILL_CHILD_PIPE %i", aantalChilderen);
-    write(listenPipe[1], msgToParent, strlen(msgToParent));
-    free(msgToParent);
-    //free(childPipeFd[aantalChilderen]);
     printf("Exit thread in child.\n");
     EXIT_THREAD;
+}
+
+void processConnectedClientWithFork(int clientSocket, struct sockaddr_in clientAddress)
+{
+    int childpid = fork();
+    if (childpid == 0)
+    {
+        sslAcceptConnection(clientSocket, clientAddress);
+        close(listenPipe[0]);
+        sslSendInteger(RPL_CONNECTED);
+        processConnectedClient();
+        free(childPipeFd[aantalChilderen]);
+
+        printf("CLOSED FORKED CLIENT\n");
+        sslClose();
+        exit(0);
+    }
+    exitIfError(childpid, "Error forking child");
 }
 
 void processConnectedClient()
 {
     printf("Connection opened with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     sslSendInteger(RPL_CONNECTED);
-    int result;
 
     pthread_t tid;
     THREAD(tid, readMessageFromParent);
@@ -158,8 +185,13 @@ void processConnectedClient()
     write(childPipeFd[aantalChilderen][1], "CLEAN_THREAD_UP", 15);
     printf("Connection closed with client (%s:%i)\n", inet_ntoa(connection.address.sin_addr), connection.address.sin_port);
     authenticated = BOOL_FALSE;
-    freeCurrentUser();
-    sslClose();
+
+    char *msgToParent = malloc(20);
+    sprintf(msgToParent, "KILL_CHILD_PIPE %i", aantalChilderen);
+    write(listenPipe[1], msgToParent, strlen(msgToParent));
+    free(msgToParent);
+
+    //freeCurrentUser();
     JOIN_THREAD(tid);
 
         /*
@@ -198,20 +230,6 @@ void processConnectedClient()
 void freeCurrentUser()
 {
     userInfo_free(&currentUser);
-}
-
-void processConnectedClientWithFork()
-{
-    int childpid = fork();
-    if (childpid == 0)
-    {
-        //close(childPipeFd[aantalChilderen][1]);
-        close(listenPipe[0]);
-        processConnectedClient();
-        printf("CLOSED FORKED CLIENT\n");
-        exit(0);
-    }
-    exitIfError(childpid, "Error forking child");
 }
 
 int parseMessage(char *message)
