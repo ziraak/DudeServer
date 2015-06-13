@@ -4,6 +4,8 @@
 #include "main.h"
 #include "ctype.h"
 
+#define INNER_BUFFER_LENGTH 1024
+
 time_t lastTimestamp;
 userInfo currentUser;
 

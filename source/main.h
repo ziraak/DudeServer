@@ -24,6 +24,7 @@
 #include "protocolDefines.h"
 #include "time.h"
 #include "server.h"
+#include "client.h"
 #include "commands/invite.h"
 #include "commands/names.h"
 #include "commands/kick.h"

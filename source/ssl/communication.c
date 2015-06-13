@@ -27,6 +27,9 @@ void sslClose()
 
     SSL_shutdown(connection.ssl_handle);
     SSL_free(connection.ssl_handle);
+
+    connection.ssl_handle = NULL;
+
     close(connection.socket);
 }
 

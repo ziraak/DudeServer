@@ -2,42 +2,117 @@
 
 int authenticated = BOOL_FALSE;
 
+typedef struct _record
+{
+    fd_set master;
+    fd_set read;
+
+    int high;
+    int listen;
+
+    int client_listen;
+    int client_write;
+
+    int* clients;
+    int client_number;
+    int client_active_number;
+} Record;
+
+Record record;
+
 void runServer(int USE_FORK, int port)
 {
-    flushStdout();
-    int sock = getListeningSocket(SERVER_IP, port);
-    exitIfError(sock, "Couldn't create a socket to listen to.");
-
-    if(USE_FORK == BOOL_TRUE)
+    if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
-// Deze regels zorgen ervoor dat de IDE niet inspecteert op de infinite loop hieronder en geen warning geeft. De server moet een infinite loop hebben
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wmissing-noreturn"
-        int childpid = fork();
+        return;
+    }
 
-        if (childpid == 0)
+    flushStdout();
+
+    int exitServer = BOOL_FALSE;
+    int piped[2];
+    pipe(piped);
+
+    bzero(&record, sizeof(Record));
+    record.clients = MALLOC(sizeof(int));
+    record.client_listen = piped[0];
+    record.client_write = piped[1];
+    record.client_number = 0;
+    record.listen = getListeningSocket(SERVER_IP, port);
+    exitIfError(record.listen, "Couldn't create a socket to listen to.");
+
+    FD_SET(record.listen, &record.master);
+    FD_SET(record.client_listen, &record.master);
+
+    printf("ACCEPT: %i | LISTEN: %i\n", record.listen, record.client_listen);
+
+    record.high = record.listen > record.client_listen ? record.listen : record.client_listen;
+
+    while(exitServer == BOOL_FALSE)
+    {
+        record.read = record.master;
+
+        select(record.high + 1, &record.read, NULL, NULL, NULL);
+        int i = 0;
+
+        for(i = 0; i <= record.high; i++)
         {
-            printf("ACCEPTING MULTIPLE CLIENTS ON PORT %i\n", port);
-            for (; ;)
+            if(FD_ISSET(i, &record.read))
             {
-                if(sslAcceptConnection(sock) == SSL_OK)
+                if(i == record.listen)
                 {
-                    processConnectedClientWithFork();
+                    if(sslAcceptConnection(record.listen) == SSL_OK)
+                    {
+                        int clientfd[2];
+                        pipe(clientfd);
+                        record.clients[record.client_number] = clientfd[1];
+                        record.client_number++;
+                        record.client_active_number++;
+
+                        handleClientProcess(record.client_write, clientfd[0], record.client_number - 1);
+                    }
+                }
+                else if(i == record.client_listen)
+                {
+                    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+                    read(record.client_listen, buffer, INNER_BUFFER_LENGTH);
+                    commandStruct cmd = commandStruct_initialize(buffer);
+
+                    if(strcmp(cmd.command, "CLOSE") == 0)
+                    {
+                        int c_number = atoi(cmd.parameters[0]);
+                        printf("#%i: CLOSED\n", c_number);
+                        close(record.clients[c_number]);
+                        record.clients[c_number] = -1;
+                        record.client_active_number--;
+
+                        if(record.client_active_number == 0)
+                        {
+                            exitServer = BOOL_TRUE;
+                            printf("EXITING SERVER!\n");
+                        }
+                    }
+                    else
+                    {
+                        int j;
+                        for(j = 0; j < record.client_number; j++)
+                        {
+                            if(record.clients[j] >= 1)
+                            {
+                                write(record.clients[j], buffer, INNER_BUFFER_LENGTH);
+                            }
+                        }
+                    }
+
+                    commandStruct_free(&cmd);
+                    FREE(buffer);
                 }
             }
         }
+    }
 
-#pragma clang diagnostic pop
-    }
-    else
-    {
-        printf("ACCEPTING A SINGLE CLIENT ON PORT %i\n", port);
-        if(sslAcceptConnection(sock) == SSL_OK)
-        {
-            processConnectedClient();
-        }
-    }
     sslDestroy();
+    stopDatabase();
 }
 
 int authenticateClient(commandStruct cmd)
