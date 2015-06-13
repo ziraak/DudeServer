@@ -1,7 +1,3 @@
-//
-// Created by osboxes on 13/06/15.
-//
-
 #include "client.h"
 
 int clientWrite;
@@ -14,6 +10,14 @@ void exitClient()
     close(clientRead);
 }
 
+void sendToServer(char *msg)
+{
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "#%i %s", clientNumber, msg);
+    write(clientWrite, buffer, INNER_BUFFER_LENGTH);
+    FREE(buffer);
+}
+
 void handleServerRead()
 {
     if(fork() != 0)
@@ -21,15 +25,13 @@ void handleServerRead()
         return;
     }
 
-    userInfo ui;
-    getUser("fatih", &ui);
-
     while(1)
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);
         ssize_t rd = read(clientRead, buffer, INNER_BUFFER_LENGTH);
         if(rd <= 0 || buffer[0] == '\0' || connection.ssl_handle == NULL)
         {
+            sendToServer("CLOSE");
             FREE(buffer);
             break;
         }
@@ -51,15 +53,14 @@ void handleClientRead()
 
         if(buffer[0] == '\0')
         {
-            sprintf(buffer, "CLOSE %i", clientNumber);
-            write(clientWrite, buffer, INNER_BUFFER_LENGTH);
+            sendToServer("CLOSE");
             FREE(buffer);
             break;
         }
 
         printf("#%i: CLIENT -> SERVER '%s'\n", clientNumber, buffer);
 
-        write(clientWrite, buffer, INNER_BUFFER_LENGTH);
+        sendToServer(buffer);
         FREE(buffer);
     }
 

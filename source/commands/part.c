@@ -32,11 +32,12 @@ int handlePartCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
+    userInfo user = getClient(cmd.sender)->user;
     char *channelName = cmd.parameters[0];
 
     if (checkChannel(channelName) == BOOL_TRUE)
     {
-        userLeaveChannel(currentUser.username, channelName);
+        userLeaveChannel(user.username, channelName);
 
         if (checkIfChannelEmpty(channelName) == BOOL_TRUE)
         {
@@ -45,12 +46,17 @@ int handlePartCommand(commandStruct cmd)
         else
         {
             char *msg = " has left the channel!!";
-            char *stringToSend = MALLOC(strlen(currentUser.username) + strlen(msg) + 1);
-            sprintf(stringToSend, "%s%s", currentUser.username, msg);
+            char *stringToSend = MALLOC(strlen(user.username) + strlen(msg) + 1);
+            sprintf(stringToSend, "%s%s", user.username, msg);
             sendSystemMessageToChannel(stringToSend, channelName);
             FREE(stringToSend);
 
             makeTheLastPersonOperatorIfThereIsOnlyOnePersonLeftInChannel(channelName);
+
+            char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+            sprintf(buffer, "%i %s %s", RPL_PART_CHANNEL, channelName, user.username);
+            sendToAllClients(buffer);
+            FREE(buffer);
         }
 
         return RPL_SUCCESS;

@@ -34,7 +34,6 @@ char* substringCharacter(char *str, int *result)
         return NULL;
     }
 
-
     size_t i = strcspn(str, " ");
     char* ret = MALLOC(i + 1);
     strncpy(ret, str, i);
@@ -48,11 +47,21 @@ char* substringCharacter(char *str, int *result)
 
 commandStruct commandStruct_initialize(char *message)
 {
-    char *command = NULL,
+    char *sender = NULL,
+         *command = NULL,
          *trailing = NULL,
+         *msg = NULL,
          **parameters = MALLOC(sizeof(char *));
 
     int offset;
+
+    message++;
+    sender = substringCharacter(message, &offset);
+    message += offset;
+
+    msg = MALLOC(strlen(message) + 1);
+    strcpy(msg, message);
+
     command = substringCharacter(message, &offset);
     toUppercase(command);
     message += offset;
@@ -88,14 +97,16 @@ commandStruct commandStruct_initialize(char *message)
         trailing = NULL;
     }
 
-//    commandStruct cmd = { .parameterCount = parameterCount, .command = command, .trailing = trailing, .parameters = parameters };
     commandStruct cmd;
     bzero(&cmd, sizeof(commandStruct));
+    cmd.sender = atoi(sender);
+    cmd.message = msg;
     cmd.command = command;
     cmd.trailing = trailing;
     cmd.parameterCount = parameterCount;
     cmd.parameters = parameters;
 
+    free(sender);
     return cmd;
 }
 
@@ -109,6 +120,7 @@ void commandStruct_free(commandStruct *cmdStruct)
             FREE(cmdStruct->parameters[j]);
         }
 
+        FREE(cmdStruct->message);
         FREE(cmdStruct->parameters);
         FREE(cmdStruct->command);
         FREE(cmdStruct->trailing);

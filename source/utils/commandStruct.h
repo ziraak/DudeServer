@@ -7,8 +7,10 @@
 
 typedef struct commandStruct
 {
+    int sender;
     char *command;
     char *trailing;
+    char *message;
     char **parameters;
     int parameterCount;
 } commandStruct;

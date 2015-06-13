@@ -14,6 +14,7 @@ int handleJoinCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
+    userInfo user = getClient(cmd.sender)->user;
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
     int joinChannelResult;
     int boolUserNeedsToBeOperator = BOOL_FALSE;
@@ -38,11 +39,20 @@ int handleJoinCommand(commandStruct cmd)
             return result;
         }
     }
-    joinChannelResult = joinChannel(channelName);
+    joinChannelResult = joinChannelByUsername(channelName, user.username);
     if (boolUserNeedsToBeOperator == BOOL_TRUE)
     {
-        updateChannelUserRole(channelName, currentUser.username, USER_ROLE_OPERATOR);
+        updateChannelUserRole(channelName, user.username, USER_ROLE_OPERATOR);
     }
+
+    if(joinChannelResult == RPL_JOIN_CHANNEL)
+    {
+        char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+        sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, user.username);
+        sendToAllClients(buffer);
+        FREE(buffer);
+    }
+
     return joinChannelResult;
 }
 
@@ -70,16 +80,11 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
     return ERR_BADCHANMASK;
 }
 
-int joinChannel(char* channelName)
-{
-    joinChannelByUsername(channelName, currentUser.username);
-}
-
 int joinChannelByUsername(char* channelName, char *username)
 {
     if(isUserInChannel(channelName, username) == BOOL_TRUE)
     {
-        return RPL_TOPIC;
+        return RPL_NOREPLY;
     }
 
     if(userJoinChannel(username, channelName, USER_ROLE_USER) == DB_RETURN_DOESNOTEXIST)
@@ -93,5 +98,5 @@ int joinChannelByUsername(char* channelName, char *username)
     sendSystemMessageToChannel(stringToSend, channelName);
     FREE(stringToSend);
 
-    return RPL_TOPIC;
+    return RPL_JOIN_CHANNEL;
 }

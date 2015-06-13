@@ -6,25 +6,23 @@
 
 #define INNER_BUFFER_LENGTH 1024
 
+typedef struct _user
+{
+    int active;
+    int authorized;
+    int write;
+    userInfo user;
+} User;
+
 time_t lastTimestamp;
 userInfo currentUser;
 
-void freeCurrentUser();
-
 void runServer(int USE_FORK, int port);
-
-void exitIfError(ssize_t variableToCheckForError, char *errorMessage);
-
-void processConnectedClient();
-
-void processConnectedClientWithFork();
-
-void flushStdout();
-
-int parseMessage(char *message);
-
 int commandEquals(commandStruct cmd, char *check);
 
-int authenticateClient(commandStruct cmd);
+User* getClient(int client);
+
+void sendToClient(int client, char *message);
+void sendToAllClients(char *message);
 
 #endif //DUDESERVER_SERVER_H

@@ -78,15 +78,12 @@ int setupDatabaseConnection()
         firstTimeSetup();
     }
 
-
-
     return DB_RETURN_SUCCES;
 }
 void stopDatabase()
 {
-    printf("DB: CLOSED CONNECTION!\n");
-
     sqlite3_close(db);
+    db = NULL;
 }
 
 int tableExists(char* name)

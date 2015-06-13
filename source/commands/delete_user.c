@@ -12,7 +12,7 @@ int handleDeleteUserCommand()
     if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
     {
         deleteUser(currentUser.username);
-        freeCurrentUser();
+        userInfo_free(&currentUser);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;
