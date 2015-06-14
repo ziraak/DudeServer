@@ -15,7 +15,7 @@ int handleUpdatePasswordCommand(commandStruct cmd)
 
     if (strlen(cmd.parameters[0]) < MINIMUM_PASSWORD_LENGTH)
     {
-        return ERR_PASSWORDTOOSHORT;
+        ERROR_PASSWORD_TOO_SHORT(cmd.sender);
     }
 
     if (checkIfUserExists(getClient(cmd.sender)->user.username) == BOOL_TRUE)

@@ -29,7 +29,7 @@ int handleCreateUserCommand(commandStruct cmd)
         }
         else
         {
-            return ERR_PASSWORDTOOSHORT;
+            ERROR_PASSWORD_TOO_SHORT(cmd.sender);
         }
     }
 }

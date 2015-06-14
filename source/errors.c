@@ -19,3 +19,11 @@ void _errorChannelPrivilegesNeeded(char* channel, int client)
     sendToClient(client, buffer);
     FREE(buffer);
 }
+
+void _errorPasswordTooShort(int client)
+{
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %i", ERR_PASSWORDTOOSHORT, MINIMUM_PASSWORD_LENGTH);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}

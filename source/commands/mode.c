@@ -278,6 +278,9 @@ int handleModeCommand(commandStruct cmd)
         case ERR_NEEDMOREPARAMS:
             ERROR_NEED_MORE_PARAMETERS(cmd.message, 3, cmd.sender);
 
+        case ERR_PASSWORDTOOSHORT:
+            ERROR_PASSWORD_TOO_SHORT(cmd.sender);
+
         default:
             break;
     }

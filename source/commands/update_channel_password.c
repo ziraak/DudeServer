@@ -20,7 +20,7 @@ int handleUpdateChannelPasswordCommand(commandStruct cmd)
 
     if (strlen(cmd.parameters[1]) < MINIMUM_PASSWORD_LENGTH)
     {
-        return ERR_PASSWORDTOOSHORT;
+        ERROR_PASSWORD_TOO_SHORT(cmd.sender);
     }
 
     if (checkIfUserExists(user.username) == BOOL_FALSE)
