@@ -173,7 +173,6 @@ void handleClient(int acceptPid)
                     perror("WRITE:");
                     exit(-4);
                 }
-                printf("S -> #%i: 'ACCEPT'\n", cmd.sender);
             }
         }
         else if(strcmp(cmd.command, "ACTIVE") == 0)
@@ -240,13 +239,16 @@ int handleAccept(int clientWrite)
         exit(-1);
     }
 
-    printf("SERVER ACCEPTING CLIENTS ON %i\n", listenSocket);
+    printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", SERVER_PORT);
 
     while(1)
     {
         if(sslAcceptConnection(listenSocket) == SSL_OK)
         {
-            printf("#%i: ACCEPTED\n", clientNumber);
+            if(PRINT_ALL == BOOL_TRUE)
+            {
+                printf("#%i: ACCEPTED\n", clientNumber);
+            }
 
             char* clientName = MALLOC(INNER_BUFFER_LENGTH);
             sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
@@ -303,7 +305,11 @@ void sendToClient(int client, char *message)
     sprintf(msg, "%s\r\n", message);
 
     write(clientRecord.clients[client].write, msg, strlen(msg));
-    printf("S -> #%i: '%s'\n", client, msg);
+
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("S -> #%i: '%s'\n", client, msg);
+    }
 
     FREE(msg);
 }

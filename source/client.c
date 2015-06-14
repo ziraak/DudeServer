@@ -6,7 +6,11 @@ int clientNumber;
 
 void exitClient(int otherPid)
 {
-    printf("#%i: CLOSED (KILLED %i)\n", clientNumber, otherPid);
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("#%i: CLOSED (KILLED %i)\n", clientNumber, otherPid);
+    }
+
     kill(otherPid, SIGKILL);
     sslClose();
     close(clientRead);
@@ -14,7 +18,11 @@ void exitClient(int otherPid)
 
 void sendToServer(char *msg)
 {
-    printf("#%i -> S: '%s'\n", clientNumber, msg);
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("#%i -> S: '%s'\n", clientNumber, msg);
+    }
+
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
     sprintf(buffer, "#%i %s", clientNumber, msg);
     write(clientWrite, buffer, INNER_BUFFER_LENGTH);
@@ -40,7 +48,10 @@ int handleServerRead()
             break;
         }
 
-        printf("#%i: SERVER -> CLIENT '%s'\n", clientNumber, buffer);
+        if(PRINT_ALL == BOOL_TRUE)
+        {
+            printf("#%i: SERVER -> CLIENT '%s'\n", clientNumber, buffer);
+        }
         sslSend(buffer);
     }
 
@@ -62,7 +73,10 @@ void handleClientRead(int otherPid)
             break;
         }
 
-        printf("#%i: CLIENT -> SERVER '%s'\n", clientNumber, buffer);
+        if(PRINT_ALL == BOOL_TRUE)
+        {
+            printf("#%i: CLIENT -> SERVER '%s'\n", clientNumber, buffer);
+        }
 
         sendToServer(buffer);
         FREE(buffer);
@@ -74,7 +88,10 @@ void handleClientRead(int otherPid)
 
 int clientAcceptProcedure()
 {
-    printf("#%i: READING ON: %i\n", clientNumber, clientRead);
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("#%i: READING ON: %i\n", clientNumber, clientRead);
+    }
 
     sendToServer("ACCEPT");
 
@@ -82,21 +99,15 @@ int clientAcceptProcedure()
     sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
     clientRead = open(clientName, O_RDONLY);
 
-    if(clientRead < 0)
-    {
-        perror("OPEN:");
-        exit(-6);
-    }
-
     FREE(clientName);
 
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    if(read(clientRead, buffer, INNER_BUFFER_LENGTH) < 0)
+    read(clientRead, buffer, INNER_BUFFER_LENGTH);
+
+    if(PRINT_ALL == BOOL_TRUE)
     {
-        perror("READ:");
-        exit(-2);
+        printf("#%i: RECEIVED '%s'\n", clientNumber, buffer);
     }
-    printf("#%i: RECEIVED '%s'\n", clientNumber, buffer);
 
     if(strcmp(buffer, "ACCEPT") != 0)
     {
@@ -105,7 +116,10 @@ int clientAcceptProcedure()
         return BOOL_FALSE;
     }
 
-    printf("#%i: ACCEPTED\n", clientNumber);
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("#%i: ACCEPTED\n", clientNumber);
+    }
 
     sendToServer("ACTIVE");
     FREE(buffer);
@@ -128,7 +142,10 @@ void handleClientProcess(int writeSocket, int number)
         exit(0);
     }
 
-    printf("#%i: STARTED\n", number);
+    if(PRINT_ALL == BOOL_TRUE)
+    {
+        printf("#%i: STARTED\n", number);
+    }
 
     handleClientRead(handleServerRead());
 }
