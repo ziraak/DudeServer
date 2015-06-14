@@ -34,20 +34,21 @@ int handleTopicCommand(commandStruct cmd)
     }
 
     char* channelName = cmd.parameters[0], *topic = cmd.trailing;
+    userInfo user = getClient(cmd.sender)->user;
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
         return ERR_NOSUCHCHANNEL;
     }
 
-    if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
     }
 
     if(topic != NULL)
     {
-        if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+        if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
         {
             return ERR_CHANOPPRIVSNEEDED;
         }

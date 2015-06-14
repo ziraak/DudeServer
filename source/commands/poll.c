@@ -8,7 +8,7 @@ int convertChannelMessageToString(messageInfo msg,  char* channelName, char** st
     }
 
     *str = MALLOC(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
-    sprintf(*str, "UNREAD %s %s %s :%s", channelName, msg.writer, msg.timestamp, msg.body);
+    sprintf(*str, "%i %s %s %s :%s", RPL_PRIV_MSG, channelName, msg.writer, msg.timestamp, msg.body);
 
     return BOOL_TRUE;
 }

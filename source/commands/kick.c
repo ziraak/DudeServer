@@ -10,12 +10,12 @@ int handleKickCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    if (userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    if (userIsOperatorInChannel(channelName, getClient(cmd.sender)->user.username) == BOOL_FALSE)
     {
         return ERR_CHANOPPRIVSNEEDED;
     }
 
-    if(isUserInChannel(channelName, currentUser.username) == BOOL_TRUE)
+    if(isUserInChannel(channelName, getClient(cmd.sender)->user.username) == BOOL_TRUE)
     {
         userLeaveChannel(usernameToKick, channelName);
 

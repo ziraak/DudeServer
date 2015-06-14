@@ -52,31 +52,31 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "UPDATE_NICKNAME"))
     {
-        result = handleUpdateNicknameCommand(cmd);
+        result = handleUpdateNicknameCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "UPDATE_PASSWORD"))
     {
-        result = handleUpdatePasswordCommand(cmd);
+        result = handleUpdatePasswordCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "TOPIC"))
     {
-        result = handleTopicCommand(cmd);
+        result = handleTopicCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "MODE"))
     {
-        result = handleModeCommand(cmd);
+        result = handleModeCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "INVITE"))
     {
-        result = handleInviteCommand(cmd);
+        result = handleInviteCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "KICK"))
     {
-        result = handleKickCommand(cmd);
+        result = handleKickCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "UPDATE_CHANNEL_PASSWORD"))
     {
-        result = handleUpdateChannelPasswordCommand(cmd);
+        result = handleUpdateChannelPasswordCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "LOGIN"))
     {
@@ -142,6 +142,7 @@ void handleClient(int acceptPid)
 
         if(strcmp(cmd.command, "ACCEPT") == 0)
         {
+            // accept procedure: open the right MKFIFO to start communicating
             if(getClient(cmd.sender) == NULL)
             {
                 int s = cmd.sender;
@@ -173,6 +174,7 @@ void handleClient(int acceptPid)
         }
         else if(strcmp(cmd.command, "ACTIVE") == 0)
         {
+            // accept procedure: mark client as active
             User *user = getClient(cmd.sender);
             if(user != NULL)
             {
@@ -181,9 +183,10 @@ void handleClient(int acceptPid)
         }
         else if(strcmp(cmd.command, "CLOSE") == 0)
         {
+            // close client connection
             closeClientConnection(cmd.sender);
 
-            if(clientRecord.clientActiveNumber == 0)
+            if(clientRecord.clientActiveNumber == 0) // TODO: remove when live environment
             {
                 exitServer = BOOL_TRUE;
                 printf("EXITING SERVER!\n");
@@ -195,7 +198,10 @@ void handleClient(int acceptPid)
             {
                 if(clientRecord.clients[cmd.sender].authorized == BOOL_TRUE)
                 {
-                    handleAuthorizedClient(cmd);
+                    if(getClient(cmd.sender) != NULL)
+                    {
+                        handleAuthorizedClient(cmd);
+                    }
                 }
                 else
                 {
@@ -242,8 +248,7 @@ int handleAccept(int clientWrite)
             sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
             if(mkfifo(clientName, 0666) < 0)
             {
-                perror("MKFIFO:");
-                exit(-5);
+                printf("S: FILE FOR NAMED PIPE '%s' ALREADY EXISTS\n", clientName);
             }
             FREE(clientName);
 
@@ -256,7 +261,7 @@ int handleAccept(int clientWrite)
     exit(0);
 }
 
-void runServer(int USE_FORK, int port)
+void runServer()
 {
     setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -280,6 +285,9 @@ void runServer(int USE_FORK, int port)
     stopDatabase();
 }
 
+/*
+ * Send MESSAGE to CLIENT if CLIENT exists.
+ */
 void sendToClient(int client, char *message)
 {
     if(client >= clientRecord.clientNumber || clientRecord.clients[client].active == BOOL_FALSE)
@@ -296,6 +304,9 @@ void sendToClient(int client, char *message)
     FREE(msg);
 }
 
+/*
+ * Send MESSAGE to all currently existing clients.
+ */
 void sendToAllClients(char *message)
 {
     int i;
@@ -305,6 +316,9 @@ void sendToAllClients(char *message)
     }
 }
 
+/*
+ * Get CLIENT if he exists, else NULL. DON'T FREE THE RESULT.
+ */
 User* getClient(int client)
 {
     if(client >= clientRecord.clientNumber)

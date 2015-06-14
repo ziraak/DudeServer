@@ -228,15 +228,11 @@ int handleModeCommand(commandStruct cmd)
     }
 
     char* channelName = cmd.parameters[0];
+    userInfo user = getClient(cmd.sender)->user;
 
     if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
         return ERR_NEEDMOREPARAMS;
-    }
-
-    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
-    {
-        return ERR_USERNAME_NOT_KNOWN;
     }
 
     if(checkChannel(channelName) != BOOL_TRUE)
@@ -244,17 +240,17 @@ int handleModeCommand(commandStruct cmd)
         return ERR_NOSUCHCHANNEL;
     }
 
-    if (checkIfUserExists(currentUser.username) == BOOL_FALSE)
+    if (checkIfUserExists(user.username) == BOOL_FALSE)
     {
         return ERR_USERNAME_NOT_KNOWN;
     }
 
-    if(isUserInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
         return ERR_NOTONCHANNEL;
     }
 
-    if(userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    if(userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
     {
         return ERR_CHANOPPRIVSNEEDED;
     }

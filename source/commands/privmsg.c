@@ -25,7 +25,7 @@ int handlePrivateMessageCommand(commandStruct cmd)
     writeMessageToDB(msgToSend, channel, user.username);
 
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    sprintf(buffer, "UNREAD %s %s %i :%s", channel, user.username, (int)time(NULL), msgToSend);
+    sprintf(buffer, "%i %s %s %i :%s", RPL_PRIV_MSG, channel, user.username, (int)time(NULL), msgToSend);
     sendToAllClients(buffer);
     FREE(buffer);
 

@@ -23,7 +23,7 @@ int main(int argc, char **argv)
         }
     }
 
-    runServer(fork, port);
+    runServer();
 
     return EXIT_SUCCESS;
 }

@@ -17,7 +17,7 @@ typedef struct _user
 time_t lastTimestamp;
 userInfo currentUser;
 
-void runServer(int USE_FORK, int port);
+void runServer();
 int commandEquals(commandStruct cmd, char *check);
 
 User* getClient(int client);

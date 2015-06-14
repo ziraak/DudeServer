@@ -1,18 +1,18 @@
 #include "invite.h"
 
-int hostAllowedToInvite(char *channelName)
+int hostAllowedToInvite(char *channelName, int client)
 {
     if (checkChannel(channelName) == BOOL_FALSE)
     {
         return ERR_NOSUCHCHANNEL;
     }
 
-    if (userIsOperatorInChannel(channelName, currentUser.username) == BOOL_FALSE)
+    if (userIsOperatorInChannel(channelName, getClient(client)->user.username) == BOOL_FALSE)
     {
         return ERR_CHANOPPRIVSNEEDED;
     }
 
-    if(isUserInChannel(channelName, currentUser.username) == BOOL_TRUE)
+    if(isUserInChannel(channelName, getClient(client)->user.username) == BOOL_TRUE)
     {
         return BOOL_TRUE;
     }
@@ -33,7 +33,7 @@ int handleInviteCommand(commandStruct cmd)
         return ERR_USERNAME_NOT_KNOWN;
     }
 
-    int resultCheckChannelHost = hostAllowedToInvite(channelName);
+    int resultCheckChannelHost = hostAllowedToInvite(channelName, cmd.sender);
 
     if (resultCheckChannelHost == BOOL_TRUE)
     {
