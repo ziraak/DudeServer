@@ -31,6 +31,11 @@
 #include "commands/update_channel_password.h"
 #include <sys/timeb.h>
 
+// PIPES
+#include <signal.h>
+#include <fcntl.h>
+#include <sys/stat.h>
+
 #define BOOL_TRUE 1
 #define BOOL_FALSE 0
 #define USERNAME_SERVER "IRC_Server"

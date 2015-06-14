@@ -13,9 +13,11 @@ int handleUpdateNicknameCommand(commandStruct cmd)
         return ERR_NEEDMOREPARAMS;
     }
 
-    if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
+    userInfo user = getClient(cmd.sender)->user;
+
+    if (checkIfUserExists(user.username) == BOOL_TRUE)
     {
-        changeNickname(currentUser.username, cmd.parameters[0]);
+        changeNickname(user.username, cmd.parameters[0]);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;

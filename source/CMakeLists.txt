@@ -28,10 +28,10 @@ target_link_libraries(DudeServer DudeServerLib)
 # remove all older database files
 add_custom_command(TARGET DudeServer PRE_BUILD
 COMMAND ${CMAKE_COMMAND} -E remove_directory
-$<TARGET_FILE_DIR:DudeServer>/xml)
+$<TARGET_FILE_DIR:DudeServer>/clients)
 add_custom_command(TARGET DudeServer POST_BUILD
 COMMAND ${CMAKE_COMMAND} -E copy_directory
-${CMAKE_SOURCE_DIR}/xml $<TARGET_FILE_DIR:DudeServer>/xml)
+${CMAKE_SOURCE_DIR}/clients $<TARGET_FILE_DIR:DudeServer>/clients)
 
 # copy over certificates
 add_custom_command(TARGET DudeServer PRE_BUILD

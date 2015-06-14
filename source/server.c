@@ -1,59 +1,33 @@
 #include "server.h"
 
-typedef struct _record
+typedef struct _clientRecord
 {
-    fd_set master;
-    fd_set read;
+    int clientListen;
+    int clientNumber;
+    int clientActiveNumber;
+    User *clients;
+} ClientRecord;
 
-    int high;
-    int listen;
-
-    int client_listen;
-    int client_write;
-
-    int client_number;
-    int client_active_number;
-    User* clients;
-} Record;
-
-Record record;
+ClientRecord clientRecord;
 
 void closeClientConnection(int client)
 {
-    if(client >= record.client_number)
+    if(client >= clientRecord.clientNumber)
     {
         return;
     }
-    close(record.clients[client].write);
-    userInfo_free(&record.clients[client].user);
+    close(clientRecord.clients[client].write);
+    userInfo_free(&clientRecord.clients[client].user);
 
-    record.clients[client].authorized = BOOL_FALSE;
-    record.clients[client].active = BOOL_FALSE;
-    record.clients[client].write = BOOL_FALSE;
-    record.client_active_number--;
-}
+    clientRecord.clients[client].authorized = BOOL_FALSE;
+    clientRecord.clients[client].active = BOOL_FALSE;
+    clientRecord.clients[client].write = BOOL_FALSE;
+    clientRecord.clientActiveNumber--;
 
-void handleAccept()
-{
-    if(sslAcceptConnection(record.listen) == SSL_OK)
-    {
-        int clientfd[2];
-        pipe(clientfd);
-
-        User u = {
-                .active = BOOL_TRUE,
-                .authorized = BOOL_FALSE,
-                .write = clientfd[1]
-        };
-        REALLOC(record.clients, sizeof(User) * (record.client_number + 1));
-        record.clients[record.client_number] = u;
-        record.client_number++;
-        record.client_active_number++;
-
-        printf("#%i: ACCEPTED\n", record.client_number - 1);
-
-        handleClientProcess(record.client_write, clientfd[0], record.client_number - 1);
-    }
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, CLIENT_MKFIFO_LOCATION, client);
+    unlink(buffer);
+    FREE(buffer);
 }
 
 void handleAuthorizedClient(commandStruct cmd)
@@ -129,10 +103,7 @@ void handleUnauthorizedClient(commandStruct cmd)
         int result = handleLoginCommand(cmd);
         if (result == RPL_LOGIN)
         {
-            record.clients[cmd.sender].authorized = BOOL_TRUE;
-            record.clients[cmd.sender].user = currentUser;
-
-            sprintf(buffer, "%i %s", result, record.clients[cmd.sender].user.username);
+            sprintf(buffer, "%i %s", result, getClient(cmd.sender)->user.username);
         }
         else
         {
@@ -149,106 +120,169 @@ void handleUnauthorizedClient(commandStruct cmd)
     }
 }
 
-int handleClient()
-{
-    int result = BOOL_FALSE;
-
-    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    read(record.client_listen, buffer, INNER_BUFFER_LENGTH);
-    commandStruct cmd = commandStruct_initialize(buffer);
-
-    if(strcmp(cmd.command, "CLOSE") == 0)
-    {
-        closeClientConnection(cmd.sender);
-
-        if(record.client_active_number == 0)
-        {
-            result = BOOL_TRUE;
-            printf("EXITING SERVER!\n");
-        }
-    }
-    else
-    {
-        if(record.clients[cmd.sender].authorized == BOOL_TRUE)
-        {
-            handleAuthorizedClient(cmd);
-        }
-        else
-        {
-            handleUnauthorizedClient(cmd);
-        }
-    }
-
-    commandStruct_free(&cmd);
-    FREE(buffer);
-
-    return result;
-}
-
-void runServer(int USE_FORK, int port)
+void handleClient(int acceptPid)
 {
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return;
     }
 
-    setvbuf(stdout, NULL, _IONBF, 0);
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
 
     int exitServer = BOOL_FALSE;
-    int piped[2];
-    pipe(piped);
-
-    bzero(&record, sizeof(Record));
-    record.clients = MALLOC(sizeof(User));
-    record.client_listen = piped[0];
-    record.client_write = piped[1];
-    record.client_number = 0;
-    record.listen = getListeningSocket(SERVER_IP, port);
-
-    if(record.listen < 0)
-    {
-        perror("Nope!");
-        return;
-    }
-
-    FD_SET(record.listen, &record.master);
-    FD_SET(record.client_listen, &record.master);
-
-    record.high = record.listen > record.client_listen ? record.listen : record.client_listen;
-
-    printf("SERVER IS LISTENING...");
-
     while(exitServer == BOOL_FALSE)
     {
-        record.read = record.master;
+        read(clientRecord.clientListen, buffer, INNER_BUFFER_LENGTH);
+        commandStruct cmd = commandStruct_initialize(buffer);
 
-        select(record.high + 1, &record.read, NULL, NULL, NULL);
-        int i = 0;
-
-        for(i = 0; i <= record.high; i++)
+        if(cmd.sender < 0)
         {
-            if(FD_ISSET(i, &record.read))
+            continue;
+        }
+
+        if(strcmp(cmd.command, "ACCEPT") == 0)
+        {
+            if(getClient(cmd.sender) == NULL)
             {
-                if(i == record.listen)
+                int s = cmd.sender;
+
+                if(s >= clientRecord.clientNumber)
                 {
-                    handleAccept();
+                    clientRecord.clientNumber = s + 1;
+                    REALLOC(clientRecord.clients, sizeof(User) * clientRecord.clientNumber);
                 }
-                else if(i == record.client_listen)
+
+                char* clientName = MALLOC(INNER_BUFFER_LENGTH);
+                sprintf(clientName, CLIENT_MKFIFO_LOCATION, cmd.sender);
+
+                User user = {
+                    .authorized = BOOL_FALSE,
+                    .active = BOOL_FALSE,
+                    .write = open(clientName, O_WRONLY)
+                };
+
+                FREE(clientName);
+                clientRecord.clients[s] = user;
+                if(write(user.write, "ACCEPT", 6) < 0)
                 {
-                    exitServer = handleClient();
+                    perror("WRITE:");
+                    exit(-4);
+                }
+                printf("S -> #%i: 'ACCEPT'\n", cmd.sender);
+            }
+        }
+        else if(strcmp(cmd.command, "ACTIVE") == 0)
+        {
+            User *user = getClient(cmd.sender);
+            if(user != NULL)
+            {
+                user->active = BOOL_TRUE;
+            }
+        }
+        else if(strcmp(cmd.command, "CLOSE") == 0)
+        {
+            closeClientConnection(cmd.sender);
+
+            if(clientRecord.clientActiveNumber == 0)
+            {
+                exitServer = BOOL_TRUE;
+                printf("EXITING SERVER!\n");
+            }
+        }
+        else
+        {
+            if(cmd.sender < clientRecord.clientNumber && clientRecord.clients[cmd.sender].active)
+            {
+                if(clientRecord.clients[cmd.sender].authorized == BOOL_TRUE)
+                {
+                    handleAuthorizedClient(cmd);
+                }
+                else
+                {
+                    handleUnauthorizedClient(cmd);
                 }
             }
         }
+
+        commandStruct_free(&cmd);
+        bzero(buffer, INNER_BUFFER_LENGTH);
     }
 
-    close(record.listen);
+    FREE(buffer);
+    kill(acceptPid, SIGKILL);
+    exit(0);
+}
+
+int handleAccept(int clientWrite)
+{
+    int pid = fork();
+    if(pid == 0)
+    {
+        return pid;
+    }
+
+    int listenSocket = getListeningSocket(SERVER_IP, SERVER_PORT);
+    int clientNumber = 0;
+
+    if(listenSocket < 0)
+    {
+        perror("BINDING FAILED!");
+        exit(-1);
+    }
+
+    printf("SERVER ACCEPTING CLIENTS ON %i\n", listenSocket);
+
+    while(1)
+    {
+        if(sslAcceptConnection(listenSocket) == SSL_OK)
+        {
+            printf("#%i: ACCEPTED\n", clientNumber);
+
+            char* clientName = MALLOC(INNER_BUFFER_LENGTH);
+            sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
+            if(mkfifo(clientName, 0666) < 0)
+            {
+                perror("MKFIFO:");
+                exit(-5);
+            }
+            FREE(clientName);
+
+            handleClientProcess(clientWrite, clientNumber);
+
+            clientNumber++;
+        }
+    }
+
+    exit(0);
+}
+
+void runServer(int USE_FORK, int port)
+{
+    setvbuf(stdout, NULL, _IONBF, 0);
+
+    int piped[2];
+    if(pipe(piped) < 0)
+    {
+        return;
+    }
+
+    printf("SERVER IS ACTIVE!\n");
+
+    bzero(&clientRecord, sizeof(ClientRecord));
+
+    int pid = handleAccept(piped[1]);
+
+    clientRecord.clientListen = piped[0];
+
+    handleClient(pid);
+
     sslDestroy();
     stopDatabase();
 }
 
 void sendToClient(int client, char *message)
 {
-    if(client >= record.client_number || record.clients[client].active == BOOL_FALSE)
+    if(client >= clientRecord.clientNumber || clientRecord.clients[client].active == BOOL_FALSE)
     {
         return;
     }
@@ -256,7 +290,8 @@ void sendToClient(int client, char *message)
     char *msg = MALLOC(strlen(message) + 3);
     sprintf(msg, "%s\r\n", message);
 
-    write(record.clients[client].write, msg, strlen(msg));
+    write(clientRecord.clients[client].write, msg, strlen(msg));
+    printf("S -> #%i: '%s'\n", client, msg);
 
     FREE(msg);
 }
@@ -264,7 +299,7 @@ void sendToClient(int client, char *message)
 void sendToAllClients(char *message)
 {
     int i;
-    for(i = 0; i < record.client_number; i++)
+    for(i = 0; i < clientRecord.clientNumber; i++)
     {
         sendToClient(i, message);
     }
@@ -272,12 +307,12 @@ void sendToAllClients(char *message)
 
 User* getClient(int client)
 {
-    if(client >= record.client_number)
+    if(client >= clientRecord.clientNumber)
     {
         return NULL;
     }
 
-    return &record.clients[client];
+    return &clientRecord.clients[client];
 }
 
 int commandEquals(commandStruct cmd, char *check)

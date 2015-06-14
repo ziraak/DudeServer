@@ -21,7 +21,8 @@ int handleLoginCommand(commandStruct cmd)
     int userAuthenticated = authenticateUser(username, password, &user);
     if (userAuthenticated == RPL_LOGIN)
     {
-        currentUser = user;
+        getClient(cmd.sender)->user = user;
+        getClient(cmd.sender)->authorized = BOOL_TRUE;
     }
 
     if(cmd.parameterCount > 1)
