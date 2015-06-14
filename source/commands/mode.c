@@ -242,7 +242,7 @@ int handleModeCommand(commandStruct cmd)
 
     if (checkIfUserExists(user.username) == BOOL_FALSE)
     {
-        return ERR_USERNAME_NOT_KNOWN;
+        ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
     }
 
     if(isUserInChannel(channelName, user.username) == BOOL_FALSE)

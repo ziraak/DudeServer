@@ -30,7 +30,7 @@ int handleInviteCommand(commandStruct cmd)
 
     if (checkIfUserExists(usernameUserToInvite) == BOOL_FALSE)
     {
-        return ERR_USERNAME_NOT_KNOWN;
+        ERROR_USERNAME_NOT_KNOWN(usernameUserToInvite, cmd.sender);
     }
 
     int resultCheckChannelHost = hostAllowedToInvite(channelName, cmd.sender);

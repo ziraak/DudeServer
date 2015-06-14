@@ -16,5 +16,5 @@ int handleDeleteUserCommand(commandStruct cmd)
         deleteUser(user.username);
         return RPL_SUCCESS;
     }
-    return ERR_USERNAME_NOT_KNOWN;
+    ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
 }

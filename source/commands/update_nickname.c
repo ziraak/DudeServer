@@ -20,5 +20,5 @@ int handleUpdateNicknameCommand(commandStruct cmd)
         changeNickname(user.username, cmd.parameters[0]);
         return RPL_SUCCESS;
     }
-    return ERR_USERNAME_NOT_KNOWN;
+    ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
 }

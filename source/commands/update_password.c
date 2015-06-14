@@ -18,10 +18,12 @@ int handleUpdatePasswordCommand(commandStruct cmd)
         ERROR_PASSWORD_TOO_SHORT(cmd.sender);
     }
 
-    if (checkIfUserExists(getClient(cmd.sender)->user.username) == BOOL_TRUE)
+    userInfo user = getClient(cmd.sender)->user;
+    if (checkIfUserExists(user.username) == BOOL_TRUE)
     {
-        changePassword(getClient(cmd.sender)->user.username, cmd.parameters[0]);
+        changePassword(user.username, cmd.parameters[0]);
         return RPL_SUCCESS;
     }
-    return ERR_USERNAME_NOT_KNOWN;
+
+    ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
 }

@@ -27,3 +27,11 @@ void _errorPasswordTooShort(int client)
     sendToClient(client, buffer);
     FREE(buffer);
 }
+
+void _errorUsernameNotKnown(char* username, int client)
+{
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s", ERR_USERNAME_NOT_KNOWN, username);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}
