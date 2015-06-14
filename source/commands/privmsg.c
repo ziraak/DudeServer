@@ -24,11 +24,6 @@ int handlePrivateMessageCommand(commandStruct cmd)
 
     writeMessageToDB(msgToSend, channel, user.username);
 
-    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    sprintf(buffer, "%i %s %s %i :%s", RPL_PRIV_MSG, channel, user.username, (int)time(NULL), msgToSend);
-    sendToAllClients(buffer);
-    FREE(buffer);
-
     return RPL_NOREPLY;
 }
 
@@ -38,5 +33,11 @@ int writeMessageToDB(char *msgToSend, char *channel, char *username)
     message.body = msgToSend;
     message.writer = username;
     insertMessage(message, channel);
+
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s %s %i :%s", RPL_PRIV_MSG, channel, username, (int)time(NULL), msgToSend);
+    sendToAllClients(buffer);
+    FREE(buffer);
+
     return DB_RETURN_SUCCES;
 }
