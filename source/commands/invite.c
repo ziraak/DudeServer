@@ -4,19 +4,22 @@ int hostAllowedToInvite(char *channelName, int client)
 {
     if (checkChannel(channelName) == BOOL_FALSE)
     {
-        return ERR_NOSUCHCHANNEL;
+        ERROR_NO_SUCH_CHANNEL(channelName, client);
     }
 
-    if (userIsOperatorInChannel(channelName, getClient(client)->user.username) == BOOL_FALSE)
+    userInfo user = getClient(client)->user;
+
+    if (userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        return ERR_CHANOPPRIVSNEEDED;
+        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, client);
     }
 
-    if(isUserInChannel(channelName, getClient(client)->user.username) == BOOL_TRUE)
+    if(isUserInChannel(channelName, user.username) == BOOL_TRUE)
     {
         return BOOL_TRUE;
     }
-    return ERR_NOTONCHANNEL;
+
+    ERROR_NOT_ON_CHANNEL(channelName, user.username, client);
 }
 
 int handleInviteCommand(commandStruct cmd)

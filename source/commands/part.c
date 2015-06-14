@@ -61,5 +61,5 @@ int handlePartCommand(commandStruct cmd)
 
         return RPL_SUCCESS;
     }
-    return ERR_NOSUCHCHANNEL;
+    ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
 }

@@ -11,7 +11,7 @@ int handleNamesCommand(commandStruct cmd)
     }
     if (checkChannel(channelName) == BOOL_FALSE)
     {
-        return ERR_NOSUCHCHANNEL;
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
     }
 
     int result;

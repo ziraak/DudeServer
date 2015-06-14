@@ -30,7 +30,7 @@ int handleUpdateChannelPasswordCommand(commandStruct cmd)
 
     if (isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        return ERR_NOTONCHANNEL;
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
     }
 
     if (userIsOperatorInChannel(channelName, user.username))

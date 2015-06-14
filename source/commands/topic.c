@@ -38,12 +38,12 @@ int handleTopicCommand(commandStruct cmd)
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
-        return ERR_NOSUCHCHANNEL;
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
     }
 
     if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        return ERR_NOTONCHANNEL;
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
     }
 
     if(topic != NULL)

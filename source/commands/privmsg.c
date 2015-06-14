@@ -19,7 +19,7 @@ int handlePrivateMessageCommand(commandStruct cmd)
 
     if (isUserInChannel(channel, user.username) == BOOL_FALSE)
     {
-        return ERR_NOTONCHANNEL;
+        ERROR_NOT_ON_CHANNEL(channel, user.username, cmd.sender);
     }
 
     writeMessageToDB(msgToSend, channel, user.username);

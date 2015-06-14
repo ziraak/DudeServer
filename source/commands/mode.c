@@ -237,7 +237,7 @@ int handleModeCommand(commandStruct cmd)
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
-        return ERR_NOSUCHCHANNEL;
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
     }
 
     if (checkIfUserExists(user.username) == BOOL_FALSE)
@@ -247,12 +247,12 @@ int handleModeCommand(commandStruct cmd)
 
     if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        return ERR_NOTONCHANNEL;
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
     }
 
     if(userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        return ERR_CHANOPPRIVSNEEDED;
+        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
     }
 
     int result;
@@ -280,6 +280,12 @@ int handleModeCommand(commandStruct cmd)
 
         case ERR_PASSWORDTOOSHORT:
             ERROR_PASSWORD_TOO_SHORT(cmd.sender);
+
+        case ERR_NOSUCHCHANNEL:
+            ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+
+        case ERR_NOTONCHANNEL:
+            ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
 
         default:
             break;

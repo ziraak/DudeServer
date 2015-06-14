@@ -4,6 +4,22 @@
 
 #include "errors.h"
 
+void _errorNotOnChannel(char *channel, char *username, int client)
+{
+    char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s %s", ERR_NOTONCHANNEL, channel, username);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}
+
+void _errorNoSuchChannel(char* channel, int client)
+{
+    char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s", ERR_NOSUCHCHANNEL, channel);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}
+
 void _errorNeedMoreParameter(char* msg, int count, int client)
 {
     char *buffer = MALLOC(INNER_BUFFER_LENGTH);
