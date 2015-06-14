@@ -94,8 +94,12 @@ void handleAuthorizedClient(commandStruct cmd)
     }
 }
 
+/*
+ * Login procedure.
+ */
 void handleUnauthorizedClient(commandStruct cmd)
 {
+    //TODO: CREATE_USER toevoegen
     if(commandEquals(cmd, "LOGIN") == BOOL_TRUE)
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);

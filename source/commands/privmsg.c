@@ -10,7 +10,7 @@ int handlePrivateMessageCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
     }
 
     userInfo user = getClient(cmd.sender)->user;

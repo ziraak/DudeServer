@@ -11,7 +11,7 @@ int handleJoinCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
     }
 
     userInfo user = getClient(cmd.sender)->user;

@@ -11,7 +11,7 @@ int handleLoginCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
     }
 
     char *username = cmd.parameters[0];

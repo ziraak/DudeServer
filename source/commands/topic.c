@@ -30,7 +30,7 @@ int handleTopicCommand(commandStruct cmd)
     //TODO: operator rechten checken (channel +t flag)
     if(cmd.parameterCount < 1)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
     }
 
     char* channelName = cmd.parameters[0], *topic = cmd.trailing;
@@ -50,6 +50,7 @@ int handleTopicCommand(commandStruct cmd)
     {
         if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
         {
+            ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
             return ERR_CHANOPPRIVSNEEDED;
         }
 

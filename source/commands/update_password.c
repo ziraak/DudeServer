@@ -10,7 +10,7 @@ int handleUpdatePasswordCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
     }
 
     if (strlen(cmd.parameters[0]) < MINIMUM_PASSWORD_LENGTH)

@@ -9,13 +9,13 @@
 
 int handleUpdateChannelPasswordCommand(commandStruct cmd)
 {
-    if(cmd.parameterCount < 2)
+    if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
     }
 
     char *channelName = cmd.parameters[0],
-            *password = cmd.parameters[1];
+            *password = cmd.trailing;
     userInfo user = getClient(cmd.sender)->user;
 
     if (strlen(cmd.parameters[1]) < MINIMUM_PASSWORD_LENGTH)

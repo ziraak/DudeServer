@@ -224,7 +224,7 @@ int handleModeCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 2)
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
     }
 
     char* channelName = cmd.parameters[0];
@@ -232,7 +232,7 @@ int handleModeCommand(commandStruct cmd)
 
     if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
-        return ERR_NEEDMOREPARAMS;
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
     }
 
     if(checkChannel(channelName) != BOOL_TRUE)
@@ -272,6 +272,15 @@ int handleModeCommand(commandStruct cmd)
     }
 
     modeStruct_free(&ms);
+
+    switch(result)
+    {
+        case ERR_NEEDMOREPARAMS:
+            ERROR_NEED_MORE_PARAMETERS(cmd.message, 3, cmd.sender);
+
+        default:
+            break;
+    }
 
     return result;
 }
