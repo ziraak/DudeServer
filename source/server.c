@@ -146,7 +146,6 @@ int handleClient()
 
     if(strcmp(cmd.command, "CLOSE") == 0)
     {
-        printf("#%i: CLOSED\n", cmd.sender);
         close(record.clients[cmd.sender].write);
         record.clients[cmd.sender].write = -1;
         record.clients[cmd.sender].authorized = BOOL_FALSE;
@@ -208,6 +207,8 @@ void runServer(int USE_FORK, int port)
     FD_SET(record.client_listen, &record.master);
 
     record.high = record.listen > record.client_listen ? record.listen : record.client_listen;
+
+    printf("SERVER IS LISTENING...");
 
     while(exitServer == BOOL_FALSE)
     {

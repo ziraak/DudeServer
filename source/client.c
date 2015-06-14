@@ -1,11 +1,14 @@
+#include <signal.h>
 #include "client.h"
 
 int clientWrite;
 int clientRead;
 int clientNumber;
 
-void exitClient()
+void exitClient(int otherPid)
 {
+    printf("#%i: CLOSED (KILLED %i)\n", clientNumber, otherPid);
+    kill(otherPid, SIGKILL);
     sslClose();
     close(clientRead);
 }
@@ -18,11 +21,12 @@ void sendToServer(char *msg)
     FREE(buffer);
 }
 
-void handleServerRead()
+int handleServerRead()
 {
-    if(fork() != 0)
+    int i = fork();
+    if(i != 0)
     {
-        return;
+        return i;
     }
 
     while(1)
@@ -40,11 +44,11 @@ void handleServerRead()
         sslSend(buffer);
     }
 
-    exitClient();
+    exitClient(getppid());
     exit(0);
 }
 
-void handleClientRead()
+void handleClientRead(int otherPid)
 {
     while(1)
     {
@@ -64,7 +68,7 @@ void handleClientRead()
         FREE(buffer);
     }
 
-    exitClient();
+    exitClient(otherPid);
     exit(0);
 }
 
@@ -80,6 +84,5 @@ void handleClientProcess(int writeSocket, int readSocket, int number)
     clientRead = readSocket;
     clientNumber = number;
 
-    handleServerRead();
-    handleClientRead();
+    handleClientRead(handleServerRead());
 }

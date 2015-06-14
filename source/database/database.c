@@ -62,8 +62,6 @@ void firstTimeSetup()
 
 int setupDatabaseConnection()
 {
-    printf("DB: OPENED NEW CONNECTION!\n");
-
     int rc = sqlite3_open("dude@chat.db", &db);
 
     if(rc != SQLITE_OK)
