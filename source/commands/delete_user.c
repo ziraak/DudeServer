@@ -7,12 +7,13 @@
 #include "delete_user.h"
 
 //TODO verificatie a.d.h.v. password? iets.. veiliger, lijkt me
-int handleDeleteUserCommand()
+int handleDeleteUserCommand(commandStruct cmd)
 {
-    if (checkIfUserExists(currentUser.username) == BOOL_TRUE)
+    userInfo user = getClient(cmd.sender)->user;
+
+    if (checkIfUserExists(user.username) == BOOL_TRUE)
     {
-        deleteUser(currentUser.username);
-        userInfo_free(&currentUser);
+        deleteUser(user.username);
         return RPL_SUCCESS;
     }
     return ERR_USERNAME_NOT_KNOWN;

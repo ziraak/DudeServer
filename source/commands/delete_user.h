@@ -5,6 +5,6 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleDeleteUserCommand();
+int handleDeleteUserCommand(commandStruct cmd);
 
 #endif //DUDESERVER_DELETE_USER_H

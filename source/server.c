@@ -1,7 +1,5 @@
 #include "server.h"
 
-int authenticated = BOOL_FALSE;
-
 typedef struct _record
 {
     fd_set master;
@@ -19,6 +17,21 @@ typedef struct _record
 } Record;
 
 Record record;
+
+void closeClientConnection(int client)
+{
+    if(client >= record.client_number)
+    {
+        return;
+    }
+    close(record.clients[client].write);
+    userInfo_free(&record.clients[client].user);
+
+    record.clients[client].authorized = BOOL_FALSE;
+    record.clients[client].active = BOOL_FALSE;
+    record.clients[client].write = BOOL_FALSE;
+    record.client_active_number--;
+}
 
 void handleAccept()
 {
@@ -60,8 +73,8 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "DELETE_USER"))
     {
-        result = handleDeleteUserCommand();
-        authenticated = BOOL_FALSE;
+        handleDeleteUserCommand(cmd);
+        closeClientConnection(cmd.sender);
     }
     else if (commandEquals(cmd, "UPDATE_NICKNAME"))
     {
@@ -146,12 +159,7 @@ int handleClient()
 
     if(strcmp(cmd.command, "CLOSE") == 0)
     {
-        close(record.clients[cmd.sender].write);
-        record.clients[cmd.sender].write = -1;
-        record.clients[cmd.sender].authorized = BOOL_FALSE;
-        record.clients[cmd.sender].active = BOOL_FALSE;
-        userInfo_free(&record.clients[cmd.sender].user);
-        record.client_active_number--;
+        closeClientConnection(cmd.sender);
 
         if(record.client_active_number == 0)
         {
