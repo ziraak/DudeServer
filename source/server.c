@@ -60,7 +60,7 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "TOPIC"))
     {
-        handleTopicCommand(cmd); //TODO: server push compliant
+        handleTopicCommand(cmd);
     }
     else if (commandEquals(cmd, "MODE"))
     {
@@ -68,11 +68,11 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "INVITE"))
     {
-        handleInviteCommand(cmd); //TODO: server push compliant
+        handleInviteCommand(cmd);
     }
     else if (commandEquals(cmd, "KICK"))
     {
-        handleKickCommand(cmd); //TODO: server push compliant
+        handleKickCommand(cmd);
     }
     else if (commandEquals(cmd, "UPDATE_CHANNEL_PASSWORD"))
     {
