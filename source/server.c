@@ -254,7 +254,8 @@ int handleAccept(int clientWrite, int port)
             sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
             if(mkfifo(clientName, 0666) < 0)
             {
-                printf("S: FILE FOR NAMED PIPE '%s' ALREADY EXISTS\n", clientName);
+                printf("S: ERROR CREATING NAMED PIPE %s:\n", clientName);
+                perror("");
             }
             FREE(clientName);
 
