@@ -34,14 +34,16 @@ void handleChannelTopic(char* channelName, int client)
     }
 
     channelInfo channel;
-    if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
+    getChannelByName(channelName, &channel);
+
+    if(channel.topic != NULL)
     {
         char *buffer = MALLOC(INNER_BUFFER_LENGTH);
         sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, channel.topic);
         sendToClient(client, buffer);
         FREE(buffer);
-        channelInfo_free(&channel);
     }
+    channelInfo_free(&channel);
 }
 
 int handleTopicCommand(commandStruct cmd)

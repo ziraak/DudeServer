@@ -4,7 +4,7 @@ int main(int argc, char **argv)
 {
     lastTimestamp = 0;
 
-    int port = SERVER_PORT;
+    uint16_t port = SERVER_PORT;
     int i;
     for(i = 1; i < argc; i++)
     {
@@ -12,7 +12,7 @@ int main(int argc, char **argv)
         {
             if(argc >= i + 1)
             {
-                port = atoi(argv[i + 1]);
+                port = (uint16_t)atoi(argv[i + 1]);
                 printf("ACCEPTED PORT %i FROM ARGUMENTS\n", port);
                 i++;
             }

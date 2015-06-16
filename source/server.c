@@ -141,12 +141,23 @@ void handleUnauthorizedClient(commandStruct cmd)
     }
 }
 
+void killServer(int signal)
+{
+    printf("CAUGHT SIGNAL: %i\n", signal);
+
+    sslDestroy();
+    stopDatabase();
+    exit(0);
+}
+
 void handleClient(int acceptPid)
 {
     if(setupDatabaseConnection() != DB_RETURN_SUCCES)
     {
         return;
     }
+
+    signal(SIGINT, killServer);
 
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
 
@@ -255,10 +266,9 @@ void handleClient(int acceptPid)
 
     FREE(buffer);
     kill(acceptPid, SIGKILL);
-    exit(0);
 }
 
-int handleAccept(int clientWrite, int port)
+int handleAccept(int clientWrite, uint16_t port)
 {
     int listenSocket = getListeningSocket(SERVER_IP, port);
     int clientNumber = 0;
@@ -303,7 +313,7 @@ int handleAccept(int clientWrite, int port)
     return pid;
 }
 
-void runServer(int port)
+void runServer(uint16_t port)
 {
     setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -322,9 +332,6 @@ void runServer(int port)
     clientRecord.clientListen = piped[0];
 
     handleClient(pid);
-
-    sslDestroy();
-    stopDatabase();
 }
 
 /*

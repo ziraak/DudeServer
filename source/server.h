@@ -20,7 +20,7 @@ typedef struct _user
 time_t lastTimestamp;
 userInfo currentUser;
 
-void runServer(int port);
+void runServer(uint16_t port);
 int commandEquals(commandStruct cmd, char *check);
 
 User* getClient(int client);
