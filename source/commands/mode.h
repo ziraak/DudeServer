@@ -17,6 +17,7 @@ typedef struct flagStruct
 
 typedef struct modeStruct
 {
+    int client;
     int error;
     char* channelName;
     int flagCount;

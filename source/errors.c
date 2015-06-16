@@ -51,3 +51,11 @@ void _errorUsernameNotKnown(char* username, int client)
     sendToClient(client, buffer);
     FREE(buffer);
 }
+
+void _errorUnknownModeFlag(char flag, int client)
+{
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %c", ERR_UMODEUNKNOWNFLAG, flag);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}

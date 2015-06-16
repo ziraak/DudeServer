@@ -68,7 +68,8 @@ modeStruct getFlags(commandStruct cmd)
             .channelName = cmd.parameters[0],
             .error = error,
             .flagCount = i,
-            .flags = fs
+            .flags = fs,
+            .client = cmd.sender
     };
 
     return ms;
@@ -213,7 +214,7 @@ int checkFlags(modeStruct ms)
                 break;
 
             default:
-                MODE_CHECK_FLAGS_RETURN(ERR_UMODEUNKNOWNFLAG, ci, users, userCount);
+                ERROR_MODE_UNKNOWN_FLAG(ms.flags[i].flag, ms.client);
         }
     }
 

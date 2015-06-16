@@ -222,7 +222,7 @@ void handleClient(int acceptPid)
     exit(0);
 }
 
-int handleAccept(int clientWrite)
+int handleAccept(int clientWrite, int port)
 {
     int pid = fork();
     if(pid == 0)
@@ -230,7 +230,7 @@ int handleAccept(int clientWrite)
         return pid;
     }
 
-    int listenSocket = getListeningSocket(SERVER_IP, SERVER_PORT);
+    int listenSocket = getListeningSocket(SERVER_IP, port);
     int clientNumber = 0;
 
     if(listenSocket < 0)
@@ -267,7 +267,7 @@ int handleAccept(int clientWrite)
     exit(0);
 }
 
-void runServer()
+void runServer(int port)
 {
     setvbuf(stdout, NULL, _IONBF, 0);
 
@@ -281,7 +281,7 @@ void runServer()
 
     bzero(&clientRecord, sizeof(ClientRecord));
 
-    int pid = handleAccept(piped[1]);
+    int pid = handleAccept(piped[1], port);
 
     clientRecord.clientListen = piped[0];
 
