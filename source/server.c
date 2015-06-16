@@ -193,6 +193,10 @@ void handleClient(int acceptPid)
         else if(strcmp(cmd.command, "CLOSE") == 0)
         {
             User *user = getClient(cmd.sender);
+
+            // close client connection
+            closeClientConnection(cmd.sender);
+
             if(user != NULL && user->authorized == BOOL_TRUE)
             {
                 char *logout = MALLOC(INNER_BUFFER_LENGTH);
@@ -200,9 +204,6 @@ void handleClient(int acceptPid)
                 sendToAllClients(logout);
                 FREE(logout);
             }
-
-            // close client connection
-            closeClientConnection(cmd.sender);
 
             /*
             if(clientRecord.clientActiveNumber == 0) // TODO: remove when live environment
@@ -241,21 +242,20 @@ void handleClient(int acceptPid)
 
 int handleAccept(int clientWrite, int port)
 {
+    int listenSocket = getListeningSocket(SERVER_IP, port);
+    int clientNumber = 0;
+
+    if (listenSocket < 0)
+    {
+        perror("BINDING FAILED!");
+        exit(-1);
+    }
+
+    printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", port);
+
     int pid = fork();
     if(pid == 0)
     {
-
-        int listenSocket = getListeningSocket(SERVER_IP, port);
-        int clientNumber = 0;
-
-        if (listenSocket < 0)
-        {
-            perror("BINDING FAILED!");
-            exit(-1);
-        }
-
-        printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", port);
-
         while (1)
         {
             if (sslAcceptConnection(listenSocket) == SSL_OK)
