@@ -204,11 +204,13 @@ void handleClient(int acceptPid)
             // close client connection
             closeClientConnection(cmd.sender);
 
+            /*
             if(clientRecord.clientActiveNumber == 0) // TODO: remove when live environment
             {
                 exitServer = BOOL_TRUE;
                 printf("EXITING SERVER!\n");
             }
+             */
         }
         else
         {
