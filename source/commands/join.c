@@ -90,10 +90,7 @@ int joinChannelByUsername(char* channelName, char *username)
     sendSystemMessageToChannel(stringToSend, channelName);
     FREE(stringToSend);
 
-    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, username);
-    sendToAllClientsInChannel(buffer, channelName);
-    FREE(buffer);
+    REPLY_JOIN(channelName, username);
 
     int clientId = getClientIdByUsername(username);
     if(clientId != -1)

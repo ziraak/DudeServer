@@ -4,6 +4,7 @@
 #include "main.h"
 #include "ctype.h"
 #include "errors.h"
+#include "success.h"
 
 #define INNER_BUFFER_LENGTH 1024
 #define PRINT_ALL BOOL_FALSE

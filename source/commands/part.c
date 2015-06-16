@@ -52,11 +52,7 @@ int handlePartCommand(commandStruct cmd)
             FREE(stringToSend);
 
             makeTheLastPersonOperatorIfThereIsOnlyOnePersonLeftInChannel(channelName);
-
-            char *buffer = MALLOC(INNER_BUFFER_LENGTH);
-            sprintf(buffer, "%i %s %s", RPL_PART_CHANNEL, channelName, user.username);
-            sendToAllClientsInChannel(buffer, channelName);
-            FREE(buffer);
+            REPLY_PART(channelName, user.username);
         }
 
         return RPL_SUCCESS;
