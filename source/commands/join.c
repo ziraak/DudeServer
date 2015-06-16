@@ -56,7 +56,7 @@ int authenticateChannel(channelInfo channel, char *channelName, char *optionalCh
         {
             if(optionalChannelKey != NULL && strlen(optionalChannelKey) > 0)
             {
-                if(strcmp(passwordEncrypt(channel.password), optionalChannelKey) != 0)
+                if(strcmp(channel.password, passwordEncrypt(optionalChannelKey)) != 0)
                 {
                     return ERR_BADCHANNELKEY;
                 }
