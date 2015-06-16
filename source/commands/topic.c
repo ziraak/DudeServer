@@ -7,24 +7,6 @@
  */
 #include "topic.h"
 
-int sendSuccessMessage(char* channelName, char* topic)
-{
-    size_t len = strlen(topic);
-    if(len > 0)
-    {
-        len += strlen(channelName) + 7;
-        char* snd = MALLOC(len);
-        bzero(snd, len);
-        sprintf(snd, "%i %s :%s", RPL_TOPIC, channelName, topic);
-        sslSend(snd);
-        FREE(snd);
-
-        return RPL_NOREPLY;
-    }
-
-    return RPL_NOTOPIC;
-}
-
 int handleTopicCommand(commandStruct cmd)
 {
     //TODO: operator rechten checken (channel +t flag)
@@ -51,7 +33,6 @@ int handleTopicCommand(commandStruct cmd)
         if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
         {
             ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
-            return ERR_CHANOPPRIVSNEEDED;
         }
 
         //set
@@ -63,7 +44,11 @@ int handleTopicCommand(commandStruct cmd)
         sendSystemMessageToChannel(stringToSend, channelName);
         FREE(stringToSend);
 
-        return sendSuccessMessage(channelName, topic);
+        char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+        sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, topic);
+        sendToAllClientsInChannel(buffer, channelName);
+        FREE(buffer);
+        return RPL_TOPIC;
     }
     else
     {
@@ -71,9 +56,12 @@ int handleTopicCommand(commandStruct cmd)
         channelInfo channel;
         if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
         {
-            int result = sendSuccessMessage(channel.name, channel.topic);
+            char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+            sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, channel.topic);
+            sendToClient(cmd.sender, buffer);
+            FREE(buffer);
             channelInfo_free(&channel);
-            return result;
+            return RPL_TOPIC;
         }
         return RPL_NOTOPIC;
     }

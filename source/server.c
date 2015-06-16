@@ -60,7 +60,7 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "TOPIC"))
     {
-        result = handleTopicCommand(cmd); //TODO: server push compliant
+        handleTopicCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "MODE"))
     {
@@ -383,6 +383,25 @@ User* getClient(int client)
     }
 
     return &clientRecord.clients[client];
+}
+
+int getClientIdByUsername(char *username)
+{
+    if(username == NULL)
+    {
+        return -1;
+    }
+
+    int i;
+    for(i = 0; i < clientRecord.clientNumber; i++)
+    {
+        if(clientRecord.clients[i].authorized == BOOL_TRUE && strcmp(clientRecord.clients[i].user.username, username) == 0)
+        {
+            return i;
+        }
+    }
+
+    return -1;
 }
 
 int commandEquals(commandStruct cmd, char *check)

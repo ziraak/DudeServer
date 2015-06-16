@@ -23,6 +23,7 @@ void runServer(int port);
 int commandEquals(commandStruct cmd, char *check);
 
 User* getClient(int client);
+int getClientIdByUsername(char *username);
 
 void sendToClient(int client, char *message);
 void sendToAllClients(char *message);
