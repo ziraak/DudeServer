@@ -36,7 +36,7 @@ int writeMessageToDB(char *msgToSend, char *channel, char *username)
 
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
     sprintf(buffer, "%i %s %s %i :%s", RPL_PRIV_MSG, channel, username, (int)time(NULL), msgToSend);
-    sendToAllClients(buffer);
+    sendToAllClientsInChannel(buffer, channel);
     FREE(buffer);
 
     return DB_RETURN_SUCCES;

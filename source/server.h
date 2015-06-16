@@ -26,5 +26,6 @@ User* getClient(int client);
 
 void sendToClient(int client, char *message);
 void sendToAllClients(char *message);
+void sendToAllClientsInChannel(char *message, char *channel);
 
 #endif //DUDESERVER_SERVER_H

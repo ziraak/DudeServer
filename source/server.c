@@ -192,6 +192,15 @@ void handleClient(int acceptPid)
         }
         else if(strcmp(cmd.command, "CLOSE") == 0)
         {
+            User *user = getClient(cmd.sender);
+            if(user != NULL && user->authorized == BOOL_TRUE)
+            {
+                char *logout = MALLOC(INNER_BUFFER_LENGTH);
+                sprintf(logout, "%i %s", RPL_LOGOUT, user->user.username);
+                sendToAllClients(logout);
+                FREE(logout);
+            }
+
             // close client connection
             closeClientConnection(cmd.sender);
 
@@ -334,6 +343,33 @@ void sendToAllClients(char *message)
     {
         sendToClient(i, message);
     }
+}
+
+void sendToAllClientsInChannel(char *message, char *channel)
+{
+    int amount;
+    userInfo *users = getChannelUsers(channel, &amount);
+
+    if(amount > 0)
+    {
+        int i, j;
+        for(i = 0; i < clientRecord.clientNumber; i++)
+        {
+            if(clientRecord.clients[i].active == BOOL_TRUE && clientRecord.clients[i].authorized == BOOL_TRUE)
+            {
+                for(j = 0; j < amount; j++)
+                {
+                    if(strcmp(clientRecord.clients[i].user.username, users[j].username) == 0)
+                    {
+                        sendToClient(i, message);
+                        j = amount;
+                    }
+                }
+            }
+        }
+    }
+
+    userInfos_free(users, amount);
 }
 
 /*

@@ -49,7 +49,7 @@ int handleJoinCommand(commandStruct cmd)
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);
         sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, user.username);
-        sendToAllClients(buffer);
+        sendToAllClientsInChannel(buffer, channelName);
         FREE(buffer);
 
         handleChannelNames(channelName, cmd.sender);

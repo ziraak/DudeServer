@@ -6,6 +6,7 @@
 #define RPL_JOIN_CHANNEL 52
 #define RPL_PART_CHANNEL 53
 #define RPL_PRIV_MSG 54
+#define RPL_LOGOUT 55
 
 #define RPL_CONNECTED 100 // CONNECT
 #define RPL_LOGIN 300 // LOGIN

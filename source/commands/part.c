@@ -55,7 +55,7 @@ int handlePartCommand(commandStruct cmd)
 
             char *buffer = MALLOC(INNER_BUFFER_LENGTH);
             sprintf(buffer, "%i %s %s", RPL_PART_CHANNEL, channelName, user.username);
-            sendToAllClients(buffer);
+            sendToAllClientsInChannel(buffer, channelName);
             FREE(buffer);
         }
 
