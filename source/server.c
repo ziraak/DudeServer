@@ -136,7 +136,12 @@ void handleClient(int acceptPid)
     int exitServer = BOOL_FALSE;
     while(exitServer == BOOL_FALSE)
     {
-        read(clientRecord.clientListen, buffer, INNER_BUFFER_LENGTH);
+        if(read(clientRecord.clientListen, buffer, INNER_BUFFER_LENGTH) < 0)
+        {
+            perror("SERVER READ");
+            continue;
+        }
+
         commandStruct cmd = commandStruct_initialize(buffer);
 
         if(cmd.sender < 0)
@@ -305,7 +310,10 @@ void sendToClient(int client, char *message)
     char *msg = MALLOC(strlen(message) + 3);
     sprintf(msg, "%s\r\n", message);
 
-    write(clientRecord.clients[client].write, msg, strlen(msg));
+    if(write(clientRecord.clients[client].write, msg, strlen(msg)) < 0)
+    {
+        perror("SERVER -> CLIENT WRITE");
+    }
 
     if(PRINT_ALL == BOOL_TRUE)
     {

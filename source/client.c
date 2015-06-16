@@ -25,7 +25,10 @@ void sendToServer(char *msg)
 
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
     sprintf(buffer, "#%i %s", clientNumber, msg);
-    write(clientWrite, buffer, INNER_BUFFER_LENGTH);
+    if(write(clientWrite, buffer, INNER_BUFFER_LENGTH) < 0)
+    {
+        perror("CLIENT -> SERVER WRITE");
+    }
     FREE(buffer);
 }
 
@@ -43,7 +46,12 @@ int handleServerRead()
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);
         ssize_t rd = read(clientRead, buffer, INNER_BUFFER_LENGTH);
-        if(rd <= 0 || buffer[0] == '\0' || connection.ssl_handle == NULL)
+
+        if(rd < 0)
+        {
+            perror("CLIENT READ");
+        }
+        else if(rd == 0 || buffer[0] == '\0' || connection.ssl_handle == NULL)
         {
             sendToServer("CLOSE");
             FREE(buffer);
