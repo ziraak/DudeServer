@@ -41,10 +41,13 @@ void handleAuthorizedClient(commandStruct cmd)
     {
         result = handleJoinCommand(cmd);
 
-        char *msgToParent = malloc(200);
-        sprintf(msgToParent, "%i %s", result, cmd.parameters[0]);
-        sendToClient(cmd.sender, msgToParent);
-        free(msgToParent);
+        if(result != RPL_JOIN_CHANNEL)
+        {
+            char *msgToParent = malloc(200);
+            sprintf(msgToParent, "%i %s", result, cmd.parameters[0]);
+            sendToClient(cmd.client, msgToParent);
+            free(msgToParent);
+        }
     }
     else if (commandEquals(cmd, "PART"))
     {
@@ -53,7 +56,7 @@ void handleAuthorizedClient(commandStruct cmd)
     else if (commandEquals(cmd, "DELETE_USER"))
     {
         handleDeleteUserCommand(cmd);
-        closeClientConnection(cmd.sender);
+        closeClientConnection(cmd.client);
     }
     else if (commandEquals(cmd, "UPDATE_NICKNAME"))
     {
@@ -87,14 +90,14 @@ void handleAuthorizedClient(commandStruct cmd)
     {
         char *buffer = MALLOC(INNER_BUFFER_LENGTH);
         sprintf(buffer, "%i", ERR_ALREADY_LOGGED_IN);
-        sendToClient(cmd.sender, buffer);
+        sendToClient(cmd.client, buffer);
         FREE(buffer);
     }
     else
     {
         char *buffer = MALLOC(INNER_BUFFER_LENGTH);
         sprintf(buffer, "%i '%s'", ERR_ALREADY_LOGGED_IN, cmd.message);
-        sendToClient(cmd.sender, buffer);
+        sendToClient(cmd.client, buffer);
         FREE(buffer);
     }
 }
@@ -105,14 +108,14 @@ void handleAuthorizedClient(commandStruct cmd)
 void handleUnauthorizedClient(commandStruct cmd)
 {
     //TODO: CREATE_USER toevoegen
-    if(commandEquals(cmd, "LOGIN") == BOOL_TRUE)
+    if(commandEquals(cmd, "LOGIN"))
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);
 
         int result = handleLoginCommand(cmd);
         if (result == RPL_LOGIN)
         {
-            sprintf(buffer, "%i %s", result, getClient(cmd.sender)->user.username);
+            sprintf(buffer, "%i %s", result, getClient(cmd.client)->user.username);
         }
         else
         {
@@ -121,13 +124,20 @@ void handleUnauthorizedClient(commandStruct cmd)
         sendToAllClients(buffer);
         FREE(buffer);
 
-        handlePoll(cmd.sender, 100);
-        handleNames(cmd.sender);
-        handleTopic(cmd.sender);
+        handlePoll(cmd.client, 100);
+        handleNames(cmd.client);
+        handleTopic(cmd.client);
+    }
+    else if(commandEquals(cmd, "CREATE_USER"))
+    {
+        if(handleCreateUserCommand(cmd) == RPL_SUCCESS)
+        {
+            REPLY_SUCCESS(cmd);
+        }
     }
     else
     {
-        sendToClient(cmd.sender, "444");
+        sendToClient(cmd.client, "444");
     }
 }
 
@@ -151,7 +161,7 @@ void handleClient(int acceptPid)
 
         commandStruct cmd = commandStruct_initialize(buffer);
 
-        if(cmd.sender < 0)
+        if(cmd.client < 0)
         {
             continue;
         }
@@ -159,9 +169,9 @@ void handleClient(int acceptPid)
         if(strcmp(cmd.command, "ACCEPT") == 0)
         {
             // accept procedure: open the right MKFIFO to start communicating
-            if(getClient(cmd.sender) == NULL)
+            if(getClient(cmd.client) == NULL)
             {
-                int s = cmd.sender;
+                int s = cmd.client;
 
                 if(s >= clientRecord.clientNumber)
                 {
@@ -170,7 +180,7 @@ void handleClient(int acceptPid)
                 }
 
                 char* clientName = MALLOC(INNER_BUFFER_LENGTH);
-                sprintf(clientName, CLIENT_MKFIFO_LOCATION, cmd.sender);
+                sprintf(clientName, CLIENT_MKFIFO_LOCATION, cmd.client);
 
                 User user = {
                     .authorized = BOOL_FALSE,
@@ -190,18 +200,20 @@ void handleClient(int acceptPid)
         else if(strcmp(cmd.command, "ACTIVE") == 0)
         {
             // accept procedure: mark client as active
-            User *user = getClient(cmd.sender);
+            User *user = getClient(cmd.client);
             if(user != NULL)
             {
                 user->active = BOOL_TRUE;
+
+                sendToClient(cmd.client, "100");
             }
         }
         else if(strcmp(cmd.command, "CLOSE") == 0)
         {
-            User *user = getClient(cmd.sender);
+            User *user = getClient(cmd.client);
 
             // close client connection
-            closeClientConnection(cmd.sender);
+            closeClientConnection(cmd.client);
 
             if(user != NULL && user->authorized == BOOL_TRUE)
             {
@@ -221,11 +233,11 @@ void handleClient(int acceptPid)
         }
         else
         {
-            if(cmd.sender < clientRecord.clientNumber && clientRecord.clients[cmd.sender].active)
+            if(cmd.client < clientRecord.clientNumber && clientRecord.clients[cmd.client].active)
             {
-                if(clientRecord.clients[cmd.sender].authorized == BOOL_TRUE)
+                if(clientRecord.clients[cmd.client].authorized == BOOL_TRUE)
                 {
-                    if(getClient(cmd.sender) != NULL)
+                    if(getClient(cmd.client) != NULL)
                     {
                         handleAuthorizedClient(cmd);
                     }

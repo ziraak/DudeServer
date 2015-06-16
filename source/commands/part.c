@@ -29,10 +29,10 @@ int handlePartCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.client);
     }
 
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
     char *channelName = cmd.parameters[0];
 
     if (checkChannel(channelName) == BOOL_TRUE)
@@ -57,5 +57,5 @@ int handlePartCommand(commandStruct cmd)
 
         return RPL_SUCCESS;
     }
-    ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+    ERROR_NO_SUCH_CHANNEL(channelName, cmd.client);
 }

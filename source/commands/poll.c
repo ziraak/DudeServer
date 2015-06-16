@@ -2,13 +2,13 @@
 
 int convertChannelMessageToString(messageInfo msg,  char* channelName, char** str)
 {
-    if(msg.timestamp == NULL || msg.writer == NULL || msg.body == NULL || channelName == NULL)
+    if(msg.user == NULL || msg.message == NULL || channelName == NULL)
     {
         return BOOL_FALSE;
     }
 
-    *str = MALLOC(12 + strlen(channelName) + strlen(msg.writer) + strlen(msg.timestamp) + strlen(msg.body));
-    sprintf(*str, "%i %s %s %s :%s", RPL_PRIV_MSG, channelName, msg.writer, msg.timestamp, msg.body);
+    *str = MALLOC(25 + strlen(channelName) + strlen(msg.user) + strlen(msg.message));
+    sprintf(*str, "%i %s %s %ld :%s", RPL_PRIV_MSG, channelName, msg.user, msg.timestamp, msg.message);
 
     return BOOL_TRUE;
 }

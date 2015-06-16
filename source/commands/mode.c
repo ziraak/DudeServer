@@ -69,7 +69,7 @@ modeStruct getFlags(commandStruct cmd)
             .error = error,
             .flagCount = i,
             .flags = fs,
-            .client = cmd.sender
+            .client = cmd.client
     };
 
     return ms;
@@ -225,35 +225,35 @@ int handleModeCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 2)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     char* channelName = cmd.parameters[0];
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
 
     if(strlen(cmd.parameters[1]) < 2 || (cmd.parameters[1][0] != '-' && cmd.parameters[1][0] != '+'))
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
-        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.client);
     }
 
     if (checkIfUserExists(user.username) == BOOL_FALSE)
     {
-        ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
+        ERROR_USERNAME_NOT_KNOWN(user.username, cmd.client);
     }
 
     if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.client);
     }
 
     if(userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
+        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.client);
     }
 
     int result;
@@ -277,16 +277,16 @@ int handleModeCommand(commandStruct cmd)
     switch(result)
     {
         case ERR_NEEDMOREPARAMS:
-            ERROR_NEED_MORE_PARAMETERS(cmd.message, 3, cmd.sender);
+            ERROR_NEED_MORE_PARAMETERS(cmd.message, 3, cmd.client);
 
         case ERR_PASSWORDTOOSHORT:
-            ERROR_PASSWORD_TOO_SHORT(cmd.sender);
+            ERROR_PASSWORD_TOO_SHORT(cmd.client);
 
         case ERR_NOSUCHCHANNEL:
-            ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+            ERROR_NO_SUCH_CHANNEL(channelName, cmd.client);
 
         case ERR_NOTONCHANNEL:
-            ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
+            ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.client);
 
         default:
             break;

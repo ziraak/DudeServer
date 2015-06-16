@@ -99,7 +99,7 @@ commandStruct commandStruct_initialize(char *message)
 
     commandStruct cmd;
     bzero(&cmd, sizeof(commandStruct));
-    cmd.sender = atoi(sender);
+    cmd.client = atoi(sender);
     cmd.message = msg;
     cmd.command = command;
     cmd.trailing = trailing;

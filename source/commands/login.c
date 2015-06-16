@@ -11,7 +11,7 @@ int handleLoginCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     char *username = cmd.parameters[0];
@@ -21,8 +21,8 @@ int handleLoginCommand(commandStruct cmd)
     int userAuthenticated = authenticateUser(username, password, &user);
     if (userAuthenticated == RPL_LOGIN)
     {
-        getClient(cmd.sender)->user = user;
-        getClient(cmd.sender)->authorized = BOOL_TRUE;
+        getClient(cmd.client)->user = user;
+        getClient(cmd.client)->authorized = BOOL_TRUE;
     }
 
     if(cmd.parameterCount > 1)

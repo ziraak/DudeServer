@@ -10,16 +10,16 @@ int handlePrivateMessageCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
     char *channel = cmd.parameters[0],
             *msgToSend = cmd.trailing;
 
     if (isUserInChannel(channel, user.username) == BOOL_FALSE)
     {
-        ERROR_NOT_ON_CHANNEL(channel, user.username, cmd.sender);
+        ERROR_NOT_ON_CHANNEL(channel, user.username, cmd.client);
     }
 
     writeMessageToDB(msgToSend, channel, user.username);
@@ -29,18 +29,18 @@ int handlePrivateMessageCommand(commandStruct cmd)
 
 int writeMessageToDB(char *msgToSend, char *channel, char *username)
 {
-    messageInfo message;
-    message.body = msgToSend;
-    message.writer = username;
-    insertMessage(message, channel);
-
     struct timeb timestamp;
     ftime(&timestamp);
-    lastTimestamp = timestamp.time * 1000 + timestamp.millitm;
-    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    sprintf(buffer, "%i %s %s %ld :%s", RPL_PRIV_MSG, channel, username, lastTimestamp, msgToSend);
-    sendToAllClientsInChannel(buffer, channel);
-    FREE(buffer);
+
+    messageInfo message;
+    message.message = msgToSend;
+    message.user = username;
+    message.channel = channel;
+    message.timestamp = timestamp.time * 1000 + timestamp.millitm;
+    insertMessage(message);
+    lastTimestamp = message.timestamp;
+
+    REPLY_PRIVATE_MESSAGE(message);
 
     return DB_RETURN_SUCCES;
 }

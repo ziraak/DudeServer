@@ -7,7 +7,7 @@
 
 typedef struct commandStruct
 {
-    int sender;
+    int client;
     char *command;
     char *trailing;
     char *message;

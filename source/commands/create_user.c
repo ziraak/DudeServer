@@ -10,7 +10,7 @@ int handleCreateUserCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     char *username = cmd.parameters[0],
@@ -29,7 +29,7 @@ int handleCreateUserCommand(commandStruct cmd)
         }
         else
         {
-            ERROR_PASSWORD_TOO_SHORT(cmd.sender);
+            ERROR_PASSWORD_TOO_SHORT(cmd.client);
         }
     }
 }

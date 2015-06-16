@@ -49,27 +49,27 @@ int handleTopicCommand(commandStruct cmd)
     //TODO: operator rechten checken (channel +t flag)
     if(cmd.parameterCount < 1)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.client);
     }
 
     char* channelName = cmd.parameters[0], *topic = cmd.trailing;
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
 
     if(checkChannel(channelName) != BOOL_TRUE)
     {
-        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.client);
     }
 
     if(isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.client);
     }
 
     if(topic != NULL)
     {
         if(checkIfChannelTopicOperatorOnly(channelName) == BOOL_TRUE && userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
         {
-            ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
+            ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.client);
         }
 
         //set
@@ -95,7 +95,7 @@ int handleTopicCommand(commandStruct cmd)
         {
             char *buffer = MALLOC(INNER_BUFFER_LENGTH);
             sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, channel.topic);
-            sendToClient(cmd.sender, buffer);
+            sendToClient(cmd.client, buffer);
             FREE(buffer);
             channelInfo_free(&channel);
             return RPL_TOPIC;

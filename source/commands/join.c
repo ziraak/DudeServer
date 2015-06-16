@@ -11,17 +11,17 @@ int handleJoinCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.client);
     }
 
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
     char *channelName = cmd.parameters[0], *optionalChannelKey = cmd.trailing;
     int joinChannelResult;
     int boolUserNeedsToBeOperator = BOOL_FALSE;
     channelInfo channel;
     if(getChannelByName(channelName, &channel) == BOOL_FALSE)
     {
-        insertChannel(channelName, NULL, NULL, BOOL_TRUE, 0, 0);
+        insertChannel(channelName, optionalChannelKey, NULL, BOOL_TRUE, 0, 0);
         boolUserNeedsToBeOperator = BOOL_TRUE;
     }
     else

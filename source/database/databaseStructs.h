@@ -19,9 +19,10 @@ typedef struct channelUser
 
 typedef struct messageInfo
 {
-    char *writer;
-    char *timestamp;
-    char *body;
+    char *channel;
+    char *user;
+    long timestamp;
+    char *message;
 } messageInfo;
 
 typedef struct channelInfo

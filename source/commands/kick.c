@@ -7,14 +7,14 @@ int handleKickCommand(commandStruct cmd)
 
     if (checkChannel(channelName) == BOOL_FALSE)
     {
-        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+        ERROR_NO_SUCH_CHANNEL(channelName, cmd.client);
     }
 
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
 
     if (userIsOperatorInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.sender);
+        ERROR_CHANNEL_PRIVILEGES_NEEDED(channelName, cmd.client);
     }
 
     if(isUserInChannel(channelName, user.username) == BOOL_TRUE)
@@ -39,5 +39,5 @@ int handleKickCommand(commandStruct cmd)
         return RPL_SUCCESS;
     }
 
-    ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
+    ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.client);
 }

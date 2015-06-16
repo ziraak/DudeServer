@@ -11,26 +11,26 @@ int handleUpdateChannelPasswordCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 1 || cmd.trailing == NULL)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     char *channelName = cmd.parameters[0],
             *password = cmd.trailing;
-    userInfo user = getClient(cmd.sender)->user;
+    userInfo user = getClient(cmd.client)->user;
 
     if (strlen(cmd.parameters[1]) < MINIMUM_PASSWORD_LENGTH)
     {
-        ERROR_PASSWORD_TOO_SHORT(cmd.sender);
+        ERROR_PASSWORD_TOO_SHORT(cmd.client);
     }
 
     if (checkIfUserExists(user.username) == BOOL_FALSE)
     {
-        ERROR_USERNAME_NOT_KNOWN(user.username, cmd.sender);
+        ERROR_USERNAME_NOT_KNOWN(user.username, cmd.client);
     }
 
     if (isUserInChannel(channelName, user.username) == BOOL_FALSE)
     {
-        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.sender);
+        ERROR_NOT_ON_CHANNEL(channelName, user.username, cmd.client);
     }
 
     if (userIsOperatorInChannel(channelName, user.username))

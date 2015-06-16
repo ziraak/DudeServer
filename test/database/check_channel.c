@@ -52,12 +52,12 @@ END_TEST
 
 START_TEST(test_getMessages)
     {
-//        char* body = "test123";
+//        char* message = "test123";
 //        char* body2 = "test321";
 //        messageInfo* messageInfo1;
 //        messageInfo1= getMessages("testChannel", 100);
-//        ck_assert_str_eq(messageInfo1[0].body,body);
-//        ck_assert_str_eq(messageInfo1[1].body,body2);
+//        ck_assert_str_eq(messageInfo1[0].message,message);
+//        ck_assert_str_eq(messageInfo1[1].message,body2);
     }
 END_TEST
 
@@ -66,7 +66,7 @@ START_TEST(test_getMessagesOnTime)
         char* body = "test321";
         messageInfo* messageInfo1;
         messageInfo1= getMessagesOnTime("testChannel", 10, NULL, 0);
-        ck_assert_str_eq(messageInfo1[0].body,body);
+        ck_assert_str_eq(messageInfo1[0].message,body);
     }
 END_TEST
 
@@ -115,8 +115,8 @@ END_TEST
 START_TEST(test_WriteMsg)
     {
         messageInfo message;
-        message.body = "ik weaat niet wat ik moet schrijven maar nu hebben we tenminste tekst";
-        message.writer = "fatih";
+        message.message = "ik weaat niet wat ik moet schrijven maar nu hebben we tenminste tekst";
+        message.user = "fatih";
         message.timestamp = "50000";
 
 //        writeMessageToChannel("eigendunk", message);

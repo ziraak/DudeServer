@@ -7,9 +7,10 @@ void _fillChannelMessage(sqlite3_stmt *stmt, messageInfo *messageInfoStruct)
     int i;
     for(i = 0; i < columnCount; i++)
     {
-        if(strcmp(sqlite3_column_name(stmt, i), "user_name") == 0) { messageInfoStruct->writer = sqlite3_column_string(stmt, i); continue; }
-        if(strcmp(sqlite3_column_name(stmt, i), "timestamp") == 0) { messageInfoStruct->timestamp = sqlite3_column_string(stmt, i); continue; }
-        if(strcmp(sqlite3_column_name(stmt, i), "body") == 0) { messageInfoStruct->body = sqlite3_column_string(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "user_name") == 0) { messageInfoStruct->user = sqlite3_column_string(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "timestamp") == 0) { messageInfoStruct->timestamp = sqlite3_column_int64(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "message") == 0) { messageInfoStruct->message = sqlite3_column_string(stmt, i); continue; }
+        if(strcmp(sqlite3_column_name(stmt, i), "channel_name") == 0) { messageInfoStruct->channel = sqlite3_column_string(stmt, i); continue; }
     }
 }
 
@@ -53,20 +54,15 @@ messageInfo *getMessagesOnTime(char *channelName, time_t timestamp, int *result,
     STMT_RETURN(BOOL_FALSE, statement);
 }
 
-int insertMessage(messageInfo message, char *channelName)
+int insertMessage(messageInfo message)
 {
-    struct timeb timestamp;
-    ftime(&timestamp);
-    time_t currentTimestamp = timestamp.time * 1000 + timestamp.millitm;
-    char *statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, body) VALUES (%Q, %Q, %lu, %Q);", message.writer, channelName, currentTimestamp, message.body);
+    char *statement = sqlite3_mprintf("INSERT INTO CHANNEL_MESSAGES (user_name, channel_name, timestamp, message) VALUES (%Q, %Q, %lu, %Q);", message.user, message.channel, message.timestamp, message.message);
     executeStatement(statement);
     sqlite3_free(statement);
 
     int result, resultMessageInfos;
-    messageInfo *resultMessageInfo = getMessagesOnTime(channelName, currentTimestamp, &resultMessageInfos, 0);
+    messageInfo *resultMessageInfo = getMessagesOnTime(message.channel, message.timestamp, &resultMessageInfos, 0);
     result = resultMessageInfo != NULL ? BOOL_TRUE : BOOL_FALSE;
     messageInfos_free(resultMessageInfo, resultMessageInfos);
     return result;
-
-
 }

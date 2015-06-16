@@ -25,9 +25,9 @@ void messageInfo_free(messageInfo *mi)
 {
     if(mi != NULL)
     {
-        FREE(mi->writer);
-        FREE(mi->body);
-        FREE(mi->timestamp);
+        FREE(mi->channel);
+        FREE(mi->user);
+        FREE(mi->message);
     }
 }
 

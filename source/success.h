@@ -9,5 +9,7 @@
 
 void REPLY_JOIN(char *channelName, char *username);
 void REPLY_PART(char *channelName, char *username);
+void REPLY_PRIVATE_MESSAGE(messageInfo mi);
+void REPLY_SUCCESS(commandStruct cmd);
 
 #endif //DUDESERVER_SUCCESS_H

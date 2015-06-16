@@ -26,17 +26,17 @@ int handleInviteCommand(commandStruct cmd)
 {
     if(cmd.parameterCount < 2)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.sender);
+        ERROR_NEED_MORE_PARAMETERS(cmd.message, 2, cmd.client);
     }
 
     char *channelName = cmd.parameters[0], *usernameUserToInvite = cmd.parameters[1];
 
     if (checkIfUserExists(usernameUserToInvite) == BOOL_FALSE)
     {
-        ERROR_USERNAME_NOT_KNOWN(usernameUserToInvite, cmd.sender);
+        ERROR_USERNAME_NOT_KNOWN(usernameUserToInvite, cmd.client);
     }
 
-    int resultCheckChannelHost = hostAllowedToInvite(channelName, cmd.sender);
+    int resultCheckChannelHost = hostAllowedToInvite(channelName, cmd.client);
 
     if (resultCheckChannelHost == BOOL_TRUE)
     {

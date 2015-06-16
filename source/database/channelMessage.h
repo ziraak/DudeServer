@@ -4,7 +4,7 @@
 #include "database.h"
 
 int countMessages(char *channelName);
-int insertMessage(messageInfo message, char *channelName);
+int insertMessage(messageInfo message);
 void deleteMessage(char *channelName);
 
 #endif //DUDESERVER_CHANNELMESSAGES_H

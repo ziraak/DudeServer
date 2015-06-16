@@ -40,8 +40,6 @@ int handleServerRead()
         return i;
     }
 
-    sslSend("100");
-
     while(1)
     {
         char* buffer = MALLOC(INNER_BUFFER_LENGTH);
