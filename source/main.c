@@ -13,6 +13,7 @@ int main(int argc, char **argv)
             if(argc >= i + 1)
             {
                 port = atoi(argv[i + 1]);
+                printf("ACCEPTED PORT %i FROM ARGUMENTS\n", port);
                 i++;
             }
         }

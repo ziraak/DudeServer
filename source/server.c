@@ -239,7 +239,7 @@ int handleAccept(int clientWrite, int port)
         exit(-1);
     }
 
-    printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", SERVER_PORT);
+    printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", port);
 
     while(1)
     {
