@@ -244,45 +244,45 @@ int handleAccept(int clientWrite, int port)
     int pid = fork();
     if(pid == 0)
     {
-        return pid;
-    }
 
-    int listenSocket = getListeningSocket(SERVER_IP, port);
-    int clientNumber = 0;
+        int listenSocket = getListeningSocket(SERVER_IP, port);
+        int clientNumber = 0;
 
-    if(listenSocket < 0)
-    {
-        perror("BINDING FAILED!");
-        exit(-1);
-    }
-
-    printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", port);
-
-    while(1)
-    {
-        if(sslAcceptConnection(listenSocket) == SSL_OK)
+        if (listenSocket < 0)
         {
-            if(PRINT_ALL == BOOL_TRUE)
-            {
-                printf("#%i: ACCEPTED\n", clientNumber);
-            }
-
-            char* clientName = MALLOC(INNER_BUFFER_LENGTH);
-            sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
-            if(mkfifo(clientName, 0666) < 0)
-            {
-                printf("S: ERROR CREATING NAMED PIPE %s:\n", clientName);
-                perror("");
-            }
-            FREE(clientName);
-
-            handleClientProcess(clientWrite, clientNumber);
-
-            clientNumber++;
+            perror("BINDING FAILED!");
+            exit(-1);
         }
-    }
 
-    exit(0);
+        printf("SERVER ACCEPTING CLIENTS ON PORT %i\n", port);
+
+        while (1)
+        {
+            if (sslAcceptConnection(listenSocket) == SSL_OK)
+            {
+                if (PRINT_ALL == BOOL_TRUE)
+                {
+                    printf("#%i: ACCEPTED\n", clientNumber);
+                }
+
+                char *clientName = MALLOC(INNER_BUFFER_LENGTH);
+                sprintf(clientName, CLIENT_MKFIFO_LOCATION, clientNumber);
+                if (mkfifo(clientName, 0666) < 0)
+                {
+                    printf("S: ERROR CREATING NAMED PIPE %s:\n", clientName);
+                    perror("");
+                }
+                FREE(clientName);
+
+                handleClientProcess(clientWrite, clientNumber);
+
+                clientNumber++;
+            }
+        }
+
+        exit(0);
+    }
+    return pid;
 }
 
 void runServer(int port)
