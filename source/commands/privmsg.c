@@ -34,8 +34,11 @@ int writeMessageToDB(char *msgToSend, char *channel, char *username)
     message.writer = username;
     insertMessage(message, channel);
 
+    struct timeb timestamp;
+    ftime(&timestamp);
+    lastTimestamp = timestamp.time * 1000 + timestamp.millitm;
     char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-    sprintf(buffer, "%i %s %s %i :%s", RPL_PRIV_MSG, channel, username, (int)time(NULL), msgToSend);
+    sprintf(buffer, "%i %s %s %ld :%s", RPL_PRIV_MSG, channel, username, lastTimestamp, msgToSend);
     sendToAllClientsInChannel(buffer, channel);
     FREE(buffer);
 
