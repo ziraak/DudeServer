@@ -51,6 +51,8 @@ int handleJoinCommand(commandStruct cmd)
         sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, user.username);
         sendToAllClients(buffer);
         FREE(buffer);
+
+        handleChannelNames(channelName, cmd.sender);
     }
 
     return joinChannelResult;

@@ -10,7 +10,7 @@ int main(int argc, char **argv)
         return success;
     }
 
-    printf("VERBONDEN MET %s:%i\n", "188.226.140.234", 9001);
+    printf("VERBONDEN MET %s:%i\n", SERVER_IP, SERVER_PORT);
 
     int childpid = fork();
     if (childpid == 0)

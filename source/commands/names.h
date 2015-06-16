@@ -5,6 +5,9 @@
 #include "../utils/utils.h"
 #include "../database/database.h"
 
-int handleNamesCommand(commandStruct cmd);
+//int handleNamesCommand(commandStruct cmd);
+
+void handleChannelNames(char* channelName, int client);
+void handleNames(int client);
 
 #endif //DUDESERVER_NAMES_H

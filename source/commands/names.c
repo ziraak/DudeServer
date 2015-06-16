@@ -1,17 +1,29 @@
 #include "names.h"
 
-
-int handleNamesCommand(commandStruct cmd)
+void handleNames(int client)
 {
-    char *channelName = cmd.parameters[0];
+    int result;
+    channelInfo *channels = getUserChannels(getClient(client)->user.username, &result);
 
-    if (cmd.parameterCount < 1)
+    if(result < 0)
     {
-        ERROR_NEED_MORE_PARAMETERS(cmd.message, 1, cmd.sender);
+        return;
     }
+
+    int i;
+    for(i = 0; i < result; i++)
+    {
+        handleChannelNames(channels[i].name, client);
+    }
+
+    channelInfos_free(channels, result);
+}
+
+void handleChannelNames(char* channelName, int client)
+{
     if (checkChannel(channelName) == BOOL_FALSE)
     {
-        ERROR_NO_SUCH_CHANNEL(channelName, cmd.sender);
+        _errorNoSuchChannel(channelName, client);
     }
 
     int result;
@@ -27,12 +39,10 @@ int handleNamesCommand(commandStruct cmd)
         mallocRolesLength += strlen(userInfoStruct[i].role) + 1; // 1 = ","
     }
 
-    char *users = MALLOC(mallocUsersLength + mallocRolesLength);
+    char *users = MALLOC(mallocUsersLength + mallocRolesLength + 1 + strlen(channelName));
     char *roles = MALLOC(mallocRolesLength);
-    bzero(users, mallocUsersLength + mallocRolesLength);
-    bzero(roles, mallocRolesLength);
 
-    sprintf(users, "%i", RPL_NAMREPLY);
+    sprintf(users, "%i %s", RPL_NAMREPLY, channelName);
     strcat(users, " ");
     strcat(roles, "");
     for (i = 0; i < result; i++)
@@ -48,9 +58,8 @@ int handleNamesCommand(commandStruct cmd)
     }
     strcat(users, " ");
     strcat(users, roles);
-    sslSend(users);
+    sendToClient(client, users);
     FREE(users);
     FREE(roles);
     userInfos_free(userInfoStruct, result);
-    return RPL_NOREPLY;
 }
