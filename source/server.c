@@ -39,7 +39,12 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "JOIN"))
     {
-        handleJoinCommand(cmd);
+        result = handleJoinCommand(cmd);
+
+        char *msgToParent = malloc(200);
+        sprintf(msgToParent, "%i %s", result, cmd.parameters[0]);
+        sendToClient(cmd.sender, msgToParent);
+        free(msgToParent);
     }
     else if (commandEquals(cmd, "PART"))
     {
