@@ -45,14 +45,6 @@ int handleJoinCommand(commandStruct cmd)
         updateChannelUserRole(channelName, user.username, USER_ROLE_OPERATOR);
     }
 
-    if(joinChannelResult == RPL_JOIN_CHANNEL)
-    {
-        char* buffer = MALLOC(INNER_BUFFER_LENGTH);
-        sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, user.username);
-        sendToAllClientsInChannel(buffer, channelName);
-        FREE(buffer);
-    }
-
     return joinChannelResult;
 }
 
@@ -97,6 +89,11 @@ int joinChannelByUsername(char* channelName, char *username)
     sprintf(stringToSend, "%s%s", username, joinedChanMsg);
     sendSystemMessageToChannel(stringToSend, channelName);
     FREE(stringToSend);
+
+    char* buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s %s", RPL_JOIN_CHANNEL, channelName, username);
+    sendToAllClientsInChannel(buffer, channelName);
+    FREE(buffer);
 
     int clientId = getClientIdByUsername(username);
     if(clientId != -1)

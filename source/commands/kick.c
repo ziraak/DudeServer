@@ -27,6 +27,12 @@ int handleKickCommand(commandStruct cmd)
         }
         else
         {
+            char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+            sprintf(buffer, "%i %s %s", RPL_PART_CHANNEL, channelName, usernameToKick);
+            sendToClient(getClientIdByUsername(usernameToKick), buffer);
+            sendToAllClientsInChannel(buffer, channelName);
+            FREE(buffer);
+
             char *kickChanMsg = " was kicked out of the channel!!";
             char *stringToSend = MALLOC(strlen(usernameToKick) + strlen(kickChanMsg) + 1);
             sprintf(stringToSend, "%s%s", usernameToKick, kickChanMsg);

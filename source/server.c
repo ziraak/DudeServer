@@ -68,11 +68,11 @@ void handleAuthorizedClient(commandStruct cmd)
     }
     else if (commandEquals(cmd, "INVITE"))
     {
-        result = handleInviteCommand(cmd); //TODO: server push compliant
+        handleInviteCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "KICK"))
     {
-        result = handleKickCommand(cmd); //TODO: server push compliant
+        handleKickCommand(cmd); //TODO: server push compliant
     }
     else if (commandEquals(cmd, "UPDATE_CHANNEL_PASSWORD"))
     {
@@ -312,7 +312,7 @@ void runServer(int port)
  */
 void sendToClient(int client, char *message)
 {
-    if(client >= clientRecord.clientNumber || clientRecord.clients[client].active == BOOL_FALSE)
+    if(client < 0 || client >= clientRecord.clientNumber || clientRecord.clients[client].active == BOOL_FALSE)
     {
         return;
     }
