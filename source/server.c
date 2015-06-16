@@ -118,6 +118,7 @@ void handleUnauthorizedClient(commandStruct cmd)
 
         handlePoll(cmd.sender, 100);
         handleNames(cmd.sender);
+        handleTopic(cmd.sender);
     }
     else
     {

@@ -7,6 +7,43 @@
  */
 #include "topic.h"
 
+void handleTopic(int client)
+{
+    int result;
+    channelInfo *channels = getUserChannels(getClient(client)->user.username, &result);
+
+    if(result < 0)
+    {
+        return;
+    }
+
+    int i;
+    for(i = 0; i < result; i++)
+    {
+        handleChannelTopic(channels[i].name, client);
+    }
+
+    channelInfos_free(channels, result);
+}
+
+void handleChannelTopic(char* channelName, int client)
+{
+    if (checkChannel(channelName) == BOOL_FALSE)
+    {
+        _errorNoSuchChannel(channelName, client);
+    }
+
+    channelInfo channel;
+    if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
+    {
+        char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+        sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, channel.topic);
+        sendToClient(client, buffer);
+        FREE(buffer);
+        channelInfo_free(&channel);
+    }
+}
+
 int handleTopicCommand(commandStruct cmd)
 {
     //TODO: operator rechten checken (channel +t flag)
