@@ -114,7 +114,7 @@ int handlePoll(int client, int amountOfMessages)
     int channelCount;
     userInfo user = getClient(client)->user;
     channelInfo *channels = getUserChannels(user.username, &channelCount);
-    pollStruct ps = pollStruct_initialize(channels, channelCount, lastTimestamp);
+    pollStruct ps = pollStruct_initialize(channels, channelCount, 0);
 
     if(getPollMessages(&ps, amountOfMessages) == BOOL_TRUE)
     {
