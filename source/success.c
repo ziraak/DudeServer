@@ -32,3 +32,19 @@ void REPLY_SUCCESS(commandStruct cmd)
     sendToClient(cmd.client, buffer);
     FREE(buffer);
 }
+
+void REPLY_TOPIC(char *channelName, char *topic, int client)
+{
+    char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, topic);
+    sendToClient(client, buffer);
+    FREE(buffer);
+}
+
+void REPLY_TOPIC_ALL(char *channelName, char *topic)
+{
+    char *buffer = MALLOC(INNER_BUFFER_LENGTH);
+    sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, topic);
+    sendToAllClientsInChannel(buffer, channelName);
+    FREE(buffer);
+}

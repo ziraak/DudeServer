@@ -83,25 +83,20 @@ int handleTopicCommand(commandStruct cmd)
         sendSystemMessageToChannel(stringToSend, channelName);
         FREE(stringToSend);
 
-        char *buffer = MALLOC(INNER_BUFFER_LENGTH);
-        sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, topic);
-        sendToAllClientsInChannel(buffer, channelName);
-        FREE(buffer);
+        REPLY_TOPIC_ALL(channelName, topic);
         return RPL_TOPIC;
     }
     else
     {
         //get
         channelInfo channel;
-        if(getChannelByName(channelName, &channel) == BOOL_TRUE && channel.topic != NULL)
+        getChannelByName(channelName, &channel);
+        if(channel.topic != NULL)
         {
-            char *buffer = MALLOC(INNER_BUFFER_LENGTH);
-            sprintf(buffer, "%i %s :%s", RPL_TOPIC, channelName, channel.topic);
-            sendToClient(cmd.client, buffer);
-            FREE(buffer);
-            channelInfo_free(&channel);
+            REPLY_TOPIC(channelName, channel.topic, cmd.client);
             return RPL_TOPIC;
         }
+        channelInfo_free(&channel);
         return RPL_NOTOPIC;
     }
 }

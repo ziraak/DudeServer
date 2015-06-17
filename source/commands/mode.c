@@ -101,6 +101,22 @@ void handleOFlag(char *channelName, flagStruct flag)
         sprintf(stringToSend, "%s%s", flag.parameter, msg);
         sendSystemMessageToChannel(stringToSend, channelName);
         FREE(stringToSend);
+
+        int amount;
+        userInfo *users = getChannelUsers(channelName, &amount);
+
+        int i, client;
+        for(i = 0; i < amount; i++)
+        {
+            client = getClientIdByUsername(users[i].username);
+
+            if(client >= 0)
+            {
+                handleChannelNames(channelName, client);
+            }
+        }
+
+        userInfos_free(users, amount);
     }
 }
 
